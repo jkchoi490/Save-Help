@@ -21,8 +21,14 @@ public class User {
     @Column(length = 100)
     private String name;
 
+    @Column(name = "login_id", nullable = false, length = 50)
+    private String loginId;
+
     @Column(length = 255, unique = true)
     private String email;
+
+    @Column(length = 255, unique = true)
+    private String phone;
 
     @Column(length = 255)
     private String password;
@@ -36,7 +42,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String provider;
+    private Provider provider;
 
     @Column(name = "provider_user_id", nullable = false, length = 255)
     private String providerUserId;
