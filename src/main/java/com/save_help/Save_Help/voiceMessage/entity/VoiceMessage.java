@@ -28,7 +28,8 @@ public class VoiceMessage {
 
     private LocalDateTime sentAt;
 
-    private boolean read = false;
+    @Column(name = "is_read", nullable = false)
+    private boolean read;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "call_id")

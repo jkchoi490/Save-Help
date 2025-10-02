@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.emergency;
 
+import com.save_help.Save_Help.communityCenter.CommunityCenter;
 import com.save_help.Save_Help.helper.Helper;
 import com.save_help.Save_Help.hospital.entity.Hospital;
 import com.save_help.Save_Help.user.entity.User;
@@ -52,4 +53,8 @@ public class Emergency {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hospital_id")
     private Hospital hospital; // 해당 병원으로 배정
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "center_id")
+    private CommunityCenter assignedCenter;
 }

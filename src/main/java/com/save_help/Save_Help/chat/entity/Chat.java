@@ -33,7 +33,8 @@ public class Chat {
     private LocalDateTime sentAt;
 
     // 읽음 여부
-    private boolean read = false;
+    @Column(name = "is_read", nullable = false)
+    private boolean read;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "call_id")
