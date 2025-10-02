@@ -1,6 +1,7 @@
 package com.save_help.Save_Help.emergency;
 
 import com.save_help.Save_Help.helper.Helper;
+import com.save_help.Save_Help.hospital.entity.Hospital;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -47,4 +48,8 @@ public class Emergency {
         this.status = EmergencyStatus.CANCELLED;
         this.resolvedAt = LocalDateTime.now();
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hospital_id")
+    private Hospital hospital; // 해당 병원으로 배정
 }

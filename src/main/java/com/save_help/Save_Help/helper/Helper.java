@@ -2,6 +2,7 @@ package com.save_help.Save_Help.helper;
 
 import com.save_help.Save_Help.communityCenter.CommunityCenter;
 import com.save_help.Save_Help.emergency.Emergency;
+import com.save_help.Save_Help.hospital.entity.Hospital;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,4 +37,5 @@ public class Helper {
     // 담당한 긴급 상황들
     @OneToMany(mappedBy = "assignedHelper")
     private List<Emergency> emergencies = new ArrayList<>();
+
 }
