@@ -38,4 +38,7 @@ public class Helper {
     @OneToMany(mappedBy = "assignedHelper")
     private List<Emergency> emergencies = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hospital_id")
+    private Hospital hospital;
 }
