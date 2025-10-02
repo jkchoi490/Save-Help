@@ -56,4 +56,8 @@ public class User {
 
     private int age;
 
+    private String incomeLevel;
+    private boolean disabled;
+    private boolean inEmergency;
+
 }
