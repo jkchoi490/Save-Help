@@ -19,5 +19,7 @@ public class SignUpRequestDto {
     private String phone;
     private int age;
     private String gender;
+    private String provider;
+    private String providerUserId;
 
 }

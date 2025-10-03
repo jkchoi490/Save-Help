@@ -14,10 +14,10 @@ import java.io.IOException;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtUtil jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
-    public OAuth2SuccessHandler(JwtUtil jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public OAuth2SuccessHandler(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String email = extractEmail(oAuth2User);
 
         // JWT 발급
-        String token = jwtTokenProvider.generateToken(email);
+        String token = jwtUtil.generateToken(email);
 
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write("{\"token\":\"" + token + "\"}");

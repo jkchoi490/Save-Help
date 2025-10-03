@@ -18,11 +18,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // CSRF 비활성화 (Postman 테스트용)
                 .csrf(csrf -> csrf.disable())
+
+                // URL별 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // 회원가입, 로그인, 로그아웃은 인증 없이 접근 허용
+                        .requestMatchers("/user/signup", "/user/login", "/user/logout").permitAll()
+
+                        // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
-                );
+                )
+
+                // HTTP Basic 비활성화 (JWT 사용 예정)
+                .httpBasic(httpBasic -> httpBasic.disable());
+
         return http.build();
     }
 }
