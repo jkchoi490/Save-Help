@@ -3,8 +3,13 @@ package com.save_help.Save_Help.chat.entity;
 import com.save_help.Save_Help.call.entity.Call;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 public class Chat {
 
