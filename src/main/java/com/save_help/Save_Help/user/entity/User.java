@@ -42,7 +42,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Provider provider;
+    private Provider provider = Provider.LOCAL;
 
     @Column(name = "provider_user_id", nullable = false, length = 255)
     private String providerUserId;

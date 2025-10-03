@@ -3,6 +3,7 @@ package com.save_help.Save_Help.user.service;
 import com.save_help.Save_Help.user.dto.LoginRequestDto;
 import com.save_help.Save_Help.user.dto.SignUpRequestDto;
 import com.save_help.Save_Help.user.dto.TokenResponseDto;
+import com.save_help.Save_Help.user.entity.Provider;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import com.save_help.Save_Help.user.util.JwtUtil;
@@ -30,6 +31,8 @@ public class UserService {
                 .phone(requestDto.getPhone())
                 .age(requestDto.getAge())
                 .gender(requestDto.getGender())
+                .provider(Provider.LOCAL) // 여기 필수
+                .providerUserId(requestDto.getProviderUserId())
                 .build();
         userRepository.save(user);
     }
