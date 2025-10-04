@@ -1,4 +1,4 @@
-package com.save_help.Save_Help.helper;
+package com.save_help.Save_Help.helper.entity;
 
 public enum HelperRole {
     MEDICAL,     // 의사, 간호사

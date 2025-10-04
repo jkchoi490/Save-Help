@@ -1,4 +1,4 @@
-package com.save_help.Save_Help.communityCenter;
+package com.save_help.Save_Help.communityCenter.entity;
 
 public enum CenterType {
     POLICE,

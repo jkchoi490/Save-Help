@@ -1,6 +1,6 @@
 package com.save_help.Save_Help.dailyNecessities.entity;
 
-import com.save_help.Save_Help.communityCenter.CommunityCenter;
+import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
