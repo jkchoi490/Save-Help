@@ -1,10 +1,15 @@
 package com.save_help.Save_Help.counseling.entity;
 
-import com.save_help.Save_Help.helper.Helper;
+import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 public class Counseling {
 

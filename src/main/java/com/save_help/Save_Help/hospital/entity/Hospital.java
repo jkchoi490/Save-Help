@@ -1,7 +1,7 @@
 package com.save_help.Save_Help.hospital.entity;
 
 import com.save_help.Save_Help.emergency.Emergency;
-import com.save_help.Save_Help.helper.Helper;
+import com.save_help.Save_Help.helper.entity.Helper;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
