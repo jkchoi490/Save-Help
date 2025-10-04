@@ -1,11 +1,16 @@
 package com.save_help.Save_Help.hospital.entity;
 
 import com.save_help.Save_Help.emergency.Emergency;
-import com.save_help.Save_Help.helper.Helper;
+import com.save_help.Save_Help.helper.entity.Helper;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 public class Hospital {
 
