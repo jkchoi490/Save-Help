@@ -4,7 +4,7 @@ import com.save_help.Save_Help.AmbulanceCall.dto.AmbulanceCallDto;
 import com.save_help.Save_Help.AmbulanceCall.entity.AmbulanceCall;
 import com.save_help.Save_Help.AmbulanceCall.entity.AmbulanceCallStatus;
 import com.save_help.Save_Help.AmbulanceCall.service.AmbulanceCallService;
-import com.save_help.Save_Help.emergency.Emergency;
+import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

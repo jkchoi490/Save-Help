@@ -1,6 +1,6 @@
 package com.save_help.Save_Help.communityCenter.entity;
 
-import com.save_help.Save_Help.emergency.Emergency;
+import com.save_help.Save_Help.emergency.entity.Emergency;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
