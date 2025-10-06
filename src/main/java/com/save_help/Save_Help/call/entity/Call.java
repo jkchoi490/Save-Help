@@ -2,10 +2,14 @@ package com.save_help.Save_Help.call.entity;
 
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "calls")
 public class Call {
     @Id
