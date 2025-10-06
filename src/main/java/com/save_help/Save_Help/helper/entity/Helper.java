@@ -1,7 +1,7 @@
 package com.save_help.Save_Help.helper.entity;
 
 import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
-import com.save_help.Save_Help.emergency.Emergency;
+import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.hospital.entity.Hospital;
 import jakarta.persistence.*;
 import lombok.Getter;
