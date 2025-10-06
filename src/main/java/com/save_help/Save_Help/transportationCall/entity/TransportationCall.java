@@ -2,8 +2,13 @@ package com.save_help.Save_Help.transportationCall.entity;
 
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 public class TransportationCall {
 
@@ -45,4 +50,21 @@ public class TransportationCall {
     // 호출 유형 (택시, 셔틀, 자가용 등)
     @Enumerated(EnumType.STRING)
     private TransportationType type;
+
+    // 기본 생성자
+    protected TransportationCall() {}
+
+    // 생성자
+    public TransportationCall(User requester, Double pickupLat, Double pickupLon,
+                              Double dropLat, Double dropLon, TransportationType type) {
+        this.requester = requester;
+        this.pickupLatitude = pickupLat;
+        this.pickupLongitude = pickupLon;
+        this.dropoffLatitude = dropLat;
+        this.dropoffLongitude = dropLon;
+        this.type = type;
+        this.status = TransportationCallStatus.REQUESTED;
+        this.requestedAt = LocalDateTime.now();
+    }
+
 }
