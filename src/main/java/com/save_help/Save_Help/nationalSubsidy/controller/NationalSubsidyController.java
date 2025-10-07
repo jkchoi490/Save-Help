@@ -1,8 +1,8 @@
-package com.save_help.Save_Help.dailyNecessities.controller;
+package com.save_help.Save_Help.nationalSubsidy.controller;
 
-import com.save_help.Save_Help.dailyNecessities.dto.NationalSubsidyResponseDto;
-import com.save_help.Save_Help.dailyNecessities.service.NationalSubsidyService;
-import com.save_help.Save_Help.nationalSubsidy.SubsidyType;
+import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
+import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

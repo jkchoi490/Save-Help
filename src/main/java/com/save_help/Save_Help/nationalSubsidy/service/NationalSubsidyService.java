@@ -1,9 +1,9 @@
-package com.save_help.Save_Help.dailyNecessities.service;
+package com.save_help.Save_Help.nationalSubsidy.service;
 
-import com.save_help.Save_Help.dailyNecessities.dto.NationalSubsidyResponseDto;
-import com.save_help.Save_Help.dailyNecessities.repository.NationalSubsidyRepository;
-import com.save_help.Save_Help.nationalSubsidy.NationalSubsidy;
-import com.save_help.Save_Help.nationalSubsidy.SubsidyType;
+import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyRepository;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
+import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

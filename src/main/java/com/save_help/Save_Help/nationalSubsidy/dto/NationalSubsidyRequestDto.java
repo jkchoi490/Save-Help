@@ -1,14 +1,13 @@
-package com.save_help.Save_Help.dailyNecessities.dto;
+package com.save_help.Save_Help.nationalSubsidy.dto;
 
-import com.save_help.Save_Help.nationalSubsidy.SubsidyType;
-import lombok.Builder;
+import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
 
 @Getter
-@Builder
-public class NationalSubsidyResponseDto {
-    private Long id;
+@Setter
+public class NationalSubsidyRequestDto {
     private String name;
     private String description;
     private SubsidyType type;
