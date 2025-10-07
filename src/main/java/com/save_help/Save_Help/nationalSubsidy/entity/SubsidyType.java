@@ -1,4 +1,4 @@
-package com.save_help.Save_Help.nationalSubsidy;
+package com.save_help.Save_Help.nationalSubsidy.entity;
 
 public enum SubsidyType {
     MEDICAL,    // 의료 지원
