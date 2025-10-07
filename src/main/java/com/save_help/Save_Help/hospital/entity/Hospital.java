@@ -37,6 +37,9 @@ public class Hospital {
     // 운영 여부
     private boolean active = true;
 
+    //남아있는 병상 수
+    private int bedCount;
+
     // 소속 MedicalStaff / Helper 리스트
     @OneToMany(mappedBy = "hospital")
     private List<Helper> medicalStaff = new ArrayList<>();
@@ -44,4 +47,16 @@ public class Hospital {
     // 긴급 상황 처리 Emergency 리스트
     @OneToMany(mappedBy = "hospital")
     private List<Emergency> emergencies = new ArrayList<>();
+
+    public void decreaseBedCount() {
+        if (bedCount > 0) {
+            bedCount--;
+        } else {
+            throw new IllegalStateException("병상이 더 이상 남아있지 않습니다.");
+        }
+    }
+
+    public void increaseBedCount() {
+        bedCount++;
+    }
 }
