@@ -1,4 +1,4 @@
-package com.save_help.Save_Help.nationalSubsidy;
+package com.save_help.Save_Help.nationalSubsidy.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

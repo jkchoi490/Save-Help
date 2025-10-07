@@ -1,6 +1,6 @@
 package com.save_help.Save_Help.userSubsidy.entity;
 
-import com.save_help.Save_Help.nationalSubsidy.NationalSubsidy;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

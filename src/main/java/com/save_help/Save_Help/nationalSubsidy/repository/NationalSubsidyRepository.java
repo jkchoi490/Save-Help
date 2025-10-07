@@ -1,7 +1,7 @@
-package com.save_help.Save_Help.dailyNecessities.repository;
+package com.save_help.Save_Help.nationalSubsidy.repository;
 
-import com.save_help.Save_Help.nationalSubsidy.NationalSubsidy;
-import com.save_help.Save_Help.nationalSubsidy.SubsidyType;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
+import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
