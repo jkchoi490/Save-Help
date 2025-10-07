@@ -1,0 +1,128 @@
+package com.save_help.Save_Help.hospital.service;
+
+import com.save_help.Save_Help.hospital.dto.HospitalRequestDto;
+import com.save_help.Save_Help.hospital.dto.HospitalResponseDto;
+import com.save_help.Save_Help.hospital.entity.Hospital;
+import com.save_help.Save_Help.hospital.repository.HospitalRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class HospitalService {
+
+    private final HospitalRepository hospitalRepository;
+
+    public HospitalResponseDto createHospital(HospitalRequestDto dto) {
+        Hospital hospital = new Hospital();
+        hospital.setName(dto.getName());
+        hospital.setType(dto.getType());
+        hospital.setPhoneNumber(dto.getPhoneNumber());
+        hospital.setLatitude(dto.getLatitude());
+        hospital.setLongitude(dto.getLongitude());
+        hospital.setActive(dto.isActive());
+        hospital.setBedCount(dto.getBedCount());
+
+        hospitalRepository.save(hospital);
+        return toDto(hospital);
+    }
+
+    public HospitalResponseDto getHospital(Long id) {
+        Hospital hospital = hospitalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
+        return toDto(hospital);
+    }
+
+    public List<HospitalResponseDto> getAllHospitals() {
+        return hospitalRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public HospitalResponseDto updateHospital(Long id, HospitalRequestDto dto) {
+        Hospital hospital = hospitalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
+
+        hospital.setName(dto.getName());
+        hospital.setType(dto.getType());
+        hospital.setPhoneNumber(dto.getPhoneNumber());
+        hospital.setLatitude(dto.getLatitude());
+        hospital.setLongitude(dto.getLongitude());
+        hospital.setActive(dto.isActive());
+        hospital.setBedCount(dto.getBedCount());
+
+        return toDto(hospital);
+    }
+
+    public void deleteHospital(Long id) {
+        hospitalRepository.deleteById(id);
+    }
+
+    //남은 병상 수 조회
+    public int getRemainingBeds(Long id) {
+        Hospital hospital = hospitalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
+        return hospital.getBedCount();
+    }
+
+    //병상 감소
+    public void decreaseBedCount(Long hospitalId) {
+        Hospital hospital = hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
+
+        hospital.decreaseBedCount();
+        hospitalRepository.save(hospital);
+    }
+
+    /**
+     * 병상 부족 시 가장 가까운 병원 탐색
+     * @param latitude - 요청 위치 위도
+     * @param longitude - 요청 위치 경도
+     * @return 가장 가까운 이용 가능한 병원 or null
+     */
+    public Hospital findNearestAvailableHospital(double latitude, double longitude) {
+        List<Hospital> hospitals = hospitalRepository.findByActiveTrue();
+
+        return hospitals.stream()
+                .filter(h -> h.getBedCount() > 0)
+                .min(Comparator.comparingDouble(h -> distance(latitude, longitude, h.getLatitude(), h.getLongitude())))
+                .orElse(null);
+    }
+
+
+    //위도/경도로 거리 계산 (Haversine formula)
+
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        if (lat1 == 0 || lon1 == 0 || lat2 == 0 || lon2 == 0) return Double.MAX_VALUE;
+
+        final int R = 6371; // Earth radius in km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // distance in km
+    }
+
+    private HospitalResponseDto toDto(Hospital hospital) {
+        return HospitalResponseDto.builder()
+                .id(hospital.getId())
+                .name(hospital.getName())
+                .type(hospital.getType())
+                .phoneNumber(hospital.getPhoneNumber())
+                .latitude(hospital.getLatitude())
+                .longitude(hospital.getLongitude())
+                .active(hospital.isActive())
+                .bedCount(hospital.getBedCount())
+                .remainingBeds(getRemainingBeds(hospital.getId()))
+                .build();
+    }
+}
