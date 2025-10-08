@@ -35,7 +35,7 @@ public class CommunityCenterController {
     }
 
     @Operation(summary = "센터 생성", description = "센터를 생성합니다")
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<CommunityCenter> createCenter(@RequestBody CommunityCenterDto dto) {
         return ResponseEntity.ok(service.createCenter(dto));
     }
@@ -69,5 +69,26 @@ public class CommunityCenterController {
     @GetMapping("/active/type/{type}")
     public ResponseEntity<List<CommunityCenter>> getActiveCentersByType(@PathVariable CenterType type) {
         return ResponseEntity.ok(service.getActiveCentersByType(type));
+    }
+
+    @PostMapping
+    public ResponseEntity<CommunityCenter> registerCenter(@RequestBody CommunityCenter center) {
+        CommunityCenter saved = service.registerCenter(center);
+        return ResponseEntity.ok(saved);
+    }
+
+
+     // 센터 타입별 + 반경 내 검색
+     // 예: /api/community-centers/nearby/type?lat=37.498&lng=127.027&type=HOSPITAL&radiusKm=5
+
+    @GetMapping("/nearby/type")
+    public ResponseEntity<List<CommunityCenter>> getCentersNearLocationByType(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam CenterType type,
+            @RequestParam(defaultValue = "5.0") double radiusKm) {
+        List<CommunityCenter> centers =
+                service.findCentersNearLocationByType(lat, lng, radiusKm, type);
+        return ResponseEntity.ok(centers);
     }
 }
