@@ -19,4 +19,5 @@ public interface CommunityCenterRepository extends JpaRepository<CommunityCenter
     List<CommunityCenter> findByActiveTrue();
 
     List<CommunityCenter> findByTypeAndActiveTrue(CenterType type);
+
 }
