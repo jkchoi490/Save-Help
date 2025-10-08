@@ -24,7 +24,11 @@ public class SecurityConfig {
                 // URL별 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         // 회원가입, 로그인, 로그아웃은 인증 없이 접근 허용
-                        .requestMatchers("/user/signup", "/user/login", "/user/logout").permitAll()
+                        .requestMatchers("/user/signup", "/user/login", "/user/logout", "/api/**", "/static/chat-client.html", "/ws/**",             // ✅ WebSocket 허용
+                                "/topic/**",          // ✅ 메시지 브로커 허용
+                                "/app/**",            // ✅ STOMP 송신 허용
+                                "/chat-client.html",  // ✅ 클라이언트 페이지 접근 허용
+                                "/css/**", "/js/**", "/images/**" ).permitAll()
 
                         // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>실시간 채팅 테스트</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+<h2>실시간 채팅 테스트</h2>
+
+<div>
+    <label>보내는 사람 ID:</label>
+    <input type="number" id="senderId" value="1"><br>
+
+    <label>받는 사람 ID:</label>
+    <input type="number" id="receiverId" value="2"><br>
+
+    <label>메시지:</label>
+    <input type="text" id="message" value="안녕하세요! 실시간 채팅 테스트 중이에요"><br><br>
+
+    <button onclick="connect()">서버 연결</button>
+    <button onclick="sendMessage()">메시지 전송</button>
+</div>
+
+<hr>
+<div id="chatBox" style="border:1px solid #ccc; width:400px; height:300px; overflow:auto;"></div>
+
+<script>
+    let stompClient = null;
+    let senderId = null;
+    let receiverId = null;
+
+    function connect() {
+        senderId = document.getElementById("senderId").value;
+        receiverId = document.getElementById("receiverId").value;
+
+        if (!senderId || !receiverId) {
+            alert("보내는 사람 ID와 받는 사람 ID를 입력해주세요.");
+            return;
+        }
+
+        // SockJS 연결
+        const socket = new SockJS('http://localhost:8080/ws/chat');
+
+        // ⚡ 여기서 Stomp 객체 사용
+        stompClient = StompJs.Stomp.over(socket);
+
+        stompClient.connect({}, function () {
+            console.log('✅ WebSocket 연결됨');
+
+            // 수신자 큐 구독
+            stompClient.subscribe(`/queue/${receiverId}`, function (msg) {
+                const chat = JSON.parse(msg.body);
+                console.log('📩 받은 메시지:', chat.message);
+                showMessage(chat);
+            });
+        }, function (error) {
+            console.error('❌ WebSocket 연결 실패:', error);
+        });
+    }
+
+    function sendMessage() {
+        if (!stompClient) {
+            alert("서버에 연결 후 메시지를 보내세요.");
+            return;
+        }
+
+        const msg = document.getElementById("message").value;
+
+        stompClient.send('/app/chat.sendMessage', {}, JSON.stringify({
+            senderId: senderId,
+            receiverId: receiverId,
+            message: msg,
+            type: 'TEXT'
+        }));
+
+        document.getElementById("message").value = '';
+    }
+
+    function showMessage(chat) {
+        const chatBox = document.getElementById("chatBox");
+        const div = document.createElement("div");
+        div.textContent = `[${chat.senderId} ➤ ${chat.receiverId}] ${chat.message}`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</body>
+</html>
