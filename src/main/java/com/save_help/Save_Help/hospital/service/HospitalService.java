@@ -3,6 +3,7 @@ package com.save_help.Save_Help.hospital.service;
 import com.save_help.Save_Help.hospital.dto.HospitalRequestDto;
 import com.save_help.Save_Help.hospital.dto.HospitalResponseDto;
 import com.save_help.Save_Help.hospital.entity.Hospital;
+import com.save_help.Save_Help.hospital.entity.HospitalType;
 import com.save_help.Save_Help.hospital.repository.HospitalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -92,14 +93,14 @@ public class HospitalService {
 
         return hospitals.stream()
                 .filter(h -> h.getBedCount() > 0)
-                .min(Comparator.comparingDouble(h -> distance(latitude, longitude, h.getLatitude(), h.getLongitude())))
+                .min(Comparator.comparingDouble(h -> calculateDistance(latitude, longitude, h.getLatitude(), h.getLongitude())))
                 .orElse(null);
     }
 
 
     //위도/경도로 거리 계산 (Haversine formula)
 
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         if (lat1 == 0 || lon1 == 0 || lat2 == 0 || lon2 == 0) return Double.MAX_VALUE;
 
         final int R = 6371; // Earth radius in km
@@ -124,5 +125,26 @@ public class HospitalService {
                 .bedCount(hospital.getBedCount())
                 .remainingBeds(getRemainingBeds(hospital.getId()))
                 .build();
+    }
+
+    // 사용자 위치 기준, 타입별 가장 가까운 병원 조회
+    public Hospital findNearestHospital(double userLat, double userLng, HospitalType type) {
+        return hospitalRepository.findByTypeAndActiveTrue(type)
+                .stream()
+                .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
+                .min(Comparator.comparingDouble(h ->
+                        calculateDistance(userLat, userLng, h.getLatitude(), h.getLongitude())))
+                .orElse(null);
+    }
+
+    //남은 병상이 있고 사용자 위치 기준 가까운 병원 조회
+    public Hospital findNearestHospitalWithAvailableBed(double userLat, double userLng, HospitalType type) {
+        return hospitalRepository.findByTypeAndActiveTrue(type)
+                .stream()
+                .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
+                .filter(h -> h.getBedCount() > 0)
+                .min(Comparator.comparingDouble(h ->
+                        calculateDistance(userLat, userLng, h.getLatitude(), h.getLongitude())))
+                .orElse(null);
     }
 }
