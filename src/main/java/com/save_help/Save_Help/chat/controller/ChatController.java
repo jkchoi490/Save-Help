@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,13 +18,18 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     // 메시지 전송
     @Operation(summary = "메시지 전송", description = "새로운 메시지를 전송합니다.")
-    @PostMapping
-    public ResponseEntity<ChatDto.ChatResponse> sendMessage(
-            @RequestBody ChatDto.ChatRequest request) {
-        return ResponseEntity.ok(chatService.sendMessage(request));
+    @MessageMapping("/chat.sendMessage")
+    public void sendMessage(ChatDto.ChatRequest message) {
+        // DB 저장
+        ChatDto.ChatResponse saved = chatService.sendMessage(message);
+
+        // 수신자에게 실시간 전송
+        messagingTemplate.convertAndSend("/queue/" + saved.receiverId(), saved);
     }
 
     // 채팅 내역 조회
@@ -32,6 +39,14 @@ public class ChatController {
             @PathVariable Long senderId,
             @PathVariable Long receiverId) {
         return ResponseEntity.ok(chatService.getChatHistory(senderId, receiverId));
+    }
+
+    // 특정 유저가 받은 채팅 조회
+    @Operation(summary = "수신 채팅 조회", description = "특정 유저가 받은 모든 채팅을 최신순으로 조회합니다.")
+    @GetMapping("/received/{receiverId}")
+    public ResponseEntity<List<ChatDto.ChatResponse>> getReceivedChats(
+            @PathVariable Long receiverId) {
+        return ResponseEntity.ok(chatService.getReceivedChats(receiverId));
     }
 
     // 읽음 처리

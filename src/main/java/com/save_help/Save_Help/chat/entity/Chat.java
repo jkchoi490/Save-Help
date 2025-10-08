@@ -27,6 +27,11 @@ public class Chat {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
+    // 소속된 채팅방
+    //@ManyToOne(fetch = FetchType.LAZY)
+   // @JoinColumn(name = "room_id")
+   // private ChatRoom room;
+
     // 메시지 내용
     @Column(nullable = false, length = 1000)
     private String message;
