@@ -6,6 +6,8 @@ import com.save_help.Save_Help.hospital.entity.Hospital;
 import com.save_help.Save_Help.hospital.entity.HospitalType;
 import com.save_help.Save_Help.hospital.repository.HospitalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,10 @@ import java.util.stream.Collectors;
 public class HospitalService {
 
     private final HospitalRepository hospitalRepository;
+    //Pub/Sub 발행 추가
+    private final StringRedisTemplate redisTemplate;
+    private final ChannelTopic hospitalTopic;
+    private static final String BED_KEY_PREFIX = "hospital:";
 
     public HospitalResponseDto createHospital(HospitalRequestDto dto) {
         Hospital hospital = new Hospital();
@@ -68,19 +74,29 @@ public class HospitalService {
 
     //남은 병상 수 조회
     public int getRemainingBeds(Long id) {
+        String key = buildKey(id);
+        String bedCount = redisTemplate.opsForValue().get(key);
+
+        if (bedCount != null) {
+            return Integer.parseInt(bedCount);
+        }
+
+        // Redis에 없으면 DB에서 읽고 Redis에 초기화
         Hospital hospital = hospitalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
-        return hospital.getBedCount();
+        int count = hospital.getBedCount();
+        redisTemplate.opsForValue().set(key, String.valueOf(count));
+        return count;
     }
-
     //병상 감소
+    /*
     public void decreaseBedCount(Long hospitalId) {
         Hospital hospital = hospitalRepository.findById(hospitalId)
                 .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
 
         hospital.decreaseBedCount();
         hospitalRepository.save(hospital);
-    }
+    }*/
 
     /**
      * 병상 부족 시 가장 가까운 병원 탐색
@@ -147,4 +163,43 @@ public class HospitalService {
                         calculateDistance(userLat, userLng, h.getLatitude(), h.getLongitude())))
                 .orElse(null);
     }
+
+    public void setBedCount(Long hospitalId, int bedCount) {
+        redisTemplate.opsForValue().set(buildKey(hospitalId), String.valueOf(bedCount));
+        publishBedUpdate(hospitalId, bedCount);
+    }
+
+    public void decreaseBedCount(Long hospitalId) {
+        Long updated = redisTemplate.opsForValue().decrement(buildKey(hospitalId));
+
+        if (updated != null && updated >= 0) {
+            publishBedUpdate(hospitalId, updated.intValue());
+
+            // 병상이 줄어들었으니 DB도 동기화 (optional)
+            hospitalRepository.findById(hospitalId)
+                    .ifPresent(h -> h.setBedCount(updated.intValue()));
+        } else {
+            redisTemplate.opsForValue().set(buildKey(hospitalId), "0");
+            throw new IllegalStateException("병상이 더 이상 남아있지 않습니다.");
+        }
+    }
+
+    public void increaseBedCount(Long hospitalId) {
+        Long updated = redisTemplate.opsForValue().increment(buildKey(hospitalId));
+        publishBedUpdate(hospitalId, updated != null ? updated.intValue() : 0);
+    }
+
+    private void publishBedUpdate(Long hospitalId, int bedCount) {
+        String message = String.format("{\"hospitalId\":%d,\"bedCount\":%d}", hospitalId, bedCount);
+        redisTemplate.convertAndSend(hospitalTopic.getTopic(), message);
+    }
+
+    private String buildKey(Long hospitalId) {
+        return BED_KEY_PREFIX + hospitalId + ":beds";
+    }
+
+
+
+
+
 }
