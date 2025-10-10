@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>실시간 병상 현황 대시보드</title>
+</head>
+<body>
+<h1>병상 현황</h1>
+<div id="beds"></div>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8080/ws/hospital-beds");
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      document.getElementById("beds").innerHTML =
+        `병원 #${data.hospitalId} → 남은 병상 수: ${data.bedCount}`;
+    };
+</script>
+</body>
+</html>
