@@ -78,4 +78,26 @@ public class HospitalController {
         Hospital nearestWithBed = hospitalService.findNearestHospitalWithAvailableBed(lat, lng, type);
         return ResponseEntity.ok(nearestWithBed);
     }
+
+    // 병상 수 설정
+    @PostMapping("/{id}/beds")
+    public ResponseEntity<Void> setBedCount(@PathVariable Long id, @RequestParam int bedCount) {
+        hospitalService.setBedCount(id, bedCount);
+        return ResponseEntity.ok().build();
+    }
+
+    // 병상 감소
+    @PostMapping("/{id}/beds/decrease")
+    public ResponseEntity<Void> decreaseBedCount(@PathVariable Long id) {
+        hospitalService.decreaseBedCount(id);
+        return ResponseEntity.ok().build();
+    }
+
+    // 병상 증가
+    @PostMapping("/{id}/beds/increase")
+    public ResponseEntity<Void> increaseBedCount(@PathVariable Long id) {
+        hospitalService.increaseBedCount(id);
+        return ResponseEntity.ok().build();
+    }
+
 }
