@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface EmergencyRepository extends JpaRepository<Emergency, Long> {
     List<Emergency> findByRequester(User requester);
+
+    List<Emergency> findByAssignedHelperIsNullAndResolvedFalse();
 }
