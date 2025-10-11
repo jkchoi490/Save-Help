@@ -2,6 +2,7 @@ package com.save_help.Save_Help.helper.controller;
 
 import com.save_help.Save_Help.helper.dto.HelperRequestDto;
 import com.save_help.Save_Help.helper.dto.HelperResponseDto;
+import com.save_help.Save_Help.helper.entity.HelperAssignment;
 import com.save_help.Save_Help.helper.entity.HelperRole;
 import com.save_help.Save_Help.helper.service.HelperService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,4 +78,24 @@ public class HelperController {
     public ResponseEntity<List<HelperResponseDto>> getAvailableByRole(@PathVariable HelperRole role) {
         return ResponseEntity.ok(helperService.getAvailableHelpersByRole(role));
     }
+
+    // 자동 배정 (내부적으로 Helper 자동 선택 후 배정)
+    @PostMapping("/auto/{emergencyId}/{helperId}")
+    public HelperAssignment autoAssign(
+            @PathVariable Long emergencyId,
+            @PathVariable Long helperId
+    ) {
+        return helperService.assignHelperAuto(emergencyId, helperId);
+    }
+
+    // 수동 배정
+    @PostMapping("/manual/{emergencyId}/{helperId}")
+    public HelperAssignment manualAssign(
+            @PathVariable Long emergencyId,
+            @PathVariable Long helperId
+    ) {
+        return helperService.assignHelperManual(emergencyId, helperId);
+    }
+
+
 }

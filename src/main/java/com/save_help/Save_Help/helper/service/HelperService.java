@@ -2,8 +2,13 @@ package com.save_help.Save_Help.helper.service;
 
 import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
+import com.save_help.Save_Help.emergency.entity.Emergency;
+import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
+import com.save_help.Save_Help.helper.entity.AssignmentType;
 import com.save_help.Save_Help.helper.entity.Helper;
+import com.save_help.Save_Help.helper.entity.HelperAssignment;
 import com.save_help.Save_Help.helper.entity.HelperRole;
+import com.save_help.Save_Help.helper.repository.HelperAssignmentRepository;
 import com.save_help.Save_Help.helper.repository.HelperRepository;
 import com.save_help.Save_Help.hospital.entity.Hospital;
 import com.save_help.Save_Help.helper.dto.HelperRequestDto;
@@ -24,7 +29,9 @@ public class HelperService {
 
     private final HelperRepository helperRepository;
     private final CommunityCenterRepository centerRepository;
+    private final EmergencyRepository emergencyRepository;
     private final HospitalRepository hospitalRepository;
+    private final HelperAssignmentRepository assignmentRepository;
 
     // 생성
     public HelperResponseDto createHelper(HelperRequestDto dto) {
@@ -126,5 +133,44 @@ public class HelperService {
         return helperRepository.findByRoleAndAvailableTrue(role).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+
+    // Helper 자동 배정
+    @Transactional
+    public HelperAssignment assignHelperAuto(Long emergencyId, Long helperId) {
+        Emergency emergency = emergencyRepository.findById(emergencyId)
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found"));
+
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new EntityNotFoundException("Helper not found"));
+
+        // Helper 배정
+        emergency.setAssignedHelper(helper);
+        helper.setAvailable(false);
+
+        // 배정 이력 기록
+        HelperAssignment assignment = new HelperAssignment(helper, emergency, AssignmentType.AUTO);
+        return assignmentRepository.save(assignment);
+    }
+
+
+     // Helper 수동 배정
+    @Transactional
+    public HelperAssignment assignHelperManual(Long emergencyId, Long helperId) {
+        Emergency emergency = emergencyRepository.findById(emergencyId)
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found"));
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new EntityNotFoundException("Helper not found"));
+
+        if (!helper.isAvailable()) {
+            throw new IllegalStateException("해당 Helper는 현재 배정이 불가능합니다.");
+        }
+
+        emergency.setAssignedHelper(helper);
+        helper.setAvailable(false);
+
+        HelperAssignment assignment = new HelperAssignment(helper, emergency, AssignmentType.MANUAL);
+        return assignmentRepository.save(assignment);
     }
 }
