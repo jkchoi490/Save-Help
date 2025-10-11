@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+
 @Repository
 public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy, Long> {
 
@@ -19,3 +20,4 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     // 이름 키워드 검색
     List<NationalSubsidy> findByNameContainingIgnoreCase(String keyword);
 }
+
