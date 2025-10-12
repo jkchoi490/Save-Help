@@ -19,9 +19,11 @@ public class SubsidyApplication {
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subsidy_id")
     private NationalSubsidy subsidy;
 
     private LocalDate appliedDate = LocalDate.now();

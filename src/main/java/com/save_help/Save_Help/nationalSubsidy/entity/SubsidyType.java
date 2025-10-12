@@ -5,5 +5,6 @@ public enum SubsidyType {
     COUNSELING, // 상담 지원
     DISASTER,   // 재난 지원
     LIVING,     // 생활 지원
+    USER_REQUEST, // 사용자 요청 지원
     OTHER       // 기타
 }
