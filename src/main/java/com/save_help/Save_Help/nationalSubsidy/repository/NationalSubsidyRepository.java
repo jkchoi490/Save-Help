@@ -3,8 +3,10 @@ package com.save_help.Save_Help.nationalSubsidy.repository;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -19,5 +21,25 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 
     // 이름 키워드 검색
     List<NationalSubsidy> findByNameContainingIgnoreCase(String keyword);
+
+    // 이름 검색
+    List<NationalSubsidy> findByNameContaining(String keyword);
+
+    // 현재 신청 가능 보조금
+    @Query("SELECT s FROM NationalSubsidy s WHERE s.startDate <= :today AND s.endDate >= :today AND s.active = true")
+    List<NationalSubsidy> findAvailableSubsidies(LocalDate today);
+
+    // 세부 필터링
+    @Query("""
+            SELECT s FROM NationalSubsidy s
+            WHERE (:type IS NULL OR s.type = :type)
+              AND (:incomeLevel IS NULL OR s.incomeLevel = :incomeLevel)
+              AND (:minAge IS NULL OR s.minAge <= :minAge)
+              AND (:maxAge IS NULL OR s.maxAge >= :maxAge)
+              AND (:disabilityRequired IS NULL OR s.disabilityRequired = :disabilityRequired)
+            """)
+    List<NationalSubsidy> filter(SubsidyType type, String incomeLevel,
+                                 Integer minAge, Integer maxAge, Boolean disabilityRequired);
+
 }
 

@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.nationalSubsidy.service;
 
+
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyApplication;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyRepository;
@@ -11,10 +12,20 @@ import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -137,5 +148,97 @@ public class NationalSubsidyService {
 
     public void autoApplyForAllUsers() {
         userRepository.findAll().forEach(user -> autoApplyForUser(user.getId()));
+    }
+
+
+    // 보조금 맞춤형 추천
+    public List<NationalSubsidyResponseDto> recommend(Integer age, String incomeLevel, Boolean disability, Boolean emergency) {
+        List<NationalSubsidy> all = subsidyRepository.findAll();
+        return all.stream()
+                .filter(s -> s.isActive())
+                .filter(s -> (s.getMinAge() == null || age >= s.getMinAge()))
+                .filter(s -> (s.getMaxAge() == null || age <= s.getMaxAge()))
+                .filter(s -> (incomeLevel == null || s.getIncomeLevel() == null || s.getIncomeLevel().equalsIgnoreCase(incomeLevel)))
+                .filter(s -> (disability == null || !s.getDisabilityRequired() || disability))
+                .filter(s -> (emergency == null || !s.getEmergencyOnly() || emergency))
+                .map(NationalSubsidyResponseDto::fromEntity)
+                .toList();
+    }
+
+    // 신청 가능 보조금
+    public List<NationalSubsidyResponseDto> findAvailableSubsidies() {
+        LocalDate today = LocalDate.now();
+        return subsidyRepository.findAvailableSubsidies(today)
+                .stream()
+                .map(NationalSubsidyResponseDto::fromEntity)
+                .toList();
+    }
+
+    // 세부 필터 검색
+    public List<NationalSubsidyResponseDto> filter(SubsidyType type, String incomeLevel, Integer minAge,
+                                                   Integer maxAge, Boolean disabilityRequired) {
+        return subsidyRepository.filter(type, incomeLevel, minAge, maxAge, disabilityRequired)
+                .stream()
+                .map(NationalSubsidyResponseDto::fromEntity)
+                .toList();
+    }
+
+    // 유저 신청 내역 조회
+    public List<NationalSubsidyResponseDto> findApplicationsByUser(Long userId) {
+        List<SubsidyApplication> apps = applicationRepository.findByUser_Id(userId);
+        return apps.stream()
+                .map(app -> NationalSubsidyResponseDto.fromEntity(app.getSubsidy()))
+                .toList();
+    }
+
+    // 통계 API (센터별 / 유형별)
+    public Map<String, Object> getStatistics() {
+        List<NationalSubsidy> all = subsidyRepository.findAll();
+
+        Map<String, Long> byCenter = all.stream()
+                .collect(Collectors.groupingBy(NationalSubsidy::getCenter, Collectors.counting()));
+
+        Map<SubsidyType, Long> byType = all.stream()
+                .collect(Collectors.groupingBy(NationalSubsidy::getType, Collectors.counting()));
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalCount", all.size());
+        stats.put("byCenter", byCenter);
+        stats.put("byType", byType);
+        return stats;
+    }
+
+    //  CSV Export
+    public Resource exportToCsv() {
+        List<NationalSubsidy> subsidies = subsidyRepository.findAll();
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
+
+            writer.write("보조금ID,보조금이름,타입,센터명,최대지원금액,보조금지급시작일,보조금지급종료일,보조금활성화여부\n");
+            for (NationalSubsidy s : subsidies) {
+                writer.write(String.format("%d,%s,%s,%s,%d,%s,%s,%b\n",
+                        s.getId(),
+                        s.getName(),
+                        s.getType(),
+                        s.getCenter(),
+                        Optional.ofNullable(s.getMaxAmount()).orElse(0),
+                        s.getStartDate(),
+                        s.getEndDate(),
+                        s.isActive()));
+            }
+            writer.flush();
+            return new ByteArrayResource(out.toByteArray());
+        } catch (Exception e) {
+            throw new RuntimeException("CSV 생성 실패", e);
+        }
+    }
+
+    // 보조금 활성/비활성 상태 변경
+    public void updateStatus(Long id, boolean active) {
+        NationalSubsidy subsidy = subsidyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 보조금이 존재하지 않습니다. id=" + id));
+
+        subsidy.setActive(active);
+        subsidyRepository.save(subsidy);
     }
 }
