@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/helpers")
 @RequiredArgsConstructor
-@Tag(name = "Helper API", description = "상담 관리 API")
+@Tag(name = "Helper API", description = "Helper(도움 제공자) 관리 API")
 public class HelperController {
 
     private final HelperService helperService;
