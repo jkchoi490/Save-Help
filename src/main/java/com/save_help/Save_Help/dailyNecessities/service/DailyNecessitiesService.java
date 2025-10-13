@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,8 +25,8 @@ public class DailyNecessitiesService {
         this.centerRepository = centerRepository;
     }
 
-    //생성
-    public DailyNecessities create(DailyNecessitiesDto dto) {
+    // 생성
+    public DailyNecessitiesDto create(DailyNecessitiesDto dto) {
         CommunityCenter center = centerRepository.findById(dto.getCenterId())
                 .orElseThrow(() -> new EntityNotFoundException("CommunityCenter not found"));
 
@@ -38,26 +39,36 @@ public class DailyNecessitiesService {
                 center
         );
 
-        return necessitiesRepository.save(item);
+        DailyNecessities saved = necessitiesRepository.save(item);
+        return DailyNecessitiesDto.fromEntity(saved);
     }
 
-    //전체 조회
-    public List<DailyNecessities> getAll() {
-        return necessitiesRepository.findByActiveTrue();
+    // 전체 조회
+    public List<DailyNecessitiesDto> getAll() {
+        return necessitiesRepository.findByActiveTrue()
+                .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
     }
 
-    //카테고리별 조회
-    public List<DailyNecessities> getByCategory(NecessityCategory category) {
-        return necessitiesRepository.findByCategory(category);
+    // 카테고리별 조회
+    public List<DailyNecessitiesDto> getByCategory(NecessityCategory category) {
+        return necessitiesRepository.findByCategory(category)
+                .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
     }
 
-    //이름 검색
-    public List<DailyNecessities> searchByName(String name) {
-        return necessitiesRepository.findByNameContainingIgnoreCase(name);
+    // 이름 검색
+    public List<DailyNecessitiesDto> searchByName(String name) {
+        return necessitiesRepository.findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
     }
 
-    //수정
-    public DailyNecessities update(Long id, DailyNecessitiesDto dto) {
+    // 수정
+    public DailyNecessitiesDto update(Long id, DailyNecessitiesDto dto) {
         DailyNecessities item = necessitiesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Item not found"));
 
@@ -67,14 +78,30 @@ public class DailyNecessitiesService {
         item.setStock(dto.getStock());
         item.setExpirationDate(dto.getExpirationDate());
 
-        return necessitiesRepository.save(item);
+        DailyNecessities updated = necessitiesRepository.save(item);
+        return DailyNecessitiesDto.fromEntity(updated);
     }
 
-    //삭제(비활성화)
+    // 삭제(비활성화)
     public void delete(Long id) {
         DailyNecessities item = necessitiesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Item not found"));
         item.deactivate();
         necessitiesRepository.save(item);
+    }
+
+    // 단건 조회
+    public DailyNecessitiesDto getById(Long id) {
+        DailyNecessities item = necessitiesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("생필품을 찾을 수 없습니다."));
+        return DailyNecessitiesDto.fromEntity(item);
+    }
+
+    // 특정 센터의 생필품 전체 조회
+    public List<DailyNecessitiesDto> getByCenter(Long centerId) {
+        List<DailyNecessities> necessities = necessitiesRepository.findByProvidedBy_Id(centerId);
+        return necessities.stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

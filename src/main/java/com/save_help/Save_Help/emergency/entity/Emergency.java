@@ -36,9 +36,11 @@ public class Emergency {
     @Enumerated(EnumType.STRING)
     private EmergencyStatus status;
 
+    private boolean resolved;
 
     private LocalDateTime requestedAt;
 
+    @Column(name = "resolved_at", nullable = false)
     private LocalDateTime resolvedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
