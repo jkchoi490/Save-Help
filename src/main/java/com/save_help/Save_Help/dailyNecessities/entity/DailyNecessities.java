@@ -17,22 +17,29 @@ public class DailyNecessities {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 품목명
     @Column(nullable = false, length = 100)
     private String name;
 
+    // 카테고리
     @Enumerated(EnumType.STRING)
     private NecessityCategory category;
 
+    // 단위
     private String unit;
 
+    // 보유 수량
     private Integer stock;
 
+    // 유효 기간
     private LocalDate expirationDate;
 
+    // 제공 기관
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "center_id")
     private CommunityCenter providedBy;
 
+    // 활성 여부
     private boolean active = true;
 
     // 기본 생성자
