@@ -13,4 +13,6 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     List<DailyNecessities> findByCategory(NecessityCategory category);
     List<DailyNecessities> findByNameContainingIgnoreCase(String name);
     List<DailyNecessities> findByActiveTrue();
+    // providedBy(CommunityCenter)의 id로 검색
+    List<DailyNecessities> findByProvidedBy_Id(Long centerId);
 }
