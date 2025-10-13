@@ -1,6 +1,7 @@
 package com.save_help.Save_Help.helper.service;
 
 import com.save_help.Save_Help.emergency.entity.Emergency;
+import com.save_help.Save_Help.emergency.entity.EmergencyStatus;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
 import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.helper.repository.HelperRepository;
@@ -20,7 +21,15 @@ public class HelperAssignmentService {
 
     @Transactional
     public void assignHelpersAutomatically() {
-        List<Emergency> unassignedEmergencies = emergencyRepository.findByAssignedHelperIsNullAndResolvedFalse();
+        //이렇게 하면 아직 헬퍼가 배정되지 않았고(assignedHelper가 null),
+        //해결되지 않은(RESOLVED, CANCELLED이 아닌) 응급 요청들
+        List<Emergency> activeEmergencies = emergencyRepository.findByAssignedHelperIsNullAndStatusIn(
+                List.of(EmergencyStatus.PENDING, EmergencyStatus.REQUESTED, EmergencyStatus.ASSIGNED, EmergencyStatus.IN_PROGRESS)
+        );
+
+
+
+       // List<Emergency> unassignedEmergencies = emergencyRepository.findByAssignedHelperIsNullAndResolvedFalse();
     /*
         for (Emergency emergency : unassignedEmergencies) {
             List<Helper> candidates = helperRepository.findByAvailableTrueAndSpecialization(emergency.getType());
