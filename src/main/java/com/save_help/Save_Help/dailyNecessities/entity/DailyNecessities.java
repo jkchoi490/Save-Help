@@ -35,6 +35,11 @@ public class DailyNecessities {
 
     private boolean active = true;
 
+    // 승인 상태
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+
+
     // 기본 생성자
     protected DailyNecessities() {}
 
@@ -48,6 +53,22 @@ public class DailyNecessities {
         this.expirationDate = expirationDate;
         this.providedBy = providedBy;
         this.active = true;
+        this.approvalStatus = ApprovalStatus.PENDING;
     }
     public void deactivate() { this.active = false; }
+
+    public void approve() {
+        this.approvalStatus = ApprovalStatus.APPROVED;
+        this.active = true;
+    }
+
+    public void reject() {
+        this.approvalStatus = ApprovalStatus.REJECTED;
+        this.active = false;
+    }
+
+    public enum ApprovalStatus {
+        PENDING, APPROVED, REJECTED
+    }
+
 }
