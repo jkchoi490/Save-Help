@@ -28,6 +28,9 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     Optional<DailyNecessities> findByNameAndProvidedBy_Id(String name, Long id);
     //List<DailyNecessities> findByCategoryAndApprovalStatus(DailyNecessities.NecessityCategory category, DailyNecessities.ApprovalStatus status);
 
+
+
+
     // providedBy(CommunityCenter)의 id로 검색
 
 }
