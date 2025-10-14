@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
 @Getter
@@ -26,6 +27,9 @@ public class HelperSchedule {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "helper_id")
     private Helper helper;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
 
     // 근무 장소 (센터, 병원)
     private String location;
