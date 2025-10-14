@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.NecessityCategory;
-import com.save_help.Save_Help.dailyNecessities.service.DailyNecessitiesService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
