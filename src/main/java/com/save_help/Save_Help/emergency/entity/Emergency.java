@@ -65,4 +65,12 @@ public class Emergency {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "center_id")
     private CommunityCenter assignedCenter;
+
+    //긴급상황
+    private String title;
+    //위치(주소)
+    private String location;
+    //(긴급도)
+    @Enumerated(EnumType.STRING)
+    private EmergencySeverity severity;
 }

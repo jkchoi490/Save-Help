@@ -4,6 +4,7 @@ import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
 import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
+import com.save_help.Save_Help.helper.dto.HelperStatusUpdateRequestDto;
 import com.save_help.Save_Help.helper.entity.AssignmentType;
 import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.helper.entity.HelperAssignment;
@@ -173,4 +174,32 @@ public class HelperService {
         HelperAssignment assignment = new HelperAssignment(helper, emergency, AssignmentType.MANUAL);
         return assignmentRepository.save(assignment);
     }
+
+
+    // 근무 가능 상태(available) 변경
+    public HelperResponseDto updateAvailability(Long helperId, HelperStatusUpdateRequestDto dto) {
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 Helper를 찾을 수 없습니다."));
+
+        helper.setAvailable(dto.isAvailable());
+
+        return HelperResponseDto.builder()
+                .id(helper.getId())
+                .name(helper.getName())
+                .role(helper.getRole())
+                .phoneNumber(helper.getPhoneNumber())
+                .available(helper.isAvailable())
+                .build();
+    }
+
+    // 센터별 Helper 조회
+    public List<Helper> getHelpersByCenter(Long centerId) {
+        return helperRepository.findByCommunityCenterId(centerId);
+    }
+
+    // 병원별 Helper 조회
+    public List<Helper> getHelpersByHospital(Long hospitalId) {
+        return helperRepository.findByHospitalId(hospitalId);
+    }
+
 }

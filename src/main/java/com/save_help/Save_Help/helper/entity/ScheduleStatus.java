@@ -5,5 +5,6 @@ public enum ScheduleStatus {
     IN_PROGRESS, // 근무 중
     COMPLETED,   // 완료
     CANCELLED,   // 취소
-    OFF_DUTY     // 휴무
+    OFF_DUTY,     // 휴무
+    ABSENT          // 결근
 }
