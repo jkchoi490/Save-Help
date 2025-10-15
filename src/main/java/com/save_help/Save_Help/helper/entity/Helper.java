@@ -30,7 +30,7 @@ public class Helper {
     // 소속 (어느 센터나 병원에 소속되어 있는지)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "center_id")
-    private CommunityCenter center;
+    private CommunityCenter communityCenter;
 
     // 연락 가능한 전화번호
     @Column(length = 20)
