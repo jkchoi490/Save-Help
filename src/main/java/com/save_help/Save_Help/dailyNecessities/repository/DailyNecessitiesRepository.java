@@ -21,7 +21,7 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
 
     List<DailyNecessities> findByStockLessThanAndApprovalStatus(int threshold, DailyNecessities.ApprovalStatus approvalStatus);
 
-    Arrays findByProvidedBy_Id(Long centerId);
+    List<DailyNecessities> findByProvidedBy_Id(Long centerId);
 
     List<DailyNecessities> findByProvidedBy_IdAndApprovalStatus(Long centerId, DailyNecessities.ApprovalStatus status);
 
