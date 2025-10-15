@@ -1,7 +1,6 @@
 package com.save_help.Save_Help.dailyNecessities.controller;
 
-import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
-import com.save_help.Save_Help.dailyNecessities.dto.StockStatisticsDto;
+import com.save_help.Save_Help.dailyNecessities.dto.*;
 import com.save_help.Save_Help.dailyNecessities.entity.*;
 import com.save_help.Save_Help.dailyNecessities.service.*;
 import org.springframework.http.ResponseEntity;
@@ -146,17 +145,23 @@ public class DailyNecessitiesController {
     // ------------------------------------
 
     @PostMapping("/request")
-    public ResponseEntity<UserNecessityRequest> createRequest(
-            @RequestParam Long userId,
-            @RequestParam Long itemId,
-            @RequestParam Integer quantity) {
-        UserNecessityRequest request = requestService.createRequest(userId, itemId, quantity);
-        return ResponseEntity.ok(request);
+    public ResponseEntity<UserNecessityRequestResponseDto> createRequest(
+            @RequestBody UserNecessityRequestDto requestDto) {
+        UserNecessityRequest request = requestService.createRequest(
+                requestDto.getUserId(),
+                requestDto.getItemId(),
+                requestDto.getQuantity()
+        );
+        return ResponseEntity.ok(UserNecessityRequestResponseDto.fromEntity(request));
     }
 
     @GetMapping("/request/user/{userId}")
-    public ResponseEntity<List<UserNecessityRequest>> getRequestsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(requestService.getRequestsByUser(userId));
+    public ResponseEntity<List<UserNecessityRequestResponseDto>> getRequestsByUser(@PathVariable Long userId) {
+        List<UserNecessityRequestResponseDto> responses = requestService.getRequestsByUser(userId)
+                .stream()
+                .map(UserNecessityRequestResponseDto::fromEntity)
+                .toList();
+        return ResponseEntity.ok(responses);
     }
 
     @PatchMapping("/request/{requestId}")
@@ -195,33 +200,49 @@ public class DailyNecessitiesController {
     // 사용자 기부 기능
     // ------------------------------------
 
+    // 1. 기부 요청
     @PostMapping("/donation")
-    public DailyNecessitiesDonation donate(@RequestParam Long userId,
-                                           @RequestParam Long centerId,
-                                           @RequestParam String name,
-                                           @RequestParam NecessityCategory category,
-                                           @RequestParam String unit,
-                                           @RequestParam Integer quantity) {
-        return donationService.donate(userId, centerId, name, category, unit, quantity);
+    public DailyNecessitiesDonationResponseDto donate(@RequestBody DailyNecessitiesDonationRequestDto requestDto) {
+        DailyNecessitiesDonation donation = donationService.donate(
+                requestDto.getDonorId(),
+                requestDto.getCenterId(),
+                requestDto.getName(),
+                requestDto.getCategory(),
+                requestDto.getUnit(),
+                requestDto.getQuantity()
+        );
+        return DailyNecessitiesDonationResponseDto.fromEntity(donation);
     }
 
+    // 2. 관리자 승인
     @PatchMapping("/donation/{id}/approve")
-    public DailyNecessitiesDonation approveDonation(@PathVariable Long id) {
-        return donationService.approve(id);
+    public DailyNecessitiesDonationResponseDto approveDonation(@PathVariable Long id) {
+        DailyNecessitiesDonation donation = donationService.approve(id);
+        return DailyNecessitiesDonationResponseDto.fromEntity(donation);
     }
 
+    // 3. 관리자 거부
     @PatchMapping("/donation/{id}/reject")
-    public DailyNecessitiesDonation rejectDonation(@PathVariable Long id) {
-        return donationService.reject(id);
+    public DailyNecessitiesDonationResponseDto rejectDonation(@PathVariable Long id) {
+        DailyNecessitiesDonation donation = donationService.reject(id);
+        return DailyNecessitiesDonationResponseDto.fromEntity(donation);
     }
 
+    // 4. 승인 대기 목록 조회
     @GetMapping("/donation/pending")
-    public List<DailyNecessitiesDonation> getPendingDonations() {
-        return donationService.getPendingDonations();
+    public List<DailyNecessitiesDonationResponseDto> getPendingDonations() {
+        return donationService.getPendingDonations()
+                .stream()
+                .map(DailyNecessitiesDonationResponseDto::fromEntity)
+                .toList();
     }
 
+    // 5. 사용자 본인 기부 내역 조회
     @GetMapping("/donation/my")
-    public List<DailyNecessitiesDonation> getMyDonations(@RequestParam Long userId) {
-        return donationService.getMyDonations(userId);
+    public List<DailyNecessitiesDonationResponseDto> getMyDonations(@RequestParam Long userId) {
+        return donationService.getMyDonations(userId)
+                .stream()
+                .map(DailyNecessitiesDonationResponseDto::fromEntity)
+                .toList();
     }
 }
