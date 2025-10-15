@@ -49,7 +49,7 @@ public class HelperService {
         Helper helper = new Helper();
         helper.setName(dto.getName());
         helper.setRole(dto.getRole());
-        helper.setCenter(center);
+        helper.setCommunityCenter(center);
         helper.setHospital(hospital);
         helper.setPhoneNumber(dto.getPhoneNumber());
         helper.setAvailable(dto.isAvailable());
@@ -85,7 +85,7 @@ public class HelperService {
         if (dto.getCenterId() != null) {
             CommunityCenter center = centerRepository.findById(dto.getCenterId())
                     .orElseThrow(() -> new EntityNotFoundException("Center not found"));
-            helper.setCenter(center);
+            helper.setCommunityCenter(center);
         }
 
         if (dto.getHospitalId() != null) {
@@ -108,7 +108,7 @@ public class HelperService {
                 .id(helper.getId())
                 .name(helper.getName())
                 .role(helper.getRole())
-                .centerId(helper.getCenter() != null ? helper.getCenter().getId() : null)
+                .centerId(helper.getCommunityCenter() != null ? helper.getCommunityCenter().getId() : null)
                 .hospitalId(helper.getHospital() != null ? helper.getHospital().getId() : null)
                 .phoneNumber(helper.getPhoneNumber())
                 .available(helper.isAvailable())
@@ -194,7 +194,7 @@ public class HelperService {
 
     // 센터별 Helper 조회
     public List<Helper> getHelpersByCenter(Long centerId) {
-        return helperRepository.findByCommunityCenterId(centerId);
+        return helperRepository.findByCommunityCenter_Id(centerId);
     }
 
     // 병원별 Helper 조회

@@ -30,8 +30,8 @@ public class HelperScheduleService {
         schedule.setEndTime(end);
         schedule.setStatus(ScheduleStatus.PLANNED);
         schedule.setNote(note);
-        schedule.setLocation(helper.getCenter() != null
-                ? helper.getCenter().getName()
+        schedule.setLocation(helper.getCommunityCenter() != null
+                ? helper.getCommunityCenter().getName()
                 : helper.getHospital() != null ? helper.getHospital().getName() : "미지정");
 
         return scheduleRepository.save(schedule);
@@ -55,8 +55,8 @@ public class HelperScheduleService {
         schedule.setHelper(helper);
         schedule.setStartTime(LocalDateTime.now());
         schedule.setStatus(ScheduleStatus.IN_PROGRESS);
-        schedule.setLocation(helper.getCenter() != null ?
-                helper.getCenter().getName() :
+        schedule.setLocation(helper.getCommunityCenter() != null ?
+                helper.getCommunityCenter().getName() :
                 (helper.getHospital() != null ? helper.getHospital().getName() : "미지정"));
 
         return scheduleRepository.save(schedule);
