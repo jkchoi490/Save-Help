@@ -46,4 +46,8 @@ public class Helper {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hospital_id")
     private Hospital hospital;
+
+    @OneToMany(mappedBy = "helper", cascade = CascadeType.ALL)
+    private List<HelperEmergencyContact> helperEmergencyContacts = new ArrayList<>();
+
 }

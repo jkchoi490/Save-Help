@@ -1,14 +1,8 @@
 package com.save_help.Save_Help.helper.controller;
 
 import com.save_help.Save_Help.helper.dto.*;
-import com.save_help.Save_Help.helper.entity.Helper;
-import com.save_help.Save_Help.helper.entity.HelperAssignment;
-import com.save_help.Save_Help.helper.entity.HelperRole;
-import com.save_help.Save_Help.helper.entity.HelperSchedule;
-import com.save_help.Save_Help.helper.service.HelperAutoAssignmentService;
-import com.save_help.Save_Help.helper.service.HelperNotificationService;
-import com.save_help.Save_Help.helper.service.HelperScheduleService;
-import com.save_help.Save_Help.helper.service.HelperService;
+import com.save_help.Save_Help.helper.entity.*;
+import com.save_help.Save_Help.helper.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +22,7 @@ public class HelperController {
     private final HelperNotificationService notificationService;
     private final HelperAutoAssignmentService autoAssignmentService;
     private final HelperScheduleService scheduleService;
+    private final HelperEmergencyContactService contactService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -166,4 +161,34 @@ public class HelperController {
     public ResponseEntity<List<Helper>> getHelpersByHospital(@PathVariable Long hospitalId) {
         return ResponseEntity.ok(helperService.getHelpersByHospital(hospitalId));
     }
+
+    @PostMapping("/user-to-helper")
+    public ResponseEntity<HelperEmergencyContact> userToHelper(
+            @RequestParam Long userId,
+            @RequestParam Long helperId,
+            @RequestParam String message) {
+        HelperEmergencyContact contact = contactService.sendContact(userId, helperId, message, ContactType.USER_TO_HELPER);
+        return ResponseEntity.ok(contact);
+    }
+
+    @PostMapping("/helper-to-user")
+    public ResponseEntity<HelperEmergencyContact> helperToUser(
+            @RequestParam Long helperId,
+            @RequestParam Long userId,
+            @RequestParam String message) {
+        HelperEmergencyContact contact = contactService.sendContact(helperId, userId, message, ContactType.HELPER_TO_USER);
+        return ResponseEntity.ok(contact);
+    }
+
+    @GetMapping("/helper/{id}")
+    public ResponseEntity<List<HelperEmergencyContact>> getHelperContacts(@PathVariable Long id) {
+        return ResponseEntity.ok(contactService.getContactsForHelper(id));
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<HelperEmergencyContact>> getUserContacts(@PathVariable Long id) {
+        return ResponseEntity.ok(contactService.getContactsForUser(id));
+    }
+
+
 }

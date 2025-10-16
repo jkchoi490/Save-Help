@@ -1,11 +1,14 @@
 package com.save_help.Save_Help.user.entity;
 
+import com.save_help.Save_Help.helper.entity.HelperEmergencyContact;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -59,5 +62,9 @@ public class User {
     private String incomeLevel;
     private boolean disabled;
     private boolean inEmergency;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<HelperEmergencyContact> helperEmergencyContacts = new ArrayList<>();
+
 
 }
