@@ -19,6 +19,8 @@ public class DailyNecessitiesController {
     private final DailyNecessitiesStatisticsService statisticsService;
     private final DailyNecessitiesReportService reportService;
     private final DailyNecessitiesDonationService donationService;
+    private final DailyNecessitiesCenterMessageService messageService;
+    private final DailyNecessitiesUserRequestMessageService userRequestMessageService;
 
     public DailyNecessitiesController(
             DailyNecessitiesService necessitiesService,
@@ -26,13 +28,15 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
         this.statisticsService = statisticsService;
         this.reportService = reportService;
         this.donationService = donationService;
+        this.messageService = messageService;
+        this.userRequestMessageService = userRequestMessageService;
     }
 
     // ------------------------------------
@@ -245,4 +249,66 @@ public class DailyNecessitiesController {
                 .map(DailyNecessitiesDonationResponseDto::fromEntity)
                 .toList();
     }
+
+    // ------------------------------------
+    // 생필품 지원처가 사용자에게 생필품 지원 관련 메시지 전송
+    // ------------------------------------
+
+    // 센터 → 사용자 메시지 전송
+    @PostMapping("/centerMessages/send")
+    public ResponseEntity<DailyNecessitiesCenterMessageDto> sendMessage(
+            @RequestParam Long centerId,
+            @RequestParam Long userId,
+            @RequestParam String message
+    ) {
+        return ResponseEntity.ok(messageService.sendMessage(centerId, userId, message));
+    }
+
+    // 사용자 메시지 조회
+    @GetMapping("/centerMessages/user/{userId}")
+    public ResponseEntity<List<DailyNecessitiesCenterMessageDto>> getUserMessages(@PathVariable Long userId) {
+        return ResponseEntity.ok(messageService.getMessagesForUser(userId));
+    }
+
+    // 메시지 읽음 처리
+    @PatchMapping("/centerMessages/{id}/read")
+    public ResponseEntity<String> markMessageRead(@PathVariable Long id) {
+        messageService.markAsRead(id);
+        return ResponseEntity.ok("메시지를 읽음 처리했습니다.");
+    }
+
+    // ------------------------------------
+    // 사용자가 생필품 지원처에 생필품 요청 메시지 전송
+    // ------------------------------------
+
+    // 1️. 사용자 요청 메시지 생성
+    @PostMapping("/user-requests/send")
+    public ResponseEntity<DailyNecessitiesUserRequestMessageDto> sendRequest(
+            @RequestParam Long userId,
+            @RequestParam Long centerId,
+            @RequestParam String message
+    ) {
+        return ResponseEntity.ok(userRequestMessageService.create(userId, centerId, message));
+    }
+
+    // 2. 센터가 받은 요청 조회
+    @GetMapping("/user-requests/center/{centerId}")
+    public ResponseEntity<List<DailyNecessitiesUserRequestMessageDto>> getRequestsForCenter(@PathVariable Long centerId) {
+        return ResponseEntity.ok(userRequestMessageService.getRequestsForCenter(centerId));
+    }
+
+    // 3️. 사용자가 보낸 요청 조회
+    @GetMapping("/user-requests/user/{userId}")
+    public ResponseEntity<List<DailyNecessitiesUserRequestMessageDto>> getRequestsMessageByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(userRequestMessageService.getRequestsByUser(userId));
+    }
+
+    // 4️. 요청 처리 완료
+    @PatchMapping("/user-requests/{id}/processed")
+    public ResponseEntity<String> markAsProcessed(@PathVariable Long id) {
+        userRequestMessageService.markAsProcessed(id);
+        return ResponseEntity.ok("요청 처리 완료 상태로 변경했습니다.");
+    }
+
+
 }
