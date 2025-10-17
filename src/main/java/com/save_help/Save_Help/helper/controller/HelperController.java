@@ -150,43 +150,54 @@ public class HelperController {
         return ResponseEntity.ok(Map.of("helperId", id, "totalWorkTime", summary));
     }
 
-    @Operation(summary = "센터별 Helper 조회")
+    @Operation(summary = "센터별 Helper 조회", description = "센터별 Helper를 조회합니다")
     @GetMapping("/center/{centerId}")
     public ResponseEntity<List<Helper>> getHelpersByCenter(@PathVariable Long centerId) {
         return ResponseEntity.ok(helperService.getHelpersByCenter(centerId));
     }
 
-    @Operation(summary = "병원별 Helper 조회")
+    @Operation(summary = "병원별 Helper 조회", description = "병원별 Helper를 조회합니다")
     @GetMapping("/hospital/{hospitalId}")
     public ResponseEntity<List<Helper>> getHelpersByHospital(@PathVariable Long hospitalId) {
         return ResponseEntity.ok(helperService.getHelpersByHospital(hospitalId));
     }
 
+    @Operation(summary = "사용자(User)가 헬퍼(Helper)에게 연락 요청",
+            description = "사용자가 특정 헬퍼에게 긴급 연락 메시지를 전송합니다. 주로 도움이 필요한 상황에서 사용됩니다.")
     @PostMapping("/user-to-helper")
-    public ResponseEntity<HelperEmergencyContact> userToHelper(
+    public ResponseEntity<HelperEmergencyContactDto> userToHelper(
             @RequestParam Long userId,
             @RequestParam Long helperId,
             @RequestParam String message) {
-        HelperEmergencyContact contact = contactService.sendContact(userId, helperId, message, ContactType.USER_TO_HELPER);
+        HelperEmergencyContactDto contact = contactService.sendContact(userId, helperId, message, ContactType.USER_TO_HELPER);
         return ResponseEntity.ok(contact);
     }
 
+    @Operation(
+            summary = "헬퍼(Helper)가 사용자(User)에게 회신/연락",
+            description = "헬퍼가 특정 사용자에게 응답 또는 연락 메시지를 전송합니다. 사용자 요청에 대한 응답 상황 등에 사용됩니다.")
     @PostMapping("/helper-to-user")
-    public ResponseEntity<HelperEmergencyContact> helperToUser(
+    public ResponseEntity<HelperEmergencyContactDto> helperToUser(
             @RequestParam Long helperId,
             @RequestParam Long userId,
             @RequestParam String message) {
-        HelperEmergencyContact contact = contactService.sendContact(helperId, userId, message, ContactType.HELPER_TO_USER);
+        HelperEmergencyContactDto contact = contactService.sendContact(helperId, userId, message, ContactType.HELPER_TO_USER);
         return ResponseEntity.ok(contact);
     }
 
+    @Operation(
+            summary = "특정 헬퍼의 모든 연락 기록 조회",
+            description = "특정 헬퍼 ID와 관련된 (받거나 보낸) 모든 긴급 연락 기록 리스트를 조회합니다.")
     @GetMapping("/helper/{id}")
-    public ResponseEntity<List<HelperEmergencyContact>> getHelperContacts(@PathVariable Long id) {
+    public ResponseEntity<List<HelperEmergencyContactDto>> getHelperContacts(@PathVariable Long id) {
         return ResponseEntity.ok(contactService.getContactsForHelper(id));
     }
 
+    @Operation(
+            summary = "특정 사용자의 모든 연락 기록 조회",
+            description = "특정 사용자 ID와 관련된 (받거나 보낸) 모든 긴급 연락 기록 리스트를 조회합니다.")
     @GetMapping("/user/{id}")
-    public ResponseEntity<List<HelperEmergencyContact>> getUserContacts(@PathVariable Long id) {
+    public ResponseEntity<List<HelperEmergencyContactDto>> getUserContacts(@PathVariable Long id) {
         return ResponseEntity.ok(contactService.getContactsForUser(id));
     }
 

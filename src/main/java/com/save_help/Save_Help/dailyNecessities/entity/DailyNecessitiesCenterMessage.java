@@ -32,5 +32,6 @@ public class DailyNecessitiesCenterMessage  {
 
     private LocalDateTime sentAt = LocalDateTime.now();
 
+    @Column(name = "is_read", nullable = false)
     private boolean read = false; // 읽음 여부
 }
