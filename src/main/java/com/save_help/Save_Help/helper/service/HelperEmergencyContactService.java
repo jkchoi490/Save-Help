@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.helper.service;
 
+import com.save_help.Save_Help.helper.dto.HelperEmergencyContactDto;
 import com.save_help.Save_Help.helper.entity.ContactType;
 import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.helper.entity.HelperEmergencyContact;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class HelperEmergencyContactService {
     private final HelperRepository helperRepository;
     private final UserRepository userRepository;
 
-    public HelperEmergencyContact sendContact(Long senderId, Long receiverId, String message, ContactType type) {
+    public HelperEmergencyContactDto sendContact(Long senderId, Long receiverId, String message, ContactType type) {
         User user;
         Helper helper;
 
@@ -39,14 +41,32 @@ public class HelperEmergencyContactService {
                 .helper(helper)
                 .build();
 
-        return contactRepository.save(contact);
+        HelperEmergencyContact saved = contactRepository.save(contact);
+
+        return toDto(saved);
     }
 
-    public List<HelperEmergencyContact> getContactsForHelper(Long helperId) {
-        return contactRepository.findByHelperId(helperId);
+    public List<HelperEmergencyContactDto> getContactsForHelper(Long helperId) {
+        List<HelperEmergencyContact> contacts = contactRepository.findByHelperId(helperId);
+        return contacts.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<HelperEmergencyContact> getContactsForUser(Long userId) {
-        return contactRepository.findByUserId(userId);
+    public List<HelperEmergencyContactDto> getContactsForUser(Long userId) {
+        List<HelperEmergencyContact> contacts = contactRepository.findByUserId(userId);
+        return contacts.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    private HelperEmergencyContactDto toDto(HelperEmergencyContact contact) {
+        return new HelperEmergencyContactDto(
+                contact.getId(),
+                contact.isRead(),
+                contact.getMessage(),
+                contact.getHelper().getId(),
+                contact.getUser().getId()
+        );
     }
 }

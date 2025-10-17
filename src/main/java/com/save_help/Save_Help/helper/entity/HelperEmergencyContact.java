@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "helper_emergency_contact")
 public class HelperEmergencyContact {
 
     @Id
@@ -27,9 +28,11 @@ public class HelperEmergencyContact {
     private String message;
 
     // 연락 시간
-    private LocalDateTime timestamp = LocalDateTime.now();
+    @Column(name = "contact_time")
+    private LocalDateTime contactTime;
 
     // 읽음 여부
+    @Column(name = "is_read")
     private boolean read = false;
 
     // 보낸 사람과 받는 사람
