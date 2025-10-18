@@ -53,6 +53,9 @@ dependencies {
 	//Redis 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	//Twilio 의존성
+	implementation 'com.twilio.sdk:twilio:9.3.0'
+
 }
 
 tasks.named('test') {
