@@ -3,3 +3,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+twilio:
+  account-sid:
+  auth-token:
+  from-number: # Twilio에서 발급된 번호
