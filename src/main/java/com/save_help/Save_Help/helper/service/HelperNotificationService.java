@@ -20,6 +20,11 @@ public class HelperNotificationService {
     private final EmergencyRepository emergencyRepository;
     private final NotificationSender notificationSender;
 
+    //
+    // private final TwilioService twilioService;
+    // private final PushService pushService;
+
+
     public void sendEmergencyNotification(NotificationRequestDto dto) {
         Helper helper = helperRepository.findById(dto.getHelperId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 Helper를 찾을 수 없습니다."));
@@ -32,7 +37,7 @@ public class HelperNotificationService {
 
         String message = dto.getMessage();
         if (emergency != null) {
-            message += "\n\n🚨 긴급상황: " + emergency.getTitle() +
+            message += "\n\n 긴급상황: " + emergency.getTitle() +
                     "\n위치: " + emergency.getLocation() +
                     "\n긴급도: " + emergency.getSeverity();
         }
@@ -46,5 +51,13 @@ public class HelperNotificationService {
         if (dto.isViaPush()) {
             notificationSender.sendPush(dto.getTitle(), message, helper.getId());
         }
+    }
+
+    public void notifyAdmins(String message) {
+        //계속 개발 중...
+    }
+
+    public void notifyHelper(Long id, String s) {
+
     }
 }

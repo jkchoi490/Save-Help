@@ -50,4 +50,6 @@ public class Helper {
     @OneToMany(mappedBy = "helper", cascade = CascadeType.ALL)
     private List<HelperEmergencyContact> helperEmergencyContacts = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private HelperActivityStatus activityStatus = HelperActivityStatus.OFF_DUTY;
 }

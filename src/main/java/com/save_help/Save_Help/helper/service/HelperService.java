@@ -5,10 +5,8 @@ import com.save_help.Save_Help.communityCenter.repository.CommunityCenterReposit
 import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
 import com.save_help.Save_Help.helper.dto.HelperStatusUpdateRequestDto;
-import com.save_help.Save_Help.helper.entity.AssignmentType;
-import com.save_help.Save_Help.helper.entity.Helper;
-import com.save_help.Save_Help.helper.entity.HelperAssignment;
-import com.save_help.Save_Help.helper.entity.HelperRole;
+import com.save_help.Save_Help.helper.entity.*;
+import com.save_help.Save_Help.helper.event.HelperStatusChangedEvent;
 import com.save_help.Save_Help.helper.repository.HelperAssignmentRepository;
 import com.save_help.Save_Help.helper.repository.HelperRepository;
 import com.save_help.Save_Help.hospital.entity.Hospital;
@@ -17,6 +15,7 @@ import com.save_help.Save_Help.helper.dto.HelperResponseDto;
 import com.save_help.Save_Help.hospital.repository.HospitalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +32,7 @@ public class HelperService {
     private final EmergencyRepository emergencyRepository;
     private final HospitalRepository hospitalRepository;
     private final HelperAssignmentRepository assignmentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     // 생성
     public HelperResponseDto createHelper(HelperRequestDto dto) {
@@ -202,4 +202,18 @@ public class HelperService {
         return helperRepository.findByHospitalId(hospitalId);
     }
 
+    @Transactional
+    public HelperResponseDto updateActivityStatus(Long helperId, HelperActivityStatus newStatus) {
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new IllegalArgumentException("헬퍼를 찾을 수 없습니다."));
+
+        HelperActivityStatus oldStatus = helper.getActivityStatus();
+        helper.setActivityStatus(newStatus);
+        helperRepository.save(helper);
+
+        // 상태 변경 이벤트 발생
+        eventPublisher.publishEvent(new HelperStatusChangedEvent(helperId, oldStatus, newStatus));
+
+        return new HelperResponseDto(helper);
+    }
 }

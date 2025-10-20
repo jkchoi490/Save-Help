@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HelperRepository extends JpaRepository<Helper, Long> {
 
@@ -24,5 +25,5 @@ public interface HelperRepository extends JpaRepository<Helper, Long> {
     @Query("SELECT h FROM Helper h WHERE h.communityCenter.id = :centerId")
     List<Helper> findByCommunityCenter_Id(Long centerId);
 
-
+    Optional<Helper> findFirstByCommunityCenter_IdAndAvailableTrueOrderByIdAsc(Long centerId);
 }
