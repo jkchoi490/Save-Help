@@ -23,6 +23,7 @@ public class HelperController {
     private final HelperAutoAssignmentService autoAssignmentService;
     private final HelperScheduleService scheduleService;
     private final HelperEmergencyContactService contactService;
+    private final HelperAutoReassignService autoReassignService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -201,5 +202,20 @@ public class HelperController {
         return ResponseEntity.ok(contactService.getContactsForUser(id));
     }
 
+    @Operation(summary = "헬퍼 상태 업데이트", description = "근무 중, 이동 중, 응급 출동 중 등의 상태를 변경합니다.")
+    @PatchMapping("/{id}/activity")
+    public ResponseEntity<HelperResponseDto> updateActivityStatus(
+            @PathVariable Long id,
+            @RequestBody HelperActivityUpdateRequestDto dto
+    ) {
+        return ResponseEntity.ok(helperService.updateActivityStatus(id, dto.getStatus()));
+    }
+
+    @Operation(summary = "헬퍼 자동 재배치", description = "헬퍼가 응답하지 않을 경우 다른 헬퍼로 자동 재배치합니다.")
+    @PostMapping("/auto/reassign/{emergencyId}")
+    public ResponseEntity<String> autoReassign(@PathVariable Long emergencyId) {
+        autoReassignService.reassignIfUnresponsive(emergencyId);
+        return ResponseEntity.ok("자동 재배치 작업이 실행되었습니다.");
+    }
 
 }
