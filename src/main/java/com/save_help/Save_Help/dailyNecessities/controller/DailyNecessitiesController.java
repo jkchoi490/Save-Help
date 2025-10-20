@@ -22,6 +22,9 @@ public class DailyNecessitiesController {
     private final DailyNecessitiesDonationService donationService;
     private final DailyNecessitiesCenterMessageService messageService;
     private final DailyNecessitiesUserRequestMessageService userRequestMessageService;
+    private final DailyNecessitiesRestockForecastService restockForecastService;
+
+
 
     public DailyNecessitiesController(
             DailyNecessitiesService necessitiesService,
@@ -29,7 +32,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -38,6 +41,7 @@ public class DailyNecessitiesController {
         this.donationService = donationService;
         this.messageService = messageService;
         this.userRequestMessageService = userRequestMessageService;
+        this.restockForecastService = restockForecastService;
     }
 
     // ------------------------------------
@@ -340,6 +344,33 @@ public class DailyNecessitiesController {
     public ResponseEntity<String> markAsProcessed(@PathVariable Long id) {
         userRequestMessageService.markAsProcessed(id);
         return ResponseEntity.ok("요청 처리 완료 상태로 변경했습니다.");
+    }
+
+    //-----------------------------------------
+    //자동 재고 예측 및 발주 제안 기능
+    //----------------------------------------
+
+    // 1. 발주 제안 목록 조회
+    @Operation(summary = "발주 제안 목록 조회", description = "부족이 예상되는 품목의 자동 발주 제안 목록을 조회합니다.")
+    @GetMapping("/forecast/suggestions")
+    public ResponseEntity<List<DailyNecessitiesRestockSuggestion>> getSuggestions() {
+        return ResponseEntity.ok(restockForecastService.getPendingSuggestions());
+    }
+
+    // 2. 발주 제안 승인
+    @Operation(summary = "발주 제안 승인", description = "관리자가 발주 제안을 승인합니다.")
+    @PatchMapping("/forecast/suggestions/{id}/approve")
+    public ResponseEntity<String> approveSuggestion(@PathVariable Long id) {
+        restockForecastService.approveSuggestion(id);
+        return ResponseEntity.ok("발주 제안이 승인되었습니다.");
+    }
+
+    //3. 발주 제안 거절
+    @Operation(summary = "발주 제안 거절", description = "관리자가 발주 제안을 거절합니다.")
+    @PatchMapping("/forecast/suggestions/{id}/reject")
+    public ResponseEntity<String> rejectSuggestion(@PathVariable Long id) {
+        restockForecastService.rejectSuggestion(id);
+        return ResponseEntity.ok("발주 제안이 거절되었습니다.");
     }
 
 
