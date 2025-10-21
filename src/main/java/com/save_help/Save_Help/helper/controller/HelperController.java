@@ -24,6 +24,7 @@ public class HelperController {
     private final HelperScheduleService scheduleService;
     private final HelperEmergencyContactService contactService;
     private final HelperAutoReassignService autoReassignService;
+    private final HelperReviewService reviewService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -217,5 +218,22 @@ public class HelperController {
         autoReassignService.reassignIfUnresponsive(emergencyId);
         return ResponseEntity.ok("자동 재배치 작업이 실행되었습니다.");
     }
+
+    //--------------------------------
+    // Helper 평가 및 피드백
+    //--------------------------------
+
+    @Operation(summary = "헬퍼 평가 등록", description = "긴급 출동 완료 후 헬퍼에 대한 평가를 등록합니다.")
+    @PostMapping("/helpers/reviews")
+    public ResponseEntity<HelperReviewResponseDto> createReview(@RequestBody HelperReviewRequestDto dto) {
+        return ResponseEntity.ok(reviewService.createReview(dto));
+    }
+
+    @Operation(summary = "헬퍼 평가 목록 조회", description = "특정 헬퍼의 평가 및 피드백 목록을 조회합니다.")
+    @GetMapping("/helpers/reviews/{helperId}")
+    public ResponseEntity<List<HelperReviewResponseDto>> getReviewsByHelper(@PathVariable Long helperId) {
+        return ResponseEntity.ok(reviewService.getReviewsByHelper(helperId));
+    }
+
 
 }

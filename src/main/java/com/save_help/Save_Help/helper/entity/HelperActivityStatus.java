@@ -6,5 +6,7 @@ public enum HelperActivityStatus {
     ON_DUTY,       // 근무 중
     MOVING,        // 이동 중
     RESPONDING,    // 응급 출동 중
-    BUSY           // 다른 작업 중
+    BUSY,           // 다른 작업 중
+    UNAVAILABLE,        // 비활성화됨
+    REVIEW_REQUIRED     // 낮은 평가로 인해 검토 필요
 }
