@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-public class AutoRequest {
+public class DailyNecessitiesAutoRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class AutoRequest {
 
     private LocalDateTime requestedAt = LocalDateTime.now();
 
-    public AutoRequest(DailyNecessities item, CommunityCenter center, Integer quantity) {
+    public DailyNecessitiesAutoRequest(DailyNecessities item, CommunityCenter center, Integer quantity) {
         this.item = item;
         this.center = center;
         this.quantity = quantity;
