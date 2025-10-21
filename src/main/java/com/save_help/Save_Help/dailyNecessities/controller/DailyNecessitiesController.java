@@ -23,7 +23,7 @@ public class DailyNecessitiesController {
     private final DailyNecessitiesCenterMessageService messageService;
     private final DailyNecessitiesUserRequestMessageService userRequestMessageService;
     private final DailyNecessitiesRestockForecastService restockForecastService;
-
+    private final DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService;
 
 
     public DailyNecessitiesController(
@@ -32,7 +32,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -42,6 +42,7 @@ public class DailyNecessitiesController {
         this.messageService = messageService;
         this.userRequestMessageService = userRequestMessageService;
         this.restockForecastService = restockForecastService;
+        this.dailyNecessitiesAutoReorderService = dailyNecessitiesAutoReorderService;
     }
 
     // ------------------------------------
@@ -373,5 +374,31 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok("발주 제안이 거절되었습니다.");
     }
 
+    //-------------------------------
+    // 생필품 자동 재신청
+    //----------------------------------
+    @Operation(summary = "자동 재신청 설정 생성", description = "사용자가 특정 품목을 일정 주기로 자동 신청하도록 설정합니다.")
+    @PostMapping("/create")
+    public ResponseEntity<AutoReorderSetting> createSetting(
+            @RequestParam Long userId,
+            @RequestParam Long itemId,
+            @RequestParam int quantity,
+            @RequestParam int intervalDays
+    ) {
+        return ResponseEntity.ok(dailyNecessitiesAutoReorderService.createSetting(userId, itemId, quantity, intervalDays));
+    }
+
+    @Operation(summary = "자동 재신청 설정 비활성화", description = "사용자의 자동 재신청 기능을 중단합니다.")
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivate(@PathVariable Long id) {
+        dailyNecessitiesAutoReorderService.deactivate(id);
+        return ResponseEntity.ok("자동 재신청이 비활성화되었습니다.");
+    }
+
+    @Operation(summary = "사용자 자동 재신청 설정 조회", description = "사용자의 모든 자동 재신청 설정을 조회합니다.")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<AutoReorderSetting>> getUserSettings(@PathVariable Long userId) {
+        return ResponseEntity.ok(dailyNecessitiesAutoReorderService.getUserSettings(userId));
+    }
 
 }

@@ -50,6 +50,32 @@ public class Helper {
     @OneToMany(mappedBy = "helper", cascade = CascadeType.ALL)
     private List<HelperEmergencyContact> helperEmergencyContacts = new ArrayList<>();
 
+    //@Enumerated(EnumType.STRING)
+    //private HelperActivityStatus activityStatus = HelperActivityStatus.OFF_DUTY;
+
+    // 활동 상태
     @Enumerated(EnumType.STRING)
-    private HelperActivityStatus activityStatus = HelperActivityStatus.OFF_DUTY;
+    @Column(nullable = false)
+    private HelperActivityStatus activityStatus = HelperActivityStatus.AVAILABLE;
+
+    // 신뢰도 점수 (평균 평점 기반)
+    @Column(nullable = false)
+    private Double trustScore = 5.0;
+
+    // 최근 평가 갱신일 (선택사항)
+    private java.time.LocalDateTime lastReviewUpdate;
+
+    // 신뢰도 업데이트 메서드
+    public void updateTrustScore(Double newScore) {
+        this.trustScore = newScore;
+        this.lastReviewUpdate = java.time.LocalDateTime.now();
+
+        // 평균 평점이 2.5 미만이면 상태 변경
+        if (newScore < 2.5) {
+            this.activityStatus = HelperActivityStatus.REVIEW_REQUIRED;
+        } else if (this.activityStatus == HelperActivityStatus.REVIEW_REQUIRED && newScore >= 3.0) {
+            // 신뢰도 회복 시 복귀
+            this.activityStatus = HelperActivityStatus.AVAILABLE;
+        }
+    }
 }
