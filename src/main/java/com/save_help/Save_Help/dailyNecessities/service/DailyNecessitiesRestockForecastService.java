@@ -25,11 +25,13 @@ public class DailyNecessitiesRestockForecastService {
 
         List<DailyNecessities> allItems = necessitiesRepository.findAll();
         for (DailyNecessities item : allItems) {
-            int avgDailyUsage = historyRepository.getAverageDailyUsage(item.getId(), 7); // 최근 7일 평균 사용량
-            if (avgDailyUsage <= 0) continue;
+            LocalDateTime startDate = LocalDateTime.now().minusDays(7);
+            Double avgDailyUsage = historyRepository.getAverageDailyUsage(item.getId(), startDate);
+
+            if (avgDailyUsage == null || avgDailyUsage <= 0) continue;
 
             int currentStock = item.getStock();
-            int daysLeft = currentStock / avgDailyUsage;
+            int daysLeft = (int) (currentStock / avgDailyUsage);
 
             if (daysLeft <= 3) { // 3일 이하 남으면 발주 제안
                 DailyNecessitiesRestockSuggestion suggestion = DailyNecessitiesRestockSuggestion.builder()
@@ -44,6 +46,7 @@ public class DailyNecessitiesRestockForecastService {
             }
         }
     }
+
 
     public List<DailyNecessitiesRestockSuggestion> getPendingSuggestions() {
         return suggestionRepository.findByStatus(DailyNecessitiesRestockSuggestion.SuggestionStatus.PENDING);

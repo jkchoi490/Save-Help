@@ -50,7 +50,7 @@ public class DailyNecessitiesController {
     // ------------------------------------
 
     @Operation(summary = "전체 생필품 조회", description = "등록된 모든 생필품 정보를 조회합니다.")
-    @GetMapping("/getAll")
+    @GetMapping("/getAllDailyNecessities")
     public List<DailyNecessitiesDto> getAll() {
         return necessitiesService.getAll();
     }
@@ -378,7 +378,7 @@ public class DailyNecessitiesController {
     // 생필품 자동 재신청
     //----------------------------------
     @Operation(summary = "자동 재신청 설정 생성", description = "사용자가 특정 품목을 일정 주기로 자동 신청하도록 설정합니다.")
-    @PostMapping("/create")
+    @PostMapping("/createSetting")
     public ResponseEntity<AutoReorderSetting> createSetting(
             @RequestParam Long userId,
             @RequestParam Long itemId,

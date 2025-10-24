@@ -1,6 +1,5 @@
 package com.save_help.Save_Help.messaging.entity;
 
-import com.twilio.rest.api.v2010.account.Message;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,5 +21,5 @@ public class DailyNecessitiesMessageSession {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    private List<Message> messages = new ArrayList<>();
+    private List<DailyNecessitiesMessage> messages;
 }
