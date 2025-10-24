@@ -3,6 +3,7 @@ package com.save_help.Save_Help.dailyNecessities.service;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesHistory;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesHistoryRepository;
+import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
 import com.save_help.Save_Help.dailyNecessities.service.DailyNecessitiesService;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
@@ -20,13 +21,15 @@ public class DailyNecessitiesStockService {
     private final DailyNecessitiesService necessitiesService;
     private final DailyNecessitiesHistoryRepository historyRepository;
     private final UserRepository userRepository;
+    private final DailyNecessitiesRepository dailyNecessitiesRepository;
 
     public DailyNecessitiesStockService(DailyNecessitiesService necessitiesService,
                                         DailyNecessitiesHistoryRepository historyRepository,
-                                        UserRepository userRepository) {
+                                        UserRepository userRepository, DailyNecessitiesRepository dailyNecessitiesRepository) {
         this.necessitiesService = necessitiesService;
         this.historyRepository = historyRepository;
         this.userRepository = userRepository;
+        this.dailyNecessitiesRepository = dailyNecessitiesRepository;
     }
 
     // 입고
@@ -61,4 +64,10 @@ public class DailyNecessitiesStockService {
     public List<DailyNecessitiesHistory> getHistoryByPeriod(LocalDateTime start, LocalDateTime end) {
         return historyRepository.findByTimestampBetween(start, end);
     }
+
+    public DailyNecessities getItem(Long itemId) {
+        return dailyNecessitiesRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 생필품을 찾을 수 없습니다: " + itemId));
+    }
+
 }

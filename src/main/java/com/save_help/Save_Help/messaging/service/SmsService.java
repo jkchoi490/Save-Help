@@ -20,11 +20,11 @@ public class SmsService {
     private final SmsSessionRepository sessionRepository;
     private final SmsMessageRepository messageRepository;
 
-    @Value("${twilio.account-sid}")
+    @Value("${twilio.account.sid}")
     private String ACCOUNT_SID;
-    @Value("${twilio.auth-token}")
+    @Value("${twilio.auth.token}")
     private String AUTH_TOKEN;
-    @Value("${twilio.phone-number}")
+    @Value("${twilio.phone.number}")
     private String TWILIO_NUMBER;
 
 
