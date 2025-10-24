@@ -2,11 +2,13 @@ package com.save_help.Save_Help.helper.dto;
 
 import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.helper.entity.HelperRole;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
 @Builder
+@AllArgsConstructor
+@Getter
 public class HelperResponseDto {
     private Long id;
     private String name;
