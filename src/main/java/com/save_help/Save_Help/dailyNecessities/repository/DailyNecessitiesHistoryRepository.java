@@ -16,13 +16,10 @@ public interface DailyNecessitiesHistoryRepository extends JpaRepository<DailyNe
 
     List<DailyNecessitiesHistory> findByTimestampBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("""
-    SELECT COALESCE(SUM(h.changeQuantity) / 7, 0)
-    FROM DailyNecessitiesHistory h
-    WHERE h.item.id = :itemId
-      AND h.changeQuantity < 0
-      AND h.changedAt >= CURRENT_DATE - 7
-    """)
-    int getAverageDailyUsage(@Param("itemId") Long itemId, int days);
+    @Query("SELECT COALESCE(AVG(h.quantity), 0) FROM DailyNecessitiesHistory h " +
+            "WHERE h.item.id = :itemId AND h.type = 'OUT' " +
+            "AND h.timestamp >= :startDate")
+    Double getAverageDailyUsage(@Param("itemId") Long itemId,
+                                @Param("startDate") LocalDateTime startDate);
 
 }
