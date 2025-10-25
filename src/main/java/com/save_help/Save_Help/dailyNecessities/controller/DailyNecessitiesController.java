@@ -401,4 +401,17 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(dailyNecessitiesAutoReorderService.getUserSettings(userId));
     }
 
+    //-------------------------------
+    // 사용자 맞춤 생필품 추천
+    //----------------------------------
+
+    @Operation(summary = "사용자 맞춤 생필품 추천", description = "사용자의 신청 이력을 기반으로 자주 신청한 생필품 카테고리에서 품목을 추천합니다.")
+    @GetMapping("/recommendations/{userId}")
+    public ResponseEntity<List<DailyNecessitiesDto>> getRecommendations(@PathVariable Long userId) {
+        List<DailyNecessitiesDto> recommendations = necessitiesService.getRecommendationsForUser(userId);
+        return ResponseEntity.ok(recommendations);
+    }
+
+
+
 }

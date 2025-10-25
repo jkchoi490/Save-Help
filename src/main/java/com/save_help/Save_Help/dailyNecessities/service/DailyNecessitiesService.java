@@ -5,11 +5,15 @@ import com.save_help.Save_Help.communityCenter.repository.CommunityCenterReposit
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.NecessityCategory;
+import com.save_help.Save_Help.dailyNecessities.entity.UserNecessityRequest;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
+import com.save_help.Save_Help.dailyNecessities.repository.UserNecessitiesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -17,11 +21,13 @@ public class DailyNecessitiesService {
 
     private final DailyNecessitiesRepository necessitiesRepository;
     private final CommunityCenterRepository centerRepository;
+    private final UserNecessitiesRepository userNecessitiesRepository;
 
     public DailyNecessitiesService(DailyNecessitiesRepository necessitiesRepository,
-                                   CommunityCenterRepository centerRepository) {
+                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository) {
         this.necessitiesRepository = necessitiesRepository;
         this.centerRepository = centerRepository;
+        this.userNecessitiesRepository = userNecessitiesRepository;
     }
 
     // 생성
@@ -196,4 +202,38 @@ public class DailyNecessitiesService {
                 .map(DailyNecessitiesDto::fromEntity)
                 .toList();
     }
+
+    public List<DailyNecessitiesDto> getRecommendationsForUser(Long userId) {
+        //1. 사용자의 최근 신청 이력 조회
+        List<UserNecessityRequest> recentRequests = userNecessitiesRepository.findTop10ByUserIdOrderByCreatedAtDesc(userId);
+
+        if (recentRequests.isEmpty()) {
+            // 신청 이력이 없다면 인기 품목(전체 기준 상위 재고 or 최근 사용량 높은 품목) 추천
+            List<DailyNecessities> popularItems = necessitiesRepository.findTop10ByOrderByRequestCountDesc();
+            return popularItems.stream().map(DailyNecessitiesDto::fromEntity).toList();
+        }
+
+        // 2️. 사용자가 자주 신청한 카테고리 상위 1~2개 추출
+        Map<NecessityCategory, Long> categoryCount = recentRequests.stream()
+                .collect(Collectors.groupingBy(
+                        req -> req.getItem().getCategory(),
+                        Collectors.counting()
+                ));
+
+        List<NecessityCategory> topCategories = categoryCount.entrySet().stream()
+                .sorted(Map.Entry.<NecessityCategory, Long>comparingByValue().reversed())
+                .limit(2)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        // 3. 상위 카테고리 중 재고가 충분한 품목 추천
+        List<DailyNecessities> items = necessitiesRepository.findByCategoryInAndStockGreaterThan(topCategories, 0);
+
+        // 4️. 최대 10개만 반환
+        return items.stream()
+                .limit(10)
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
+    }
+
 }
