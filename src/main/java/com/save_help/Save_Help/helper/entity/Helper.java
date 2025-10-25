@@ -47,6 +47,14 @@ public class Helper {
     @JoinColumn(name = "hospital_id")
     private Hospital hospital;
 
+    @Column(precision = 10, scale = 7)
+    private Double latitude;
+
+    @Column(precision = 10, scale = 7)
+    private Double longitude;
+
+    private java.time.LocalDateTime lastLocationUpdateTime;
+
     @OneToMany(mappedBy = "helper", cascade = CascadeType.ALL)
     private List<HelperEmergencyContact> helperEmergencyContacts = new ArrayList<>();
 

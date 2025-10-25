@@ -25,6 +25,7 @@ public class HelperController {
     private final HelperEmergencyContactService contactService;
     private final HelperAutoReassignService autoReassignService;
     private final HelperReviewService reviewService;
+    private final HelperLocationService helperLocationService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -235,5 +236,15 @@ public class HelperController {
         return ResponseEntity.ok(reviewService.getReviewsByHelper(helperId));
     }
 
-
+    //--------------------------------
+    // Helper 실시간 위치 업데이트 기능
+    //--------------------------------
+    @Operation(summary = "Helper 실시간 위치 갱신", description = "GPS 좌표를 갱신하고 Helper 정보를 반환합니다.")
+    @PatchMapping("/location")
+    public ResponseEntity<HelperLocationResponseDto> updateHelperLocation(
+            @RequestBody HelperLocationUpdateRequestDto dto
+    ) {
+        HelperLocationResponseDto response = helperLocationService.updateHelperLocation(dto);
+        return ResponseEntity.ok(response);
+    }
 }

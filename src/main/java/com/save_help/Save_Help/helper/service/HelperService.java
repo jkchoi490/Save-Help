@@ -4,6 +4,7 @@ import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
 import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
+import com.save_help.Save_Help.helper.dto.HelperLocationUpdateRequestDto;
 import com.save_help.Save_Help.helper.dto.HelperStatusUpdateRequestDto;
 import com.save_help.Save_Help.helper.entity.*;
 import com.save_help.Save_Help.helper.event.HelperStatusChangedEvent;
@@ -33,6 +34,7 @@ public class HelperService {
     private final HospitalRepository hospitalRepository;
     private final HelperAssignmentRepository assignmentRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final HelperLocationService locationService;
 
     // 생성
     public HelperResponseDto createHelper(HelperRequestDto dto) {
@@ -216,4 +218,8 @@ public class HelperService {
 
         return new HelperResponseDto(helper);
     }
+
+   // public void updateHelperLocation(Long helperId, HelperLocationUpdateRequestDto dto) {
+   //     locationService.updateHelperLocation(helperId, dto);
+   // }
 }
