@@ -26,9 +26,11 @@ public class DailyNecessities {
     private NecessityCategory category;
 
     // 단위
+    @Column(nullable = false, length = 100)
     private String unit;
 
     // 보유 수량
+    @Column(nullable = false)
     private Integer stock;
 
     // 유효 기간
