@@ -4,7 +4,9 @@ import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesDonation;
+import com.save_help.Save_Help.dailyNecessities.entity.DonationPointHistory;
 import com.save_help.Save_Help.dailyNecessities.entity.NecessityCategory;
+import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesDonationPointHistoryRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesDonationRepository;
 import com.save_help.Save_Help.dailyNecessities.service.DailyNecessitiesService;
 import com.save_help.Save_Help.user.entity.User;
@@ -13,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,15 +26,17 @@ public class DailyNecessitiesDonationService {
     private final CommunityCenterRepository centerRepository;
     private final UserRepository userRepository;
     private final DailyNecessitiesService necessitiesService;
+    private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
 
     public DailyNecessitiesDonationService(DailyNecessitiesDonationRepository donationRepository,
                                            CommunityCenterRepository centerRepository,
                                            UserRepository userRepository,
-                                           DailyNecessitiesService necessitiesService) {
+                                           DailyNecessitiesService necessitiesService, DailyNecessitiesDonationPointHistoryRepository historyRepository) {
         this.donationRepository = donationRepository;
         this.centerRepository = centerRepository;
         this.userRepository = userRepository;
         this.necessitiesService = necessitiesService;
+        this.historyRepository = historyRepository;
     }
 
     // 사용자 기부 요청
@@ -78,5 +83,31 @@ public class DailyNecessitiesDonationService {
     // 관리자 승인 대기 목록 조회
     public List<DailyNecessitiesDonation> getPendingDonations() {
         return donationRepository.findByStatus(DailyNecessitiesDonation.Status.PENDING);
+    }
+
+    // 포인트 계산 정책
+    public int calculatePoints(DailyNecessitiesDonation donation) {
+        if (donation.getQuantity() == null) return 0;
+        int points = donation.getQuantity() * 10; // 수량 1개당 10점
+        return points;
+    }
+
+    @Transactional
+    public void accruePoints(DailyNecessitiesDonation donation) {
+        User donor = donation.getDonor();
+        int points = calculatePoints(donation);
+
+        // 누적 포인트 업데이트
+        donor.setTotalDonationPoints(donor.getTotalDonationPoints() + points);
+        userRepository.save(donor);
+
+        // 포인트 히스토리 기록
+        DonationPointHistory history = DonationPointHistory.builder()
+                .donor(donor)
+                .donation(donation)
+                .points(points)
+                .createdAt(LocalDateTime.now())
+                .build();
+        historyRepository.save(history);
     }
 }
