@@ -26,6 +26,7 @@ public class HelperController {
     private final HelperAutoReassignService autoReassignService;
     private final HelperReviewService reviewService;
     private final HelperLocationService helperLocationService;
+    private final HelperRecommendationService recommendationService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -246,5 +247,20 @@ public class HelperController {
     ) {
         HelperLocationResponseDto response = helperLocationService.updateHelperLocation(dto);
         return ResponseEntity.ok(response);
+    }
+
+    //--------------------------------
+    // Helper 위치+역할 기반 추천
+    //--------------------------------
+
+    @Operation(summary = "위치+역할 기반 Helper 추천", description = "현재 위치(latitude, longitude)와 역할(role)에 따라 가까운 Helper를 추천합니다.")
+    @GetMapping("/recommend")
+    public ResponseEntity<List<HelperRecommendationDto>> recommendHelpers(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam HelperRole role) {
+
+        List<HelperRecommendationDto> recommended = recommendationService.recommendHelpers(latitude, longitude, role);
+        return ResponseEntity.ok(recommended);
     }
 }
