@@ -2,7 +2,10 @@ package com.save_help.Save_Help.dailyNecessities.controller;
 
 import com.save_help.Save_Help.dailyNecessities.dto.*;
 import com.save_help.Save_Help.dailyNecessities.entity.*;
+import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesDonationPointHistoryRepository;
 import com.save_help.Save_Help.dailyNecessities.service.*;
+import com.save_help.Save_Help.user.entity.User;
+import com.save_help.Save_Help.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +27,8 @@ public class DailyNecessitiesController {
     private final DailyNecessitiesUserRequestMessageService userRequestMessageService;
     private final DailyNecessitiesRestockForecastService restockForecastService;
     private final DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService;
-
+    private final UserRepository userRepository;
+    private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
 
     public DailyNecessitiesController(
             DailyNecessitiesService necessitiesService,
@@ -32,7 +36,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -43,6 +47,8 @@ public class DailyNecessitiesController {
         this.userRequestMessageService = userRequestMessageService;
         this.restockForecastService = restockForecastService;
         this.dailyNecessitiesAutoReorderService = dailyNecessitiesAutoReorderService;
+        this.userRepository = userRepository;
+        this.historyRepository = historyRepository;
     }
 
     // ------------------------------------
@@ -412,6 +418,17 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(recommendations);
     }
 
+    //-------------------------------
+    // 사용자 생필품 기부 내역 히스토리 조회
+    //----------------------------------
+
+    @Operation(summary = "사용자 생필품 기부 내역 히스토리 조회", description = "사용자의 생필품 기부 내역을 기반으로 기부 내역을 조회합니다.")
+    @GetMapping("/donations/points/history/{userId}")
+    public ResponseEntity<List<DonationPointHistory>> getPointHistory(@PathVariable Long userId) {
+        User donor = userRepository.findById(userId).orElseThrow();
+        List<DonationPointHistory> history = historyRepository.findByDonor(donor);
+        return ResponseEntity.ok(history);
+    }
 
 
 }
