@@ -66,5 +66,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<HelperEmergencyContact> helperEmergencyContacts = new ArrayList<>();
 
-
+    @Column(name = "total_donation_points")
+    private int totalDonationPoints; // 누적 기부 포인트
 }
