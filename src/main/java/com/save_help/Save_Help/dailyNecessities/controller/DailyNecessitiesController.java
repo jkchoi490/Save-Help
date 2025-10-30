@@ -29,6 +29,7 @@ public class DailyNecessitiesController {
     private final DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService;
     private final UserRepository userRepository;
     private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
+    private final DailyNecessitiesDeliveryService deliveryService;
 
     public DailyNecessitiesController(
             DailyNecessitiesService necessitiesService,
@@ -36,7 +37,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -49,6 +50,7 @@ public class DailyNecessitiesController {
         this.dailyNecessitiesAutoReorderService = dailyNecessitiesAutoReorderService;
         this.userRepository = userRepository;
         this.historyRepository = historyRepository;
+        this.deliveryService = deliveryService;
     }
 
     // ------------------------------------
@@ -429,6 +431,27 @@ public class DailyNecessitiesController {
         List<DonationPointHistory> history = historyRepository.findByDonor(donor);
         return ResponseEntity.ok(history);
     }
+
+    //-------------------------------
+    // 사용자 생필품 배송 상태 변경/조회 기능
+    //----------------------------------
+
+    @Operation(summary = "배송 상태 변경", description = "생필품 배송 상태를 변경합니다.")
+    @PatchMapping("/delivery/{id}/status")
+    public ResponseEntity<String> updateDeliveryStatus(
+            @PathVariable Long id,
+            @RequestParam DailyNecessitiesDeliveryStatus status) {
+        deliveryService.updateStatus(id, status);
+        return ResponseEntity.ok("배송 상태가 " + status + "로 변경되었습니다.");
+    }
+
+    @Operation(summary = "배송 상태 조회", description = "특정 배송 건의 현재 상태를 조회합니다.")
+    @GetMapping("/delivery/{id}/status")
+    public ResponseEntity<String> getDeliveryStatus(@PathVariable Long id) {
+        DailyNecessitiesDelivery delivery = deliveryService.getDelivery(id);
+        return ResponseEntity.ok("현재 배송 상태는 " + delivery.getStatus() + " 입니다.");
+    }
+
 
 
 }
