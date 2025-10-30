@@ -19,7 +19,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -222,4 +227,41 @@ public class HelperService {
    // public void updateHelperLocation(Long helperId, HelperLocationUpdateRequestDto dto) {
    //     locationService.updateHelperLocation(helperId, dto);
    // }
+
+    // 자격증 업로드
+    public void uploadCertification(Long helperId, MultipartFile file) {
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Helper ID입니다."));
+
+        try {
+            // 저장 경로 지정 (임시: 프로젝트 내 /uploads 디렉토리)
+            String uploadDir = System.getProperty("user.dir") + "/uploads/certifications";
+            Files.createDirectories(Paths.get(uploadDir));
+
+            String fileName = helperId + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, fileName);
+
+            // 실제 파일 저장
+            file.transferTo(filePath.toFile());
+
+            // Helper 정보 업데이트
+            helper.setCertificationUrl(filePath.toString());
+            helper.setCertificationName(fileName);
+            helper.setCertificationVerified(false); // 검증 대기 상태
+
+            helperRepository.save(helper);
+
+        } catch (IOException e) {
+            throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
+        }
+    }
+
+    // 관리자 승인 시 검증 완료 처리
+    public void verifyCertification(Long helperId) {
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Helper ID입니다."));
+        helper.setCertificationVerified(true);
+        helperRepository.save(helper);
+    }
+
 }
