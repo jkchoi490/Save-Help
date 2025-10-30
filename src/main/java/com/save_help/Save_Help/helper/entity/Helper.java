@@ -86,4 +86,10 @@ public class Helper {
             this.activityStatus = HelperActivityStatus.AVAILABLE;
         }
     }
+
+
+    // 자격 관련 필드
+    private String certificationUrl;   // 자격증 파일 경로 (S3 또는 로컬)
+    private String certificationName;  // 파일 이름
+    private Boolean certificationVerified; // 검증 완료 여부 (관리자 승인 시 true)
 }

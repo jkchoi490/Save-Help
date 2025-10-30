@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -262,5 +263,26 @@ public class HelperController {
 
         List<HelperRecommendationDto> recommended = recommendationService.recommendHelpers(latitude, longitude, role);
         return ResponseEntity.ok(recommended);
+    }
+
+    //--------------------------------
+    // Helper 자격증 및 인증 기능
+    //--------------------------------
+
+    @Operation(summary = "헬퍼 자격증 업로드", description = "헬퍼의 자격증 파일을 업로드하고 검증 상태를 갱신합니다.")
+    @PostMapping("/{id}/certification")
+    public ResponseEntity<String> uploadCertification(
+            @PathVariable Long id,
+            @RequestParam MultipartFile file) {
+
+        helperService.uploadCertification(id, file);
+        return ResponseEntity.ok("자격증 업로드 완료 (검증 대기 중)");
+    }
+
+    @Operation(summary = "헬퍼 자격증 승인", description = "관리자가 헬퍼의 자격증을 검토 후 승인 처리합니다.")
+    @PatchMapping("/{id}/certification/verify")
+    public ResponseEntity<String> verifyCertification(@PathVariable Long id) {
+        helperService.verifyCertification(id);
+        return ResponseEntity.ok("자격증 검증이 완료되었습니다.");
     }
 }
