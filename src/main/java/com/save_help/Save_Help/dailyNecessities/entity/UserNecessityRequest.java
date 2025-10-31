@@ -40,6 +40,6 @@ public class UserNecessityRequest {
     }
 
     public enum RequestStatus {
-        PENDING, APPROVED, REJECTED
+        PENDING, APPROVED, COMPLETED, REJECTED, AUTO_APPLIED
     }
 }

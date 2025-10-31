@@ -30,6 +30,7 @@ public class DailyNecessitiesController {
     private final UserRepository userRepository;
     private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
     private final DailyNecessitiesDeliveryService deliveryService;
+    private final DailyNecessitiesAutoRequestService autoRequestService;
 
     public DailyNecessitiesController(
             DailyNecessitiesService necessitiesService,
@@ -37,7 +38,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService, DailyNecessitiesAutoRequestService autoRequestService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -51,6 +52,7 @@ public class DailyNecessitiesController {
         this.userRepository = userRepository;
         this.historyRepository = historyRepository;
         this.deliveryService = deliveryService;
+        this.autoRequestService = autoRequestService;
     }
 
     // ------------------------------------
@@ -452,6 +454,27 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok("현재 배송 상태는 " + delivery.getStatus() + " 입니다.");
     }
 
+    // 생필품 자동 신청 실행 api
 
+    @Operation(summary = "사용자 요청 기반 자동신청 실행", description = "사용자가 요청한 생필품 이름과 카테고리를 기반으로 자동신청을 실행합니다.")
+    @PostMapping("/auto/apply")
+    public ResponseEntity<String> autoApply(
+            @RequestParam Long userId,
+            @RequestParam String name,
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "1") int quantity
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        autoRequestService.autoRequestIfStockAvailable(
+                user,
+                name,
+                category != null ? NecessityCategory.valueOf(category) : null,
+                quantity
+        );
+
+        return ResponseEntity.ok("자동신청이 완료되었습니다.");
+    }
 
 }
