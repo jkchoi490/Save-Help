@@ -28,6 +28,7 @@ public class HelperController {
     private final HelperReviewService reviewService;
     private final HelperLocationService helperLocationService;
     private final HelperRecommendationService recommendationService;
+    private final HelperAssignmentService helperAssignmentService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -88,6 +89,7 @@ public class HelperController {
     }
 
     // 자동 배정 (내부적으로 Helper 자동 선택 후 배정)
+
     @PostMapping("/auto/{emergencyId}/{helperId}")
     public HelperAssignment autoAssign(
             @PathVariable Long emergencyId,
@@ -104,6 +106,70 @@ public class HelperController {
     ) {
         return helperService.assignHelperManual(emergencyId, helperId);
     }
+
+    /**
+     * ✅ 관리자 직접 배정
+     */
+    @Operation(
+            summary = "관리자 수동 배정",
+            description = "관리자가 특정 Helper를 지정하여 긴급상황에 배정합니다."
+    )
+    @PostMapping("/assign/admin")
+    public ResponseEntity<String> assignByAdmin(
+            @RequestParam Long helperId,
+            @RequestParam Long emergencyId
+    ) {
+        helperAssignmentService.assignByAdmin(helperId, emergencyId);
+        return ResponseEntity.ok("✅ 관리자에 의해 헬퍼가 수동 배정되었습니다.");
+    }
+
+    /**
+     * 사용자 직접 지정
+     */
+    @Operation(
+            summary = "사용자 직접 배정",
+            description = "사용자가 직접 특정 Helper를 요청하여 배치합니다."
+    )
+    @PostMapping("/assign/user")
+    public ResponseEntity<String> assignByUser(
+            @RequestParam Long helperId,
+            @RequestParam Long emergencyId
+    ) {
+        helperAssignmentService.assignByUser(helperId, emergencyId);
+        return ResponseEntity.ok("사용자가 직접 헬퍼를 지정했습니다.");
+    }
+
+    /**
+     * 자동 배치
+     */
+    @Operation(
+            summary = "자동 배치",
+            description = "헬퍼를 자동으로 탐색하여 긴급상황에 배치합니다."
+    )
+    @PostMapping("/assign/auto")
+    public ResponseEntity<String> assignAuto(@RequestParam Long emergencyId) {
+        helperAssignmentService.assignAutomatically(emergencyId);
+        return ResponseEntity.ok("자동으로 헬퍼를 지정했습니다.");
+    }
+
+    /**
+     * 헬퍼 해제
+     */
+    @Operation(
+            summary = "헬퍼 해제",
+            description = "긴급상황이 종료되면 헬퍼를 다시 가용 상태로 전환합니다."
+    )
+    @PatchMapping("/assign/release")
+    public ResponseEntity<String> releaseHelper(@RequestParam Long helperId) {
+        helperAssignmentService.releaseHelper(helperId);
+        return ResponseEntity.ok("헬퍼가 정상적으로 해제되었습니다.");
+    }
+
+
+
+
+
+
 
     //Helper 긴급 연락 / 알림 API
     @Operation(summary = "Helper 긴급 연락", description = "특정 Helper에게 긴급 알림(문자/푸시)을 전송합니다.")

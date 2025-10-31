@@ -26,4 +26,7 @@ public interface HelperRepository extends JpaRepository<Helper, Long> {
     List<Helper> findByCommunityCenter_Id(Long centerId);
 
     Optional<Helper> findFirstByCommunityCenter_IdAndAvailableTrueOrderByIdAsc(Long centerId);
+
+    @Query("SELECT h FROM Helper h WHERE h.available = true AND h.activityStatus = 'AVAILABLE' ORDER BY h.trustScore DESC")
+    Optional<Helper> findTopAvailableHelper();
 }
