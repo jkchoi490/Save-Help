@@ -17,7 +17,6 @@ public class DailyNecessities {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     // 품목명
     @Column(nullable = false, length = 100)
     private String name;

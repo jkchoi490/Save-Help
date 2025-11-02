@@ -452,6 +452,15 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok("현재 배송 상태는 " + delivery.getStatus() + " 입니다.");
     }
 
+    //-------------------------------
+    // 사용자 생필품 배송 상태 변경/조회 기능
+    //----------------------------------
+
+    @Operation(summary = "센터별 운영 요약", description = "센터의 생필품 재고 현황, 요청 대기, 배송 진행 건수를 요약 조회합니다.")
+    @GetMapping("/center/{centerId}/board")
+    public ResponseEntity<DailyNecessitiesCenterBoardDto> getCenterBoard(@PathVariable Long centerId) {
+        return ResponseEntity.ok(statisticsService.getCenterBoard(centerId));
+    }
 
 
 }
