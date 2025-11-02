@@ -28,6 +28,7 @@ public class HelperController {
     private final HelperReviewService reviewService;
     private final HelperLocationService helperLocationService;
     private final HelperRecommendationService recommendationService;
+    private final HelperCacheService helperCacheService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -285,4 +286,16 @@ public class HelperController {
         helperService.verifyCertification(id);
         return ResponseEntity.ok("자격증 검증이 완료되었습니다.");
     }
+
+
+    //--------------------------------
+    // Redis 캐시 기반 근무 가능한 Helper 조회
+    //--------------------------------
+
+    @Operation(summary = "Redis 캐시 기반 근무 가능한 Helper 조회", description = "응급 상황 시 DB 접근 없이 빠르게 근무 가능한 Helper를 캐시로 조회합니다.")
+    @GetMapping("/available/cached")
+    public ResponseEntity<List<HelperCacheDto>> getAvailableHelpersCached() {
+        return ResponseEntity.ok(helperCacheService.getAvailableHelpersCached());
+    }
+
 }

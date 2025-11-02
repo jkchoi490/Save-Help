@@ -30,6 +30,7 @@ public class DailyNecessitiesController {
     private final UserRepository userRepository;
     private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
     private final DailyNecessitiesDeliveryService deliveryService;
+    private final DailyNecessitiesReviewService reviewService;
 
     public DailyNecessitiesController(
             DailyNecessitiesService necessitiesService,
@@ -37,7 +38,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService, DailyNecessitiesReviewService reviewService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -51,6 +52,7 @@ public class DailyNecessitiesController {
         this.userRepository = userRepository;
         this.historyRepository = historyRepository;
         this.deliveryService = deliveryService;
+        this.reviewService = reviewService;
     }
 
     // ------------------------------------
@@ -452,6 +454,25 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok("현재 배송 상태는 " + delivery.getStatus() + " 입니다.");
     }
 
+    //-------------------------------
+    // 생필품 리뷰 등록/조회 기능
+    //----------------------------------
 
+    @Operation(summary = "생필품 리뷰 등록", description = "사용자가 받은 생필품에 대한 리뷰를 작성합니다.")
+    @PostMapping("/reviews")
+    public ResponseEntity<DailyNecessitiesReviewDto> createReview(
+            @RequestParam Long userId,
+            @RequestParam Long itemId,
+            @RequestParam int rating,
+            @RequestParam(required = false) String comment
+    ) {
+        return ResponseEntity.ok(reviewService.createReview(userId, itemId, rating, comment));
+    }
+
+    @Operation(summary = "생필품 리뷰 조회", description = "특정 품목의 리뷰 목록을 조회합니다.")
+    @GetMapping("/reviews/{itemId}")
+    public ResponseEntity<List<DailyNecessitiesReviewDto>> getReviews(@PathVariable Long itemId) {
+        return ResponseEntity.ok(reviewService.getReviewsByItem(itemId));
+    }
 
 }
