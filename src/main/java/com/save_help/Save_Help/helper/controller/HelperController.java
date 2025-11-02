@@ -28,6 +28,7 @@ public class HelperController {
     private final HelperReviewService reviewService;
     private final HelperLocationService helperLocationService;
     private final HelperRecommendationService recommendationService;
+    private final HelperFeedbackService feedbackService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -285,4 +286,41 @@ public class HelperController {
         helperService.verifyCertification(id);
         return ResponseEntity.ok("자격증 검증이 완료되었습니다.");
     }
+
+    //--------------------------------
+    // Helper 피드백 기능
+    //--------------------------------
+
+    @Operation(summary = "Helper 피드백 등록", description = "Helper가 시스템/운영 개선사항에 대한 피드백을 작성합니다.")
+    @PostMapping("/{id}/feedback")
+    public ResponseEntity<HelperFeedbackDto> createFeedback(
+            @PathVariable Long id,
+            @RequestParam String title,
+            @RequestParam String content
+    ) {
+        return ResponseEntity.ok(feedbackService.createFeedback(id, title, content));
+    }
+
+    @Operation(summary = "Helper 피드백 조회", description = "특정 Helper의 피드백 목록을 조회합니다.")
+    @GetMapping("/{id}/feedback")
+    public ResponseEntity<List<HelperFeedbackDto>> getFeedbacksByHelper(@PathVariable Long id) {
+        return ResponseEntity.ok(feedbackService.getFeedbacksByHelper(id));
+    }
+
+    @Operation(summary = "관리자용 전체 피드백 조회", description = "모든 Helper의 피드백 목록을 조회합니다.")
+    @GetMapping("/admin/feedbacks")
+    public ResponseEntity<List<HelperFeedbackDto>> getAllFeedbacks() {
+        return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+    }
+
+    @Operation(summary = "관리자 피드백 처리", description = "관리자가 피드백에 답변을 남기고 상태를 변경합니다.")
+    @PatchMapping("/admin/feedbacks/{feedbackId}")
+    public ResponseEntity<HelperFeedbackDto> respondToFeedback(
+            @PathVariable Long feedbackId,
+            @RequestParam String response,
+            @RequestParam HelperFeedback.FeedbackStatus status
+    ) {
+        return ResponseEntity.ok(feedbackService.respondToFeedback(feedbackId, response, status));
+    }
+
 }

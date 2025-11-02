@@ -26,4 +26,5 @@ public interface HelperRepository extends JpaRepository<Helper, Long> {
     List<Helper> findByCommunityCenter_Id(Long centerId);
 
     Optional<Helper> findFirstByCommunityCenter_IdAndAvailableTrueOrderByIdAsc(Long centerId);
+
 }
