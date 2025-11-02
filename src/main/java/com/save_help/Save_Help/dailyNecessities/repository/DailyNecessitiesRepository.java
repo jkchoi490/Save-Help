@@ -3,6 +3,8 @@ package com.save_help.Save_Help.dailyNecessities.repository;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.NecessityCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -36,5 +38,12 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
 
 
     // providedBy(CommunityCenter)의 id로 검색
+
+    //통계 쿼리
+    @Query("SELECT SUM(d.quantity) FROM DailyNecessities d WHERE d.center.id = :centerId")
+    Long findTotalStockByCenter(@Param("centerId") Long centerId);
+
+    @Query("SELECT COUNT(d) FROM DailyNecessities d WHERE d.center.id = :centerId AND d.quantity < :threshold")
+    Long findLowStockCountByCenter(@Param("centerId") Long centerId, @Param("threshold") int threshold);
 
 }
