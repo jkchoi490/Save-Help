@@ -34,6 +34,9 @@ public class DailyNecessities {
     @Column(nullable = false)
     private Integer stock;
 
+    //생필품 평점
+    private Double averageRating;
+
     // 유효 기간
     private LocalDate expirationDate;
 

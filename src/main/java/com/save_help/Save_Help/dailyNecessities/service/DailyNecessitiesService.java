@@ -116,16 +116,8 @@ public class DailyNecessitiesService {
         return necessitiesRepository.findByApprovalStatus(DailyNecessities.ApprovalStatus.APPROVED);
     }
 
-    // 재고 조회 (센터별)
-    /*
-    public List<DailyNecessities> getStockByCenter(Long centerId) {
+    //재고 조회 (센터별)
 
-        return necessitiesRepository.findByProvidedBy_Id(centerId)
-                .stream()
-                .filter(item -> item.getApprovalStatus() == DailyNecessities.ApprovalStatus.APPROVED)
-                .toList();
-
-    } */
     // 재고 조회 (전체)
     public List<DailyNecessities> getAllStock() {
         return necessitiesRepository.findByApprovalStatus(DailyNecessities.ApprovalStatus.APPROVED);

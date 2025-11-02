@@ -23,7 +23,7 @@ public class DailyNecessitiesReview {
     private DailyNecessities item; // 리뷰 대상 품목
 
     @Column(nullable = false)
-    private int rating; // 1~5 점수
+    private int rating; // 점수
 
     private String comment;
 

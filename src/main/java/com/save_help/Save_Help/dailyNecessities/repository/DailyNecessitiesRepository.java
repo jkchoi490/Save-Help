@@ -35,6 +35,5 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
 
 
 
-    // providedBy(CommunityCenter)의 id로 검색
 
 }
