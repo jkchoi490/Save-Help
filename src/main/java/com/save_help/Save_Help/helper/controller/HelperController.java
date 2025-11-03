@@ -29,6 +29,7 @@ public class HelperController {
     private final HelperLocationService helperLocationService;
     private final HelperRecommendationService recommendationService;
     private final HelperFeedbackService feedbackService;
+    private final HelperNotificationHistoryService helperNotificationHistoryService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -322,5 +323,12 @@ public class HelperController {
     ) {
         return ResponseEntity.ok(feedbackService.respondToFeedback(feedbackId, response, status));
     }
+
+    @Operation(summary = "Helper 알림 이력 조회", description = "특정 Helper가 받은 모든 알림 이력을 최신순으로 조회합니다.")
+    @GetMapping("/{id}/notifications/history")
+    public ResponseEntity<List<HelperNotificationDto>> getNotificationHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(helperNotificationHistoryService.getNotificationHistory(id));
+    }
+
 
 }
