@@ -87,8 +87,6 @@ public class Helper {
         }
     }
 
-
-
     // 자격 관련 필드
     private String certificationUrl;   // 자격증 파일 경로 (S3 또는 로컬)
     private String certificationName;  // 파일 이름

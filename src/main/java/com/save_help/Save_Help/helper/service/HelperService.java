@@ -143,7 +143,6 @@ public class HelperService {
                 .collect(Collectors.toList());
     }
 
-
     // Helper 자동 배정
     @Transactional
     public HelperAssignment assignHelperAuto(Long emergencyId, Long helperId) {
