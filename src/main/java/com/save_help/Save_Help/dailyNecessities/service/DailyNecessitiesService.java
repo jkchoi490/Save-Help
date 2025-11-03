@@ -22,12 +22,14 @@ public class DailyNecessitiesService {
     private final DailyNecessitiesRepository necessitiesRepository;
     private final CommunityCenterRepository centerRepository;
     private final UserNecessitiesRepository userNecessitiesRepository;
+    private final DailyNecessitiesAlertService alertService;
 
     public DailyNecessitiesService(DailyNecessitiesRepository necessitiesRepository,
-                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository) {
+                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService) {
         this.necessitiesRepository = necessitiesRepository;
         this.centerRepository = centerRepository;
         this.userNecessitiesRepository = userNecessitiesRepository;
+        this.alertService = alertService;
     }
 
     // 생성
@@ -213,7 +215,7 @@ public class DailyNecessitiesService {
             return popularItems.stream().map(DailyNecessitiesDto::fromEntity).toList();
         }
 
-        // 2️. 사용자가 자주 신청한 카테고리 상위 1~2개 추출
+        // 2️. 사용자가 자주 신청한 카테고리 상위 7개 추출
         Map<NecessityCategory, Long> categoryCount = recentRequests.stream()
                 .collect(Collectors.groupingBy(
                         req -> req.getItem().getCategory(),
@@ -222,19 +224,23 @@ public class DailyNecessitiesService {
 
         List<NecessityCategory> topCategories = categoryCount.entrySet().stream()
                 .sorted(Map.Entry.<NecessityCategory, Long>comparingByValue().reversed())
-                .limit(2)
+                .limit(7)
                 .map(Map.Entry::getKey)
                 .toList();
 
         // 3. 상위 카테고리 중 재고가 충분한 품목 추천
         List<DailyNecessities> items = necessitiesRepository.findByCategoryInAndStockGreaterThan(topCategories, 0);
 
-        // 4️. 최대 10개만 반환
+        // 4️. 최대 7개만 반환
         return items.stream()
-                .limit(10)
+                .limit(7)
                 .map(DailyNecessitiesDto::fromEntity)
                 .toList();
     }
 
+
+    public void alertLowStockItems() {
+        alertService.sendLowStockAlerts();
+    }
 
 }

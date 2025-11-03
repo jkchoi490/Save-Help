@@ -46,4 +46,5 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     @Query("SELECT COUNT(d) FROM DailyNecessities d WHERE d.center.id = :centerId AND d.quantity < :threshold")
     Long findLowStockCountByCenter(@Param("centerId") Long centerId, @Param("threshold") int threshold);
 
+    List<DailyNecessities> findByStockLessThan(int threshold);
 }
