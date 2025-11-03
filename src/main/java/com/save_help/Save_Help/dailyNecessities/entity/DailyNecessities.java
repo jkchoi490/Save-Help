@@ -64,6 +64,7 @@ public class DailyNecessities {
         this.active = true;
         this.approvalStatus = ApprovalStatus.PENDING;
     }
+
     public void deactivate() { this.active = false; }
 
     public void approve() {

@@ -462,5 +462,13 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(statisticsService.getCenterBoard(centerId));
     }
 
-
+    //----------------------------------------
+    // 긴급 재고 알림 기능
+    //----------------------------------------
+    @Operation(summary = "긴급 재고 알림 테스트", description = "재고 부족 시 관리자에게 알림을 발송합니다.")
+    @PostMapping("/alerts/low-stock")
+    public ResponseEntity<String> triggerLowStockAlerts() {
+        necessitiesService.alertLowStockItems();
+        return ResponseEntity.ok("긴급 재고 알림이 발송되었습니다.");
+    }
 }
