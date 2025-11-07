@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.dailyNecessities.entity;
 
+import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,4 +21,9 @@ public class DailyNecessitiesDelivery {
 
     @Enumerated(EnumType.STRING)
     private DailyNecessitiesDeliveryStatus status; // 배송 상태
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "center_id")
+    private CommunityCenter center;
+
 }
