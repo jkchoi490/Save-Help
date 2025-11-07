@@ -4,15 +4,12 @@ import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
 import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
-import com.save_help.Save_Help.helper.dto.HelperLocationUpdateRequestDto;
-import com.save_help.Save_Help.helper.dto.HelperStatusUpdateRequestDto;
+import com.save_help.Save_Help.helper.dto.*;
 import com.save_help.Save_Help.helper.entity.*;
 import com.save_help.Save_Help.helper.event.HelperStatusChangedEvent;
 import com.save_help.Save_Help.helper.repository.HelperAssignmentRepository;
 import com.save_help.Save_Help.helper.repository.HelperRepository;
 import com.save_help.Save_Help.hospital.entity.Hospital;
-import com.save_help.Save_Help.helper.dto.HelperRequestDto;
-import com.save_help.Save_Help.helper.dto.HelperResponseDto;
 import com.save_help.Save_Help.hospital.repository.HospitalRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -261,6 +258,22 @@ public class HelperService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Helper ID입니다."));
         helper.setCertificationVerified(true);
         helperRepository.save(helper);
+    }
+
+    // 실시간 Helper 상태 조회
+    public List<HelperLiveStatusDto> getActiveHelpersLiveStatus() {
+        List<HelperActivityStatus> activeStatuses = List.of(
+                HelperActivityStatus.ON_DUTY,
+                HelperActivityStatus.MOVING,
+                HelperActivityStatus.RESPONDING
+
+        );
+
+        List<Helper> activeHelpers = helperRepository.findByActivityStatusIn(activeStatuses);
+
+        return activeHelpers.stream()
+                .map(HelperLiveStatusDto::fromEntity)
+                .toList();
     }
 
 }

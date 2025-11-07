@@ -47,10 +47,10 @@ public class Helper {
     @JoinColumn(name = "hospital_id")
     private Hospital hospital;
 
-    @Column(precision = 10, scale = 7)
+    @Column(precision = 10)
     private Double latitude;
 
-    @Column(precision = 10, scale = 7)
+    @Column(precision = 10)
     private Double longitude;
 
     private java.time.LocalDateTime lastLocationUpdateTime;
@@ -91,4 +91,5 @@ public class Helper {
     private String certificationUrl;   // 자격증 파일 경로 (S3 또는 로컬)
     private String certificationName;  // 파일 이름
     private Boolean certificationVerified; // 검증 완료 여부 (관리자 승인 시 true)
+    private String currentTask; // 현재 수행 중인 작업 설명
 }

@@ -48,6 +48,8 @@ public class DailyNecessities {
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
+    @Column(nullable = false)
+    private int requestCount;
 
     // 기본 생성자
     protected DailyNecessities() {}
