@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,33 +16,20 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     List<DailyNecessities> findByCategory(NecessityCategory category);
     List<DailyNecessities> findByNameContainingIgnoreCase(String name);
     List<DailyNecessities> findByActiveTrue();
-
-
     List<DailyNecessities> findByApprovalStatus(DailyNecessities.ApprovalStatus approvalStatus);
-
     List<DailyNecessities> findByStockLessThanAndApprovalStatus(int threshold, DailyNecessities.ApprovalStatus approvalStatus);
 
     List<DailyNecessities> findByProvidedBy_Id(Long centerId);
-
     List<DailyNecessities> findByProvidedBy_IdAndApprovalStatus(Long centerId, DailyNecessities.ApprovalStatus status);
-
     Optional<DailyNecessities> findByNameAndProvidedBy_Id(String name, Long id);
-
     List<DailyNecessities> findByCategoryInAndStockGreaterThan(List<NecessityCategory> topCategories, int stock);
-
     List<DailyNecessities> findTop10ByOrderByRequestCountDesc();
-    //List<DailyNecessities> findByCategoryAndApprovalStatus(DailyNecessities.NecessityCategory category, DailyNecessities.ApprovalStatus status);
 
 
-
-
-    // providedBy(CommunityCenter)의 id로 검색
-
-    //통계 쿼리
-    @Query("SELECT SUM(d.quantity) FROM DailyNecessities d WHERE d.center.id = :centerId")
+    @Query("SELECT SUM(d.stock) FROM DailyNecessities d WHERE d.providedBy.id = :centerId")
     Long findTotalStockByCenter(@Param("centerId") Long centerId);
 
-    @Query("SELECT COUNT(d) FROM DailyNecessities d WHERE d.center.id = :centerId AND d.quantity < :threshold")
+    @Query("SELECT COUNT(d) FROM DailyNecessities d WHERE d.providedBy.id = :centerId AND d.stock < :threshold")
     Long findLowStockCountByCenter(@Param("centerId") Long centerId, @Param("threshold") int threshold);
 
     List<DailyNecessities> findByStockLessThan(int threshold);

@@ -5,6 +5,8 @@ import com.save_help.Save_Help.communityCenter.repository.CommunityCenterReposit
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesCenterBoardDto;
 import com.save_help.Save_Help.dailyNecessities.dto.StockStatisticsDto;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesDeliveryStatus;
+import com.save_help.Save_Help.dailyNecessities.entity.UserNecessityRequest;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesDeliveryRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
 
@@ -61,7 +63,6 @@ public class DailyNecessitiesStatisticsService {
                 })
                 .toList();
     }
-
      */
 
     public DailyNecessitiesCenterBoardDto getCenterBoard(Long centerId) {
@@ -69,11 +70,11 @@ public class DailyNecessitiesStatisticsService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 센터를 찾을 수 없습니다."));
 
         Long totalStock = necessitiesRepository.findTotalStockByCenter(centerId);
-        Long lowStockCount = necessitiesRepository.findLowStockCountByCenter(centerId, 10);
+        Long lowStockCount = necessitiesRepository.findLowStockCountByCenter(centerId, 7);
 
-        Long pendingRequests = requestRepository.countPendingRequestsByCenter(centerId);
-        Long inProgressDeliveries = deliveryRepository.countInProgressDeliveries(centerId);
-        Long completedDeliveries = deliveryRepository.countCompletedDeliveries(centerId);
+        Long pendingRequests = requestRepository.countByItem_ProvidedBy_IdAndStatus(centerId, UserNecessityRequest.RequestStatus.PENDING);
+        Long inProgressDeliveries = deliveryRepository.countByCenter_IdAndStatus(centerId, DailyNecessitiesDeliveryStatus.IN_TRANSIT);
+        Long completedDeliveries = deliveryRepository.countByCenter_IdAndStatus(centerId, DailyNecessitiesDeliveryStatus.DELIVERED);
 
         return DailyNecessitiesCenterBoardDto.builder()
                 .centerId(center.getId())

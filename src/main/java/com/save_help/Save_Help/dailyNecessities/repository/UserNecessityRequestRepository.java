@@ -14,8 +14,8 @@ public interface UserNecessityRequestRepository extends JpaRepository<UserNecess
 
     List<UserNecessityRequest> findTop10ByUserIdOrderByCreatedAtDesc(Long userId);
 
-    @Query("SELECT COUNT(r) FROM UserNecessityRequest r WHERE r.item.center.id = :centerId AND r.status = 'PENDING'")
-    Long countPendingRequestsByCenter(@Param("centerId") Long centerId);
-
+    //@Query("SELECT COUNT(r) FROM UserNecessityRequest r WHERE r.item.center.id = :centerId AND r.status = 'PENDING'")
+    //Long countPendingRequestsByCenter(@Param("centerId") Long centerId);
+    Long countByItem_ProvidedBy_IdAndStatus(Long centerId, RequestStatus status);
 
 }

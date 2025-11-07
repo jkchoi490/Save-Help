@@ -31,6 +31,8 @@ public class UserNecessityRequest {
 
     private LocalDateTime requestedAt = LocalDateTime.now();
 
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     public UserNecessityRequest(DailyNecessities item, User user, Integer quantity) {
         this.item = item;
         this.user = user;
