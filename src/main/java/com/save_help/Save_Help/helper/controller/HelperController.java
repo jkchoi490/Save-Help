@@ -330,5 +330,11 @@ public class HelperController {
         return ResponseEntity.ok(helperNotificationHistoryService.getNotificationHistory(id));
     }
 
+    @Operation(summary = "실시간 헬퍼 상태 조회", description = "현재 활동 중인 모든 헬퍼의 상태와 위치를 조회합니다.")
+    @GetMapping("/active-status")
+    public ResponseEntity<List<HelperLiveStatusDto>> getLiveStatus() {
+        return ResponseEntity.ok(helperService.getActiveHelpersLiveStatus());
+    }
+
 
 }
