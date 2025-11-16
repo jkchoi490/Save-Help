@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserNecessityRequestRepository extends JpaRepository<UserNecessityRequest, Long> {
@@ -17,5 +18,7 @@ public interface UserNecessityRequestRepository extends JpaRepository<UserNecess
     //@Query("SELECT COUNT(r) FROM UserNecessityRequest r WHERE r.item.center.id = :centerId AND r.status = 'PENDING'")
     //Long countPendingRequestsByCenter(@Param("centerId") Long centerId);
     Long countByItem_ProvidedBy_IdAndStatus(Long centerId, RequestStatus status);
+
+    List<UserNecessityRequest> findByUser_IdAndCreatedAtAfter(Long userId, LocalDateTime date);
 
 }
