@@ -30,6 +30,7 @@ public class HelperController {
     private final HelperRecommendationService recommendationService;
     private final HelperFeedbackService feedbackService;
     private final HelperNotificationHistoryService helperNotificationHistoryService;
+    private final HelperPostService helperPostService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -336,5 +337,40 @@ public class HelperController {
         return ResponseEntity.ok(helperService.getActiveHelpersLiveStatus());
     }
 
+    //---------------------------
+    // Helper 피드백 게시판
+    //---------------------------
+    @Operation(summary = "Helper 게시글 등록", description = "Helper가 경험을 공유하는 게시글을 등록합니다.")
+    @PostMapping("/community/posts")
+    public ResponseEntity<HelperPostResponseDto> createHelperPost(@RequestBody HelperPostRequestDto dto) {
+        return ResponseEntity.ok(helperPostService.createPost(dto));
+    }
+
+    @Operation(summary = "Helper 게시글 전체 조회", description = "Helper 커뮤니티의 모든 게시글을 조회합니다.")
+    @GetMapping("/community/posts")
+    public ResponseEntity<List<HelperPostResponseDto>> getAllHelperPosts() {
+        return ResponseEntity.ok(helperPostService.getAllPosts());
+    }
+
+    @Operation(summary = "Helper 게시글 단건 조회", description = "특정 Helper 게시글과 댓글을 조회합니다.")
+    @GetMapping("/community/posts/{postId}")
+    public ResponseEntity<HelperPostResponseDto> getHelperPost(@PathVariable Long postId) {
+        return ResponseEntity.ok(helperPostService.getPost(postId));
+    }
+
+    @Operation(summary = "Helper 게시글 삭제", description = "Helper가 자신이 작성한 게시글을 삭제합니다.")
+    @DeleteMapping("/community/posts/{postId}")
+    public ResponseEntity<Void> deleteHelperPost(@PathVariable Long postId) {
+        helperPostService.deletePost(postId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Helper 게시글 댓글 작성", description = "게시글에 다른 Helper가 피드백 댓글을 작성합니다.")
+    @PostMapping("/community/posts/{postId}/comments")
+    public ResponseEntity<HelperCommentResponseDto> addHelperComment(
+            @PathVariable Long postId,
+            @RequestBody HelperCommentRequestDto dto) {
+        return ResponseEntity.ok(helperPostService.addComment(postId, dto));
+    }
 
 }
