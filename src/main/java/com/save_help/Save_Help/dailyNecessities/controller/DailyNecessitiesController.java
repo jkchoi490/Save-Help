@@ -210,6 +210,7 @@ public class DailyNecessitiesController {
     // ------------------------------------
     // 관리자용 승인 / 거절
     // ------------------------------------
+
     @Operation(summary = "생필품 품목 승인이 pending된 품목들을 조회", description = "생필품 품목 승인이 pending된 품목들을 조회합니다")
     @GetMapping("/admin/pending-items")
     public ResponseEntity<List<DailyNecessities>> getPendingItems() {
