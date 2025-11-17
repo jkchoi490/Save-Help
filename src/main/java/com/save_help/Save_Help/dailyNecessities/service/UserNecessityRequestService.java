@@ -20,13 +20,15 @@ public class UserNecessityRequestService {
     private final DailyNecessitiesRepository necessitiesRepository;
     private final UserNecessityRequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final DailyNecessitiesNotificationService notificationService;
 
     public UserNecessityRequestService(DailyNecessitiesRepository necessitiesRepository,
                                        UserNecessityRequestRepository requestRepository,
-                                       UserRepository userRepository) {
+                                       UserRepository userRepository, DailyNecessitiesNotificationService notificationService) {
         this.necessitiesRepository = necessitiesRepository;
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     // 사용자 자동 신청 생성
@@ -53,6 +55,15 @@ public class UserNecessityRequestService {
                 .orElseThrow(() -> new EntityNotFoundException("신청 내역을 찾을 수 없습니다."));
         request.setStatus(status);
         requestRepository.save(request);
+
+        // 사용자에게 알림 전송
+        User user = userRepository.findById(request.getUser().getId())
+                .orElseThrow();
+
+        DailyNecessities item = necessitiesRepository.findById(request.getItem().getId())
+                .orElseThrow();
+
+        notificationService.sendRequestStatusNotification(user, item, status);
     }
 
     // (선택) 재고가 충분하면 자동 승인
@@ -65,4 +76,5 @@ public class UserNecessityRequestService {
             requestRepository.save(request);
         }
     }
+
 }

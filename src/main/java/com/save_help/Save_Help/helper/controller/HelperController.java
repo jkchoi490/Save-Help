@@ -373,4 +373,13 @@ public class HelperController {
         return ResponseEntity.ok(helperPostService.addComment(postId, dto));
     }
 
+    @Operation(summary = "관리자 Helper 공지 발송", description = "운영팀이 특정 역할 또는 센터에게 공지를 보냅니다.")
+    @PostMapping("/admin/notices")
+    public ResponseEntity<String> sendAdminNotice(
+            @RequestBody AdminNoticeRequestDto dto
+    ) {
+        notificationService.sendAdminNotice(dto);
+        return ResponseEntity.ok("공지가 성공적으로 발송되었습니다.");
+    }
+
 }

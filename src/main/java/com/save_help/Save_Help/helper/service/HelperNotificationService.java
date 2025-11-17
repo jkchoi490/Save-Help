@@ -1,15 +1,23 @@
 package com.save_help.Save_Help.helper.service;
 
+import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
+import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
 import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
+import com.save_help.Save_Help.helper.dto.AdminNoticeRequestDto;
 import com.save_help.Save_Help.helper.dto.NotificationRequestDto;
 import com.save_help.Save_Help.helper.entity.Helper;
+import com.save_help.Save_Help.helper.entity.HelperNotification;
+import com.save_help.Save_Help.helper.entity.NotificationType;
+import com.save_help.Save_Help.helper.repository.HelperNotificationRepository;
 import com.save_help.Save_Help.helper.repository.HelperRepository;
 import com.save_help.Save_Help.helper.util.NotificationSender;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +27,9 @@ public class HelperNotificationService {
     private final HelperRepository helperRepository;
     private final EmergencyRepository emergencyRepository;
     private final NotificationSender notificationSender;
+
+    private final HelperNotificationRepository notificationRepository;
+    private final CommunityCenterRepository centerRepository;
 
     //
     // private final TwilioService twilioService;
@@ -59,5 +70,39 @@ public class HelperNotificationService {
 
     public void notifyHelper(Long id, String s) {
 
+    }
+
+
+    public void sendAdminNotice(AdminNoticeRequestDto dto) {
+
+        List<Helper> targets;
+
+        // 1) 전체 헬퍼에게 공지
+        if (dto.isSendToAll()) {
+            targets = helperRepository.findAll();
+        }
+        // 2) 역할 기반 공지
+        else if (dto.getRole() != null) {
+            targets = helperRepository.findByRole(dto.getRole());
+        }
+        // 3) 센터 기반 공지
+        else if (dto.getCenterId() != null) {
+            CommunityCenter center = centerRepository.findById(dto.getCenterId())
+                    .orElseThrow(() -> new IllegalArgumentException("Center not found"));
+
+            targets = helperRepository.findByCommunityCenter(center);
+        }
+        else {
+            throw new IllegalArgumentException("공지 발송 대상이 설정되지 않았습니다.");
+        }
+
+        // 4) 일괄 공지 생성
+        for (Helper helper : targets) {
+            HelperNotification notice = new HelperNotification();
+            notice.setHelper(helper);
+            notice.setType(NotificationType.ADMIN_NOTICE);
+            notice.setMessage("[" + dto.getTitle() + "] " + dto.getMessage());
+            notificationRepository.save(notice);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.helper.repository;
 
+import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.helper.entity.HelperActivityStatus;
 import com.save_help.Save_Help.helper.entity.HelperRole;
@@ -30,4 +31,7 @@ public interface HelperRepository extends JpaRepository<Helper, Long> {
 
     // 현재 근무 중 또는 활동 중인 Helper들 조회
     List<Helper> findByActivityStatusIn(List<HelperActivityStatus> statuses);
+
+
+    List<Helper> findByCommunityCenter(CommunityCenter center);
 }

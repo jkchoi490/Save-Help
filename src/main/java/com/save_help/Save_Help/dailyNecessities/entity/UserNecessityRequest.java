@@ -47,7 +47,6 @@ public class UserNecessityRequest {
         this.requestedAt = LocalDateTime.now();
     }
 
-
     public enum RequestStatus {
         PENDING, APPROVED, REJECTED
     }
