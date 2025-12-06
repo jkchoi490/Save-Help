@@ -6,4 +6,5 @@ public enum CounselingStatus {
     IN_PROGRESS, // 상담 진행 중
     COMPLETED,   // 상담 완료
     CANCELLED    // 취소
+
 }
