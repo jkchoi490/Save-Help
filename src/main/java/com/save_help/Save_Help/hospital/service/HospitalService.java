@@ -26,6 +26,7 @@ public class HospitalService {
     private final ChannelTopic hospitalTopic;
     private static final String BED_KEY_PREFIX = "hospital:";
 
+
     public HospitalResponseDto createHospital(HospitalRequestDto dto) {
         Hospital hospital = new Hospital();
         hospital.setName(dto.getName());
@@ -174,8 +175,6 @@ public class HospitalService {
 
         if (updated != null && updated >= 0) {
             publishBedUpdate(hospitalId, updated.intValue());
-
-            // 병상이 줄어들었으니 DB도 동기화 (optional)
             hospitalRepository.findById(hospitalId)
                     .ifPresent(h -> h.setBedCount(updated.intValue()));
         } else {
@@ -186,7 +185,7 @@ public class HospitalService {
 
     public void increaseBedCount(Long hospitalId) {
         Long updated = redisTemplate.opsForValue().increment(buildKey(hospitalId));
-        publishBedUpdate(hospitalId, updated != null ? updated.intValue() : 0);
+        publishBedUpdate(hospitalId, updated.intValue());
     }
 
     private void publishBedUpdate(Long hospitalId, int bedCount) {
@@ -197,7 +196,6 @@ public class HospitalService {
     private String buildKey(Long hospitalId) {
         return BED_KEY_PREFIX + hospitalId + ":beds";
     }
-
 
 
 

@@ -14,4 +14,5 @@ public class HospitalRequestDto {
     private Double longitude;
     private boolean active;
     private int bedCount;
+
 }
