@@ -56,6 +56,7 @@ public class Hospital {
         }
     }
 
+
     public void increaseBedCount() {
         bedCount++;
     }

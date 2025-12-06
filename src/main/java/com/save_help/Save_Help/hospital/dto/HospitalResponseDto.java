@@ -18,4 +18,5 @@ public class HospitalResponseDto {
     private boolean active;
     private int bedCount;
     private int remainingBeds; // 남은 병상 수
+
 }
