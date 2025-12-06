@@ -44,4 +44,5 @@ public class Counseling {
     // 상담 유형 (전화, 화상, 대면 등)
     @Enumerated(EnumType.STRING)
     private CounselingType type;
+
 }
