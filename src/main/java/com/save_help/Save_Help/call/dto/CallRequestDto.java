@@ -8,4 +8,5 @@ import lombok.Setter;
 public class CallRequestDto {
     private Long callerId; // 발신자
     private Long calleeId; // 수신자
+
 }
