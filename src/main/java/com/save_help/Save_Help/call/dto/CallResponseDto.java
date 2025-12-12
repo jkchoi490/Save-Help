@@ -17,4 +17,5 @@ public class CallResponseDto {
     private CallStatus status;
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
+
 }
