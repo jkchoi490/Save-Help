@@ -1,5 +1,7 @@
 package com.save_help.Save_Help.counseling.controller;
 
+import com.save_help.Save_Help.counseling.dto.CounselingNoteResponse;
+import com.save_help.Save_Help.counseling.dto.CounselingNoteUpsertRequest;
 import com.save_help.Save_Help.counseling.dto.CounselingRequestDto;
 import com.save_help.Save_Help.counseling.dto.CounselingResponseDto;
 import com.save_help.Save_Help.counseling.service.CounselingService;
@@ -55,4 +57,22 @@ public class CounselingController {
         counselingService.deleteCounseling(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @Operation(summary = "상담 SOAP 노트 조회")
+    @GetMapping
+    public ResponseEntity<CounselingNoteResponse> get(@PathVariable Long counselingId) {
+        return ResponseEntity.ok(counselingService.get(counselingId));
+    }
+
+    @Operation(summary = "상담 SOAP 노트 생성/수정(Upsert)")
+    @PutMapping
+    public ResponseEntity<CounselingNoteResponse> upsert(
+            @PathVariable Long counselingId,
+            @RequestParam Long authorId,
+            @RequestBody CounselingNoteUpsertRequest req
+    ) {
+        return ResponseEntity.ok(counselingService.upsert(counselingId, authorId, req));
+    }
+
 }

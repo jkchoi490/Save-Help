@@ -1,8 +1,11 @@
 package com.save_help.Save_Help.counseling.service;
 
+import com.save_help.Save_Help.counseling.dto.CounselingNoteResponse;
 import com.save_help.Save_Help.counseling.dto.CounselingRequestDto;
 import com.save_help.Save_Help.counseling.dto.CounselingResponseDto;
 import com.save_help.Save_Help.counseling.entity.Counseling;
+import com.save_help.Save_Help.counseling.entity.CounselingNote;
+import com.save_help.Save_Help.counseling.repository.CounselingNoteRepository;
 import com.save_help.Save_Help.counseling.repository.CounselingRepository;
 import com.save_help.Save_Help.helper.entity.Helper;
 
@@ -25,6 +28,7 @@ public class CounselingService {
     private final CounselingRepository counselingRepository;
     private final UserRepository userRepository;
     private final HelperRepository helperRepository;
+    private final CounselingNoteRepository noteRepository;
 
     // 상담 등록
     public CounselingResponseDto createCounseling(CounselingRequestDto dto) {
@@ -93,4 +97,62 @@ public class CounselingService {
                 .type(counseling.getType())
                 .build();
     }
+
+
+
+    @Transactional
+    public CounselingNoteResponse upsert(Long counselingId, Long authorId, CounselingNoteUpsertRequest req) {
+        Counseling counseling = counselingRepository.findById(counselingId)
+                .orElseThrow(() -> new EntityNotFoundException("Counseling not found: " + counselingId));
+
+        Helper author = helperRepository.findById(authorId)
+                .orElseThrow(() -> new EntityNotFoundException("Helper not found: " + authorId));
+
+        CounselingNote note = noteRepository.findByCounselingId(counselingId)
+                .orElseGet(() -> CounselingNote.builder()
+                        .counseling(counseling)
+                        .author(author)
+                        .isFinalized(false)
+                        .build());
+
+        // 확정된 노트는 덮어쓰기 금지(원하면 리비전으로 확장)
+        if (Boolean.TRUE.equals(note.getIsFinalized())) {
+            throw new IllegalStateException("Note already finalized.");
+        }
+
+        note.setSubjective(req.getSubjective());
+        note.setObjective(req.getObjective());
+        note.setAssessment(req.getAssessment());
+        note.setPlan(req.getPlan());
+
+        if (Boolean.TRUE.equals(req.getFinalize())) {
+            note.setIsFinalized(true);
+        }
+
+        CounselingNote saved = noteRepository.save(note);
+        return toResponse(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public CounselingNoteResponse get(Long counselingId) {
+        CounselingNote note = noteRepository.findByCounselingId(counselingId)
+                .orElseThrow(() -> new EntityNotFoundException("Note not found for counseling: " + counselingId));
+        return toResponse(note);
+    }
+
+    private CounselingNoteResponse toResponse(CounselingNote n) {
+        return CounselingNoteResponse.builder()
+                .id(n.getId())
+                .counselingId(n.getCounseling().getId())
+                .subjective(n.getSubjective())
+                .objective(n.getObjective())
+                .assessment(n.getAssessment())
+                .plan(n.getPlan())
+                .authorId(n.getAuthor() != null ? n.getAuthor().getId() : null)
+                .finalized(n.getIsFinalized())
+                .createdAt(n.getCreatedAt())
+                .updatedAt(n.getUpdatedAt())
+                .build();
+    }
+}
 }
