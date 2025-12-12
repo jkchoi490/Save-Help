@@ -3,13 +3,18 @@ package com.save_help.Save_Help.emergency.service;
 
 import com.save_help.Save_Help.emergency.dto.EmergencyRequestDto;
 import com.save_help.Save_Help.emergency.dto.EmergencyResponseDto;
-import com.save_help.Save_Help.emergency.entity.Emergency;
-import com.save_help.Save_Help.emergency.entity.EmergencyStatus;
+import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateRequestDto;
+import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateResponseDto;
+import com.save_help.Save_Help.emergency.entity.*;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
+import com.save_help.Save_Help.emergency.repository.EmergencyVoiceNoteRepository;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +25,7 @@ import java.util.stream.Collectors;
 public class EmergencyService {
 
     private final EmergencyRepository emergencyRepository;
+    private final EmergencyVoiceNoteRepository voiceNoteRepository;
     private final UserRepository userRepository;
 
     // 긴급 요청 생성
@@ -81,4 +87,65 @@ public class EmergencyService {
                 .resolvedAt(e.getResolvedAt())
                 .build();
     }
+
+
+    @Transactional
+    public EmergencyVoiceCreateResponseDto createEmergencyByVoice(EmergencyVoiceCreateRequestDto req) {
+
+        // 1) transcript 검증 (필수)
+        String transcript = normalize(req.getTranscript());
+        if (!StringUtils.hasText(transcript)) {
+            throw new IllegalArgumentException("transcript is required.");
+        }
+        if (transcript.length() > 2000) {
+            throw new IllegalArgumentException("transcript is too long. max=2000");
+        }
+
+        // 2) requester 검증
+        if (req.getRequesterId() == null) {
+            throw new IllegalArgumentException("requesterId is required (replace with auth later).");
+        }
+        User requester = userRepository.findById(req.getRequesterId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + req.getRequesterId()));
+
+        // 3) Emergency 생성
+        Emergency emergency = new Emergency();
+        emergency.setRequester(requester);
+        emergency.setTitle(StringUtils.hasText(req.getTitle()) ? req.getTitle().trim() : "음성 긴급 요청");
+        emergency.setDescription(transcript);
+        emergency.setLatitude(req.getLatitude());
+        emergency.setLongitude(req.getLongitude());
+        emergency.setLocation(req.getLocation());
+        emergency.setStatus(EmergencyStatus.REQUESTED); // 너 enum에 맞게 조정
+        emergency.setRequestedAt(LocalDateTime.now());
+        emergency.setResolved(false);
+
+        // severity: 요청에 있으면 사용, 없으면 기본값 or 텍스트 기반 추론
+        EmergencySeverity severity = req.getSeverity() != null ? req.getSeverity() : EmergencySeverity.MEDIUM;
+        emergency.setSeverity(severity);
+
+        emergencyRepository.save(emergency);
+
+        // 4) VoiceNote 저장
+        EmergencyVoiceNote note = new EmergencyVoiceNote();
+        note.setEmergency(emergency);
+        note.setTranscript(transcript);
+        note.setSource(VoiceInputSource.CLIENT_STT);
+        voiceNoteRepository.save(note);
+
+        return EmergencyVoiceCreateResponseDto.builder()
+                .emergencyId(emergency.getId())
+                .voiceNoteId(note.getId())
+                .status(emergency.getStatus())
+                .severity(emergency.getSeverity())
+                .description(emergency.getDescription())
+                .requestedAt(emergency.getRequestedAt())
+                .build();
+    }
+
+    private String normalize(String s) {
+        if (s == null) return null;
+        return s.trim().replaceAll("\\s+", " ");
+    }
+}
 }

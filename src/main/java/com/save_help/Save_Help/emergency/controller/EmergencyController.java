@@ -2,6 +2,8 @@ package com.save_help.Save_Help.emergency.controller;
 
 import com.save_help.Save_Help.emergency.dto.EmergencyRequestDto;
 import com.save_help.Save_Help.emergency.dto.EmergencyResponseDto;
+import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateRequestDto;
+import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateResponseDto;
 import com.save_help.Save_Help.emergency.service.EmergencyService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -50,5 +52,14 @@ public class EmergencyController {
     @PutMapping("/{id}/resolve")
     public ResponseEntity<EmergencyResponseDto> resolveEmergency(@PathVariable Long id) {
         return ResponseEntity.ok(emergencyService.resolveEmergency(id));
+    }
+
+    @Operation(summary = "음성 인식 결과로 긴급 요청 생성",
+            description = "웹에서 Google STT로 변환된 transcript 텍스트를 받아 Emergency와 음성 원문 로그를 저장합니다.")
+    @PostMapping("/voice")
+    public ResponseEntity<EmergencyVoiceCreateResponseDto> createByVoice(
+            @RequestBody EmergencyVoiceCreateRequestDto req
+    ) {
+        return ResponseEntity.ok(emergencyService.createEmergencyByVoice(req));
     }
 }
