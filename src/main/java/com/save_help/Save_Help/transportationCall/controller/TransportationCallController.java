@@ -5,6 +5,8 @@ import com.save_help.Save_Help.transportationCall.dto.TransportationCallResponse
 import com.save_help.Save_Help.transportationCall.entity.TransportationCallStatus;
 import com.save_help.Save_Help.transportationCall.service.TransportationCallService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,7 @@ import java.util.List;
 public class TransportationCallController {
 
     private final TransportationCallService callService;
+
 
     //교통 호출 생성 기능 개발
     @Operation(summary = "교통 호출 생성", description = "교통 호출을 생성합니다")
@@ -39,5 +42,56 @@ public class TransportationCallController {
             @RequestParam TransportationCallStatus status
     ) {
         return callService.updateStatus(callId, status);
+    }
+
+    @Operation(summary = "운전자/차량 배치", description = "이동 호출에 운전자(Helper DRIVER)와 차량을 배치합니다")
+    @PostMapping("/{callId}/assign")
+    public void assignDriverAndVehicle(
+            @PathVariable Long callId,
+            @RequestBody @Valid TransportationAssignRequest req
+    ) {
+        callService.assignDriverAndVehicle(callId, req.driverHelperId(), req.vehicleId());
+    }
+
+    public record TransportationAssignRequest(
+            @NotNull Long driverHelperId,
+            @NotNull Long vehicleId
+    ) {}
+
+    @Operation(summary = "출발 처리", description = "배치된 운전자가 출발 처리합니다")
+    @PostMapping("/{callId}/dispatch")
+    public void dispatch(
+            @PathVariable Long callId,
+            @RequestParam @NotNull Long driverHelperId
+    ) {
+        callService.dispatch(callId, driverHelperId);
+    }
+
+    @Operation(summary = "도착 처리", description = "배치된 운전자가 도착 처리합니다")
+    @PostMapping("/{callId}/arrive")
+    public void arrive(
+            @PathVariable Long callId,
+            @RequestParam @NotNull Long driverHelperId
+    ) {
+        callService.arrive(callId, driverHelperId);
+    }
+
+    @Operation(summary = "이동 피드백 작성", description = "도착 완료된 이동 호출에 대해 운전자/차량 피드백을 작성합니다")
+    @PostMapping("/{callId}/feedback")
+    public Long createFeedback(
+            @PathVariable Long callId,
+            @RequestParam Long requesterUserId,
+            @RequestBody @Valid TransportationCallService.CreateTransportationFeedbackRequest req
+    ) {
+        return callService.createFeedback(requesterUserId, callId, req);
+    }
+
+    @Operation(summary = "내 이동 피드백 조회", description = "내가 작성한 이동 호출 피드백을 조회합니다")
+    @GetMapping("/{callId}/feedback")
+    public TransportationCallService.TransportationFeedbackResponse getMyFeedback(
+            @PathVariable Long callId,
+            @RequestParam Long requesterUserId
+    ) {
+        return callService.getMyFeedback(requesterUserId, callId);
     }
 }

@@ -6,5 +6,6 @@ public enum TransportationCallStatus {
     ON_ROUTE,    // 이동 중
     ARRIVED,     // 목적지 도착
     COMPLETED,   // 완료
-    CANCELLED    // 호출 취소
+    CANCELLED,   // 호출 취소,
+    ASSIGNED     // Helper 운전사 배치
 }

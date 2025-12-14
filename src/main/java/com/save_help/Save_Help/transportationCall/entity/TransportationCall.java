@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.transportationCall.entity;
 
+import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -51,6 +52,10 @@ public class TransportationCall {
     @Enumerated(EnumType.STRING)
     private TransportationType type;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id")
+    private Helper driver;
+
     // 기본 생성자
     protected TransportationCall() {}
 
@@ -67,4 +72,19 @@ public class TransportationCall {
         this.requestedAt = LocalDateTime.now();
     }
 
+    public void assign(Helper driver, Vehicle vehicle) {
+        this.driver = driver;
+        this.vehicle = vehicle;
+        this.status = TransportationCallStatus.ASSIGNED;
+    }
+
+    public void dispatchNow() {
+        this.status = TransportationCallStatus.DISPATCHED;
+        this.dispatchedAt = LocalDateTime.now();
+    }
+
+    public void arriveNow() {
+        this.status = TransportationCallStatus.ARRIVED;
+        this.arrivedAt = LocalDateTime.now();
+    }
 }

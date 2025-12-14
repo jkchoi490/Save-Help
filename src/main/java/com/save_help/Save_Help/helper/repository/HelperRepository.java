@@ -3,8 +3,11 @@ package com.save_help.Save_Help.helper.repository;
 import com.save_help.Save_Help.helper.entity.Helper;
 import com.save_help.Save_Help.helper.entity.HelperActivityStatus;
 import com.save_help.Save_Help.helper.entity.HelperRole;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,4 +33,11 @@ public interface HelperRepository extends JpaRepository<Helper, Long> {
 
     // 현재 근무 중 또는 활동 중인 Helper들 조회
     List<Helper> findByActivityStatusIn(List<HelperActivityStatus> statuses);
+
+    //동시에 여러 콜이 같은 운전자를 배치하지 않게 잠금
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select h from Helper h where h.id = :id")
+    Optional<Helper> findByIdForUpdate(@Param("id") Long id);
+
+    Optional<Helper> findByIdAndRoleAndActiveTrue(Long id, HelperRole role);
 }
