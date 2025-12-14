@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static com.save_help.Save_Help.call.entity.CallStatus.*;
+
 @RestController
 @RequestMapping("/api/calls")
 @RequiredArgsConstructor
@@ -84,13 +86,14 @@ public class CallController {
                 .orElseThrow(() -> new EntityNotFoundException("Call not found: " + callId));
 
         // 통화 시작 처리(원하는 시점에 맞춰 조정 가능)
-        call.setStatus(CallStatus.ACCEPTED);
+        call.setStatus(ACCEPTED);
         call.setStartedAt(LocalDateTime.now());
         callRepository.save(call);
 
         Dial dial = new Dial.Builder()
                 // statusCallback / statusCallbackEvent를 걸면 통화 이벤트를 받을 수 있음 :contentReference[oaicite:6]{index=6}
-                .number(new Number.Builder(toNumber)
+                //cannot
+                .number(new Number.Builder(toNumber) //
                         .statusCallback("https://yourdomain.com/twilio/voice/status")
                         .statusCallbackEvent("initiated ringing answered completed")
                         .build())
@@ -116,13 +119,13 @@ public class CallController {
                 .orElseThrow(() -> new EntityNotFoundException("Call not found: " + callId));
 
         switch (CallStatus) {
-            case "initiated", "ringing" -> call.setStatus(CallStatus.REQUESTED);
+            case "initiated", "ringing" -> call.setStatus(REQUESTED);
             case "answered" -> {
-                call.setStatus(CallStatus.ACCEPTED);
+                call.setStatus(ACCEPTED);
                 if (call.getStartedAt() == null) call.setStartedAt(LocalDateTime.now());
             }
             case "completed", "canceled", "failed", "busy", "no-answer" -> {
-                call.setStatus(CallStatus.ENDED);
+                call.setStatus(ENDED);
                 call.setEndedAt(LocalDateTime.now());
             }
         }
