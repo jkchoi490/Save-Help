@@ -6,5 +6,6 @@ public enum HelperRole {
     POLICE,      // 경찰
     FIREFIGHTER, // 소방관
     RESCUER, // 구조대원
-    VOLUNTEER    // 일반 자원봉사자
+    VOLUNTEER,    // 일반 자원봉사자
+    DRIVER
 }
