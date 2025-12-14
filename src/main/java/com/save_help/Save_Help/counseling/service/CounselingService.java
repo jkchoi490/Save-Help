@@ -1,6 +1,7 @@
 package com.save_help.Save_Help.counseling.service;
 
 import com.save_help.Save_Help.counseling.dto.CounselingNoteResponse;
+import com.save_help.Save_Help.counseling.dto.CounselingNoteUpsertRequest;
 import com.save_help.Save_Help.counseling.dto.CounselingRequestDto;
 import com.save_help.Save_Help.counseling.dto.CounselingResponseDto;
 import com.save_help.Save_Help.counseling.entity.Counseling;
@@ -155,4 +156,4 @@ public class CounselingService {
                 .build();
     }
 }
-}
+
