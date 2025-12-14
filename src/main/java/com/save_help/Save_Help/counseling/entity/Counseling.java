@@ -45,4 +45,5 @@ public class Counseling {
     @Enumerated(EnumType.STRING)
     private CounselingType type;
 
+
 }
