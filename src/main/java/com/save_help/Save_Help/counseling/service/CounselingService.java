@@ -4,8 +4,8 @@ import com.save_help.Save_Help.counseling.dto.CounselingNoteResponse;
 import com.save_help.Save_Help.counseling.dto.CounselingNoteUpsertRequest;
 import com.save_help.Save_Help.counseling.dto.CounselingRequestDto;
 import com.save_help.Save_Help.counseling.dto.CounselingResponseDto;
-import com.save_help.Save_Help.counseling.entity.Counseling;
-import com.save_help.Save_Help.counseling.entity.CounselingNote;
+import com.save_help.Save_Help.counseling.entity.*;
+import com.save_help.Save_Help.counseling.repository.CounselingFeedbackRepository;
 import com.save_help.Save_Help.counseling.repository.CounselingNoteRepository;
 import com.save_help.Save_Help.counseling.repository.CounselingRepository;
 import com.save_help.Save_Help.helper.entity.Helper;
@@ -30,6 +30,7 @@ public class CounselingService {
     private final UserRepository userRepository;
     private final HelperRepository helperRepository;
     private final CounselingNoteRepository noteRepository;
+    private final CounselingFeedbackRepository feedbackRepository;
 
     // 상담 등록
     public CounselingResponseDto createCounseling(CounselingRequestDto dto) {
@@ -155,5 +156,101 @@ public class CounselingService {
                 .updatedAt(n.getUpdatedAt())
                 .build();
     }
+
+    @Transactional
+    public Long createFeedback(Long userId, Long counselingId, CreateCounselingFeedbackRequest req) {
+        Counseling counseling = counselingRepository.findById(counselingId)
+                .orElseThrow(() -> new IllegalArgumentException("상담 정보를 찾을 수 없습니다."));
+
+        //  본인 상담만 작성 가능
+        if (counseling.getUser() == null || !counseling.getUser().getId().equals(userId)) {
+            throw new IllegalStateException("본인의 상담에만 피드백을 남길 수 있습니다.");
+        }
+
+        // 종료된 상담만 작성 가능 (권장: COMPLETED만 허용)
+        if (counseling.getStatus() != CounselingStatus.COMPLETED) {
+            throw new IllegalStateException("종료된 상담에만 피드백을 남길 수 있습니다.");
+        }
+
+
+        // 중복 작성 방지
+        if (feedbackRepository.findByCounselingId(counselingId).isPresent()) {
+            throw new IllegalStateException("이미 해당 상담에 대한 피드백이 작성되었습니다.");
+        }
+
+        //  평점 검증
+        validateRating(req.counselorRating(), "상담사 평점");
+        validateRating(req.sessionRating(), "상담 만족도");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+        if (counseling.getCounselor() == null) {
+            throw new IllegalStateException("상담사가 배정되지 않아 피드백을 남길 수 없습니다.");
+        }
+
+        CounselingFeedback feedback = new CounselingFeedback(
+                counseling,
+                user,
+                counseling.getCounselor(),
+                req.counselorRating(),
+                req.sessionRating(),
+                req.comment(),
+                req.issue()
+        );
+
+        feedbackRepository.save(feedback);
+
+        // (선택) 상담사 평균 평점 반영 로직을 여기서 처리할 수 있음
+        return feedback.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public CounselingFeedbackResponse getMyFeedback(Long userId, Long counselingId) {
+        CounselingFeedback feedback = feedbackRepository.findByCounselingId(counselingId)
+                .orElseThrow(() -> new IllegalArgumentException("피드백 정보를 찾을 수 없습니다."));
+
+        if (!feedback.getUser().getId().equals(userId)) {
+            throw new IllegalStateException("본인의 피드백만 조회할 수 있습니다.");
+        }
+
+        return CounselingFeedbackResponse.from(feedback);
+    }
+
+    private void validateRating(Integer rating, String field) {
+        if (rating == null) return; // 선택값이면 null 허용
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException(field + "은(는) 1~5 사이여야 합니다.");
+        }
+    }
+
+    // DTO
+    public record CreateCounselingFeedbackRequest(
+            Integer counselorRating,
+            Integer sessionRating,
+            String comment,
+            CounselingFeedbackIssue issue
+    ) {}
+
+    public record CounselingFeedbackResponse(
+            Long id,
+            Long counselingId,
+            Integer counselorRating,
+            Integer sessionRating,
+            String comment,
+            CounselingFeedbackIssue issue
+    ) {
+        public static CounselingFeedbackResponse from(CounselingFeedback f) {
+            return new CounselingFeedbackResponse(
+                    f.getId(),
+                    f.getCounseling().getId(),
+                    f.getCounselorRating(),
+                    f.getSessionRating(),
+                    f.getComment(),
+                    f.getIssue()
+            );
+        }
+    }
+
 }
 

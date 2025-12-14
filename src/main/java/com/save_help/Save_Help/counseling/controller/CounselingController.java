@@ -7,6 +7,7 @@ import com.save_help.Save_Help.counseling.dto.CounselingResponseDto;
 import com.save_help.Save_Help.counseling.service.CounselingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,4 +76,23 @@ public class CounselingController {
         return ResponseEntity.ok(counselingService.upsert(counselingId, authorId, req));
     }
 
+
+    @Operation(summary = "상담 피드백 작성", description = "종료된 상담에 대해 피드백을 작성합니다")
+    @PostMapping("/{counselingId}/feedback")
+    public Long create(
+            @PathVariable Long counselingId,
+            @RequestParam Long userId,
+            @RequestBody @Valid CounselingService.CreateCounselingFeedbackRequest req
+    ) {
+        return counselingService.createFeedback(userId, counselingId, req);
+    }
+
+    @Operation(summary = "내 상담 피드백 조회", description = "내가 작성한 상담 피드백을 조회합니다")
+    @GetMapping("/{counselingId}/feedback")
+    public CounselingService.CounselingFeedbackResponse get(
+            @PathVariable Long counselingId,
+            @RequestParam Long userId
+    ) {
+        return counselingService.getMyFeedback(userId, counselingId);
+    }
 }
