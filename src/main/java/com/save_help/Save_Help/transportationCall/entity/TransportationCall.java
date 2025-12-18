@@ -87,4 +87,5 @@ public class TransportationCall {
         this.status = TransportationCallStatus.ARRIVED;
         this.arrivedAt = LocalDateTime.now();
     }
+
 }

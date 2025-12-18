@@ -32,10 +32,10 @@ public class CallController {
     private final CallService callService;
     private final CallRepository callRepository;
 
-    @Value("${twilio.accountSid}") private String accountSid;
-    @Value("${twilio.apiKeySid}") private String apiKeySid;
-    @Value("${twilio.apiKeySecret}") private String apiKeySecret;
-    @Value("${twilio.twimlAppSid}") private String twimlAppSid;
+    @Value("${twilio.account.sid}") private String accountSid;
+    @Value("${twilio.apiKey.sid}") private String apiKeySid;
+    @Value("${twilio.apiKey.secret}") private String apiKeySecret;
+    @Value("${twilio.twimlApp.sid}") private String twimlAppSid;
 
     // 통화 요청
     @Operation(summary = "통화 요청", description = "통화를 요청합니다")
@@ -91,17 +91,14 @@ public class CallController {
         callRepository.save(call);
 
         Dial dial = new Dial.Builder()
-                // statusCallback / statusCallbackEvent를 걸면 통화 이벤트를 받을 수 있음 :contentReference[oaicite:6]{index=6}
-                //cannot
-                .number(new Number.Builder(toNumber) //
-                        .statusCallback("https://yourdomain.com/twilio/voice/status")
-                        .statusCallbackEvent("initiated ringing answered completed")
-                        .build())
+                .number(toNumber)
                 .build();
+
 
         VoiceResponse response = new VoiceResponse.Builder()
                 .dial(dial)
                 .build();
+
 
         return response.toXml();
     }

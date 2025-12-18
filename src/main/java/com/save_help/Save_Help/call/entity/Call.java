@@ -28,4 +28,5 @@ public class Call {
     @Enumerated(EnumType.STRING)
     private CallStatus status; // REQUESTED, ACCEPTED, REJECTED, ENDED
 
+
 }

@@ -24,7 +24,7 @@ public class CounselingController {
 
     // 상담 생성
     @Operation(summary = "상담 생성", description = "새로운 상담을 등록합니다.")
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<CounselingResponseDto> create(@RequestBody CounselingRequestDto dto) {
         return ResponseEntity.ok(counselingService.createCounseling(dto));
     }
@@ -38,7 +38,7 @@ public class CounselingController {
 
     // 전체 상담 조회
     @Operation(summary = "전체 상담 조회", description = "등록된 모든 상담을 조회합니다.")
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<CounselingResponseDto>> getAll() {
         return ResponseEntity.ok(counselingService.getAllCounselings());
     }
@@ -61,13 +61,13 @@ public class CounselingController {
 
 
     @Operation(summary = "상담 SOAP 노트 조회")
-    @GetMapping
+    @GetMapping("/soap")
     public ResponseEntity<CounselingNoteResponse> get(@PathVariable Long counselingId) {
         return ResponseEntity.ok(counselingService.get(counselingId));
     }
 
     @Operation(summary = "상담 SOAP 노트 생성/수정(Upsert)")
-    @PutMapping
+    @PutMapping("/soap")
     public ResponseEntity<CounselingNoteResponse> upsert(
             @PathVariable Long counselingId,
             @RequestParam Long authorId,

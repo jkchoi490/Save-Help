@@ -92,4 +92,7 @@ public class Helper {
     private String certificationName;  // 파일 이름
     private Boolean certificationVerified; // 검증 완료 여부 (관리자 승인 시 true)
     private String currentTask; // 현재 수행 중인 작업 설명
+
+    private boolean active;  //
+
 }
