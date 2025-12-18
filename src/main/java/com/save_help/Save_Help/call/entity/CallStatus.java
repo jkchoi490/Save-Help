@@ -5,4 +5,5 @@ public enum CallStatus {
     ACCEPTED,    // 수신자가 수락
     REJECTED,    // 수신자가 거절
     ENDED        // 통화 종료
+
 }
