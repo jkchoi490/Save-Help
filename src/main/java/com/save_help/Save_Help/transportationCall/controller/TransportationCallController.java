@@ -1,13 +1,19 @@
 package com.save_help.Save_Help.transportationCall.controller;
 
+import com.save_help.Save_Help.transportationCall.dto.DriverLocationMessage;
+import com.save_help.Save_Help.transportationCall.dto.DriverLocationUpdateRequest;
 import com.save_help.Save_Help.transportationCall.dto.TransportationCallRequestDto;
 import com.save_help.Save_Help.transportationCall.dto.TransportationCallResponseDto;
 import com.save_help.Save_Help.transportationCall.entity.TransportationCallStatus;
+import com.save_help.Save_Help.transportationCall.service.TransportationCallLocationService;
 import com.save_help.Save_Help.transportationCall.service.TransportationCallService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +24,8 @@ import java.util.List;
 public class TransportationCallController {
 
     private final TransportationCallService callService;
-
+    private final TransportationCallLocationService locationService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     //교통 호출 생성 기능 개발
     @Operation(summary = "교통 호출 생성", description = "교통 호출을 생성합니다")
@@ -93,5 +100,31 @@ public class TransportationCallController {
             @RequestParam Long requesterUserId
     ) {
         return callService.getMyFeedback(requesterUserId, callId);
+    }
+
+    /**
+     * 운전자 앱이 send:
+     *   /app/transportation-calls/{callId}/location
+     *
+     * 요청자 화면이 subscribe:
+     *   /topic/transportation-calls/{callId}/location
+     */
+    @MessageMapping("/{callId}/location")
+    public void updateLocation(
+            @DestinationVariable Long callId,
+            @Valid DriverLocationUpdateRequest req
+    ) {
+        DriverLocationMessage msg = locationService.updateAndCache(callId, req);
+
+        messagingTemplate.convertAndSend(
+                "/topic/transportation-calls/" + callId + "/location",
+                msg
+        );
+    }
+
+    @Operation(summary = "운전자 마지막 위치 조회", description = "재접속/새로고침 시 Redis에 저장된 마지막 위치를 조회합니다.")
+    @GetMapping("/{callId}/last-location")
+    public DriverLocationMessage lastLocation(@PathVariable Long callId) {
+        return locationService.getLastLocation(callId);
     }
 }

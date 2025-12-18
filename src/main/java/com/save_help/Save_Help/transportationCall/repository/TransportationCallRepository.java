@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TransportationCallRepository extends JpaRepository<TransportationCall, Long> {
     List<TransportationCall> findByRequester(User requester);
+
 }
