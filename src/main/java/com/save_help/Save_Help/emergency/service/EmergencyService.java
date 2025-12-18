@@ -6,12 +6,18 @@ import com.save_help.Save_Help.emergency.dto.EmergencyResponseDto;
 import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateRequestDto;
 import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateResponseDto;
 import com.save_help.Save_Help.emergency.entity.*;
+import com.save_help.Save_Help.emergency.filter.EmergencySpecs;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
 import com.save_help.Save_Help.emergency.repository.EmergencyVoiceNoteRepository;
+import com.save_help.Save_Help.helper.entity.Helper;
+import com.save_help.Save_Help.helper.repository.HelperRepository;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -27,6 +33,7 @@ public class EmergencyService {
     private final EmergencyRepository emergencyRepository;
     private final EmergencyVoiceNoteRepository voiceNoteRepository;
     private final UserRepository userRepository;
+    private final HelperRepository helperRepository;
 
     // 긴급 요청 생성
     public EmergencyResponseDto createEmergency(EmergencyRequestDto dto) {
@@ -60,6 +67,7 @@ public class EmergencyService {
     }
 
     // 요청 취소
+    /*
     public EmergencyResponseDto cancelEmergency(Long id) {
         Emergency emergency = emergencyRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 요청을 찾을 수 없습니다."));
@@ -74,6 +82,8 @@ public class EmergencyService {
         emergency.markResolved();
         return toResponseDto(emergencyRepository.save(emergency));
     }
+
+     */
 
     private EmergencyResponseDto toResponseDto(Emergency e) {
         return EmergencyResponseDto.builder()
@@ -147,5 +157,73 @@ public class EmergencyService {
         if (s == null) return null;
         return s.trim().replaceAll("\\s+", " ");
     }
+
+    // 페이징 정렬
+    @Transactional(readOnly = true)
+    public Page<EmergencyResponseDto> search(
+            EmergencyStatus status,
+            Boolean unresolvedOnly,
+            Boolean excludeCancelled,
+            Integer recentHours,
+            Pageable pageable
+    ) {
+        Specification<Emergency> spec = Specification.where(EmergencySpecs.status(status))
+                .and(EmergencySpecs.unresolvedOnly(unresolvedOnly))
+                .and(EmergencySpecs.excludeCancelled(excludeCancelled))
+                .and(EmergencySpecs.requestedWithinHours(recentHours));
+
+        return emergencyRepository.findAll(spec, pageable)
+                .map(EmergencyResponseDto::from);
+    }
+
+    // 헬퍼가 접수
+    public EmergencyResponseDto accept(Long emergencyId, Long helperId) {
+        Emergency emergency = emergencyRepository.findByIdForUpdate(emergencyId)
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found: " + emergencyId));
+
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new EntityNotFoundException("Helper not found: " + helperId));
+
+        emergency.accept(helper);
+        return EmergencyResponseDto.from(emergency);
+    }
+
+    // 관리자/센터가 배치(수동)
+    public EmergencyResponseDto assign(Long emergencyId, Long helperId) {
+        Emergency emergency = emergencyRepository.findByIdForUpdate(emergencyId)
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found: " + emergencyId));
+
+        Helper helper = helperRepository.findById(helperId)
+                .orElseThrow(() -> new EntityNotFoundException("Helper not found: " + helperId));
+
+        emergency.assign(helper);
+        return EmergencyResponseDto.from(emergency);
+    }
+
+    // 진행 시작
+    public EmergencyResponseDto startProgress(Long emergencyId) {
+        Emergency emergency = emergencyRepository.findByIdForUpdate(emergencyId)
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found: " + emergencyId));
+
+        emergency.startProgress();
+        return EmergencyResponseDto.from(emergency);
+    }
+
+    // 해결
+    public EmergencyResponseDto resolveEmergency(Long id) {
+        Emergency emergency = emergencyRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found: " + id));
+        emergency.markResolved();
+        return EmergencyResponseDto.from(emergency);
+    }
+
+    // 취소
+    public EmergencyResponseDto cancelEmergency(Long id) {
+        Emergency emergency = emergencyRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found: " + id));
+        emergency.cancel();
+        return EmergencyResponseDto.from(emergency);
+    }
+
 }
 

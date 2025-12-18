@@ -6,5 +6,6 @@ public enum EmergencyStatus {
     ASSIGNED,    // 헬퍼나 병원에 배정됨
     IN_PROGRESS,// 처리 중
     RESOLVED,   // 처리 완료
-    CANCELLED   // 사용자 취소
+    CANCELLED,   // 사용자 취소
+    ACCEPTED
 }
