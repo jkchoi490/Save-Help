@@ -8,4 +8,5 @@ public enum SubsidyType {
     USER_REQUEST, // 사용자 요청 지원
     EMERGENCY,
     OTHER       // 기타
+
 }

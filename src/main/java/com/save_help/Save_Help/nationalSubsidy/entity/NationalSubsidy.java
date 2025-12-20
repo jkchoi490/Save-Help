@@ -48,4 +48,5 @@ public class NationalSubsidy {
     private String incomeLevel;
     private Boolean disabilityRequired;
     private Boolean emergencyOnly;
+
 }

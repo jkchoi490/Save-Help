@@ -2,12 +2,15 @@ package com.save_help.Save_Help.nationalSubsidy.controller;
 
 
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
+import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
 import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ import java.util.Map;
 public class NationalSubsidyController {
 
     private final NationalSubsidyService subsidyService;
+    private final NationalSubsidyNotificationRepository notificationRepository;
 
     // 보조금 등록
     @Operation(summary = "보조금 등록", description = "보조금을 등록합니다")
@@ -149,6 +153,27 @@ public class NationalSubsidyController {
                 .body(csv);
     }
 
+    //간단한 보조금 신청 기능 -> kafka 반영 예정
+    @Operation(summary = "보조금 신청", description = "보조금을 신청합니다 - kafka 사용 예정")
+    @PostMapping("/{subsidyId}/apply")
+    public ResponseEntity<Map<String, Object>> apply(
+            @RequestParam Long userId,
+            @PathVariable Long subsidyId
+    ) {
+        Long applicationId = subsidyService.apply(userId, subsidyId);
+        return ResponseEntity.ok(Map.of("applicationId", applicationId));
+    }
 
-
+    //알림 조회 기능 -> kafka 반영 후 고도화 예정
+    @Operation(summary = "보조금 신청 알림 조회", description = "보조금을 신청 완료 알림 기능입니다")
+    @GetMapping("/notifications")
+    public ResponseEntity<?> list(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(
+                notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size))
+        );
+    }
 }
