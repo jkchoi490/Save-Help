@@ -2,7 +2,9 @@ package com.save_help.Save_Help.nationalSubsidy.service;
 
 
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyNotification;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyApplication;
+import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyRepository;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
@@ -35,6 +37,9 @@ public class NationalSubsidyService {
     private final NationalSubsidyRepository subsidyRepository;
     private final SubsidyApplicationRepository applicationRepository;
     private final UserRepository userRepository;
+    private final NationalSubsidyNotificationRepository notificationRepository;
+    private final NationalSubsidyRepository nationalSubsidyRepository;
+    private final SubsidyApplicationRepository subsidyApplicationRepository;
 
     public NationalSubsidyResponseDto create(NationalSubsidyRequestDto dto) {
         NationalSubsidy subsidy = new NationalSubsidy();
@@ -240,5 +245,32 @@ public class NationalSubsidyService {
 
         subsidy.setActive(active);
         subsidyRepository.save(subsidy);
+    }
+
+
+    @Transactional
+    public Long apply(Long userId, Long subsidyId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        NationalSubsidy subsidy = nationalSubsidyRepository.findById(subsidyId).orElseThrow();
+
+        // (선택) 최소한의 신청 가능 검증
+        if (!subsidy.isActive()) {
+            throw new IllegalStateException("비활성화된 보조금입니다.");
+        }
+
+        SubsidyApplication app = new SubsidyApplication();
+        app.setUser(user);
+        app.setSubsidy(subsidy);
+        app.setStatus("PENDING"); // 접수됨(신청 완료)
+        SubsidyApplication saved = subsidyApplicationRepository.save(app);
+
+        // 신청 완료 알림 저장
+        NationalSubsidyNotification n = new NationalSubsidyNotification();
+        n.setUser(user);
+        n.setTitle("보조금 신청 완료");
+        n.setMessage("'" + subsidy.getName() + "' 신청이 완료(접수)되었습니다.");
+        notificationRepository.save(n);
+
+        return saved.getId();
     }
 }

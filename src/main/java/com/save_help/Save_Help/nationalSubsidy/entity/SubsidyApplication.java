@@ -29,4 +29,5 @@ public class SubsidyApplication {
     private LocalDate appliedDate = LocalDate.now();
 
     private String status = "PENDING"; // PENDING, APPROVED, REJECTED
+
 }
