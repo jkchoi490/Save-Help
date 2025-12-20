@@ -7,6 +7,7 @@ import com.save_help.Save_Help.counseling.dto.CounselingResponseDto;
 import com.save_help.Save_Help.counseling.entity.*;
 import com.save_help.Save_Help.counseling.repository.CounselingFeedbackRepository;
 import com.save_help.Save_Help.counseling.repository.CounselingNoteRepository;
+import com.save_help.Save_Help.counseling.repository.CounselingNotificationRepository;
 import com.save_help.Save_Help.counseling.repository.CounselingRepository;
 import com.save_help.Save_Help.helper.entity.Helper;
 
@@ -15,6 +16,7 @@ import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,8 @@ public class CounselingService {
     private final HelperRepository helperRepository;
     private final CounselingNoteRepository noteRepository;
     private final CounselingFeedbackRepository feedbackRepository;
+    private final CounselingNotificationRepository notificationRepository;
+
 
     // 상담 등록
     public CounselingResponseDto createCounseling(CounselingRequestDto dto) {
@@ -251,6 +255,32 @@ public class CounselingService {
             );
         }
     }
+
+    @Transactional
+    public void createIfAbsent(
+            RecipientType recipientType, Long recipientId,
+            NotificationType type, String title, String message,
+            String deeplink, String uniqueKey
+    ) {
+        // 빠른 사전 체크(경합이 있으면 아래 UNIQUE에서 최종 방어)
+        if (notificationRepository.existsByUniqueKey(uniqueKey)) return;
+
+        CounselingNotification n = new CounselingNotification();
+        n.setRecipientType(recipientType);
+        n.setRecipientId(recipientId);
+        n.setType(type);
+        n.setTitle(title);
+        n.setMessage(message);
+        n.setDeeplink(deeplink);
+        n.setUniqueKey(uniqueKey);
+
+        try {
+            notificationRepository.save(n);
+        } catch (DataIntegrityViolationException ignore) {
+            // UNIQUE 충돌이면 이미 생성된 것 → 무시 (멱등)
+        }
+    }
+
 
 }
 

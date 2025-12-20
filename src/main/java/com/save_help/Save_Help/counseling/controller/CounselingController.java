@@ -4,11 +4,15 @@ import com.save_help.Save_Help.counseling.dto.CounselingNoteResponse;
 import com.save_help.Save_Help.counseling.dto.CounselingNoteUpsertRequest;
 import com.save_help.Save_Help.counseling.dto.CounselingRequestDto;
 import com.save_help.Save_Help.counseling.dto.CounselingResponseDto;
+import com.save_help.Save_Help.counseling.entity.Counseling;
+import com.save_help.Save_Help.counseling.entity.RecipientType;
+import com.save_help.Save_Help.counseling.repository.CounselingNotificationRepository;
 import com.save_help.Save_Help.counseling.service.CounselingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +25,7 @@ import java.util.List;
 public class CounselingController {
 
     private final CounselingService counselingService;
+    private final CounselingNotificationRepository notificationRepository;
 
     // 상담 생성
     @Operation(summary = "상담 생성", description = "새로운 상담을 등록합니다.")
@@ -95,4 +100,29 @@ public class CounselingController {
     ) {
         return counselingService.getMyFeedback(userId, counselingId);
     }
+
+    //조회/읽음 처리
+    @Operation(summary = "상담 알림 조회", description = "상담 알림들을 조회합니다")
+    @GetMapping("/api/notifications")
+    public ResponseEntity<?> list(
+            @RequestParam RecipientType recipientType,
+            @RequestParam Long recipientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(
+                notificationRepository.findByRecipientTypeAndRecipientIdOrderByCreatedAtDesc(
+                        recipientType, recipientId, PageRequest.of(page, size)
+                )
+        );
+    }
+
+    @Operation(summary = "상담 알림 읽음처리", description = "상담 알림들을 읽음처리합니다")
+    @PatchMapping("/{id}/read")
+    public ResponseEntity<Void> read(@PathVariable Long id) {
+        var n = notificationRepository.findById(id).orElseThrow();
+        n.setRead(true);
+        return ResponseEntity.ok().build();
+    }
+
 }

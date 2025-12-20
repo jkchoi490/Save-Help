@@ -46,4 +46,5 @@ public class Counseling {
     private CounselingType type;
 
 
+
 }
