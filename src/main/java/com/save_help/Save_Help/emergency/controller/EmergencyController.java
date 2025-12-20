@@ -100,5 +100,20 @@ public class EmergencyController {
         return ResponseEntity.ok(emergencyService.startProgress(id));
     }
 
+    @PostMapping("/{id}/notes")
+    @Operation(summary = "긴급 요청 운영 메모 추가", description = "관리자/헬퍼가 긴급 요청에 대한 내부 메모를 남깁니다.")
+    public ResponseEntity<EmergencyNoteResponseDto> addNote(
+            @PathVariable Long id,
+            @RequestBody EmergencyNoteCreateRequestDto req
+    ) {
+        return ResponseEntity.ok(emergencyService.addNote(id, req));
+    }
+
+    @GetMapping("/{id}/notes")
+    @Operation(summary = "긴급 요청 운영 메모 조회", description = "긴급 요청에 남겨진 내부 메모 목록을 조회합니다.")
+    public ResponseEntity<List<EmergencyNoteResponseDto>> getNotes(@PathVariable Long id) {
+        return ResponseEntity.ok(emergencyService.getNotes(id));
+    }
+
 
 }

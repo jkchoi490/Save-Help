@@ -1,12 +1,10 @@
 package com.save_help.Save_Help.emergency.service;
 
 
-import com.save_help.Save_Help.emergency.dto.EmergencyRequestDto;
-import com.save_help.Save_Help.emergency.dto.EmergencyResponseDto;
-import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateRequestDto;
-import com.save_help.Save_Help.emergency.dto.EmergencyVoiceCreateResponseDto;
+import com.save_help.Save_Help.emergency.dto.*;
 import com.save_help.Save_Help.emergency.entity.*;
 import com.save_help.Save_Help.emergency.filter.EmergencySpecs;
+import com.save_help.Save_Help.emergency.repository.EmergencyNoteRepository;
 import com.save_help.Save_Help.emergency.repository.EmergencyRepository;
 import com.save_help.Save_Help.emergency.repository.EmergencyVoiceNoteRepository;
 import com.save_help.Save_Help.helper.entity.Helper;
@@ -34,6 +32,7 @@ public class EmergencyService {
     private final EmergencyVoiceNoteRepository voiceNoteRepository;
     private final UserRepository userRepository;
     private final HelperRepository helperRepository;
+    private final EmergencyNoteRepository emergencyNoteRepository;
 
     // 긴급 요청 생성
     public EmergencyResponseDto createEmergency(EmergencyRequestDto dto) {
@@ -224,6 +223,44 @@ public class EmergencyService {
         emergency.cancel();
         return EmergencyResponseDto.from(emergency);
     }
+
+    // Emergency Note 생성
+    @Transactional
+    public EmergencyNoteResponseDto addNote(Long emergencyId, EmergencyNoteCreateRequestDto req) {
+        Emergency emergency = emergencyRepository.findById(emergencyId).orElseThrow();
+        User writer = userRepository.findById(req.writerId()).orElseThrow();
+
+        EmergencyNote note = new EmergencyNote();
+        note.setEmergency(emergency);
+        note.setWriter(writer);
+        note.setContent(req.content());
+
+        EmergencyNote saved = emergencyNoteRepository.save(note);
+
+        return new EmergencyNoteResponseDto(
+                saved.getId(),
+                writer.getId(),
+                saved.getContent(),
+                saved.getCreatedAt()
+        );
+    }
+
+    // Emergency Note 조회
+    @Transactional(readOnly = true)
+    public List<EmergencyNoteResponseDto> getNotes(Long emergencyId) {
+        // Emergency 존재 검증
+        emergencyRepository.findById(emergencyId).orElseThrow();
+
+        return emergencyNoteRepository.findByEmergencyIdOrderByCreatedAtAsc(emergencyId).stream()
+                .map(n -> new EmergencyNoteResponseDto(
+                        n.getId(),
+                        n.getWriter().getId(),
+                        n.getContent(),
+                        n.getCreatedAt()
+                ))
+                .toList();
+    }
+
 
 }
 
