@@ -2,13 +2,13 @@ package com.save_help.Save_Help.nationalSubsidy.service;
 
 
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
-import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyNotification;
-import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyApplication;
+import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRequestDto;
+import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.entity.*;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyRepository;
-import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
-import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
+import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidySubscriptionRepository;
 import com.save_help.Save_Help.nationalSubsidy.repository.SubsidyApplicationRepository;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
@@ -40,6 +40,8 @@ public class NationalSubsidyService {
     private final NationalSubsidyNotificationRepository notificationRepository;
     private final NationalSubsidyRepository nationalSubsidyRepository;
     private final SubsidyApplicationRepository subsidyApplicationRepository;
+    private final NationalSubsidySubscriptionRepository subscriptionRepository;
+
 
     public NationalSubsidyResponseDto create(NationalSubsidyRequestDto dto) {
         NationalSubsidy subsidy = new NationalSubsidy();
@@ -272,5 +274,58 @@ public class NationalSubsidyService {
         notificationRepository.save(n);
 
         return saved.getId();
+    }
+
+    // 보조금 자동 신청 전 정보 알림
+
+    public NationalSubsidySubscriptionResponseDto subscribe(
+            Long userId,
+            NationalSubsidySubscriptionRequestDto dto
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        NationalSubsidySubscription sub = new NationalSubsidySubscription();
+        sub.setUser(user);
+        sub.setMinAge(dto.getMinAge());
+        sub.setMaxAge(dto.getMaxAge());
+        sub.setIncomeLevel(dto.getIncomeLevel());
+        sub.setDisability(dto.getDisability());
+        sub.setEmergency(dto.getEmergency());
+        sub.setType(dto.getType());
+        sub.setRegion(dto.getRegion());
+
+        subscriptionRepository.save(sub);
+
+        return toDto(sub);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NationalSubsidySubscriptionResponseDto> getMySubscriptions(Long userId) {
+        return subscriptionRepository.findByUserIdAndActiveTrue(userId)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    public void unsubscribe(Long subscriptionId) {
+        NationalSubsidySubscription sub = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("구독 없음"));
+        sub.setActive(false);
+    }
+
+    private NationalSubsidySubscriptionResponseDto toDto(NationalSubsidySubscription s) {
+        return NationalSubsidySubscriptionResponseDto.builder()
+                .subscriptionId(s.getId())
+                .minAge(s.getMinAge())
+                .maxAge(s.getMaxAge())
+                .incomeLevel(s.getIncomeLevel())
+                .disability(s.getDisability())
+                .emergency(s.getEmergency())
+                .type(s.getType())
+                .region(s.getRegion())
+                .active(s.isActive())
+                .createdAt(s.getCreatedAt())
+                .build();
     }
 }
