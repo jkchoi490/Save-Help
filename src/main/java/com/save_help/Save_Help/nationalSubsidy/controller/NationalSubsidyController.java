@@ -2,6 +2,8 @@ package com.save_help.Save_Help.nationalSubsidy.controller;
 
 
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRequestDto;
+import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
 import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
@@ -175,5 +177,32 @@ public class NationalSubsidyController {
         return ResponseEntity.ok(
                 notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size))
         );
+    }
+
+
+    // 구독 등록
+    @Operation(summary = "보조금 알림 구독", description = "조건에 맞는 보조금 오픈/마감 알림을 구독합니다")
+    @PostMapping
+    public NationalSubsidySubscriptionResponseDto subscribe(
+            @RequestParam Long userId,
+            @RequestBody NationalSubsidySubscriptionRequestDto dto
+    ) {
+        return subsidyService.subscribe(userId, dto);
+    }
+
+    // 내 구독 목록 조회
+    @Operation(summary = "내 보조금 구독 조회", description = "내가 설정한 보조금 알림 구독 목록을 조회합니다")
+    @GetMapping
+    public List<NationalSubsidySubscriptionResponseDto> mySubscriptions(
+            @RequestParam Long userId
+    ) {
+        return subsidyService.getMySubscriptions(userId);
+    }
+
+    // 구독 해지
+    @Operation(summary = "보조금 알림 구독 해지", description = "보조금 알림 구독을 해지합니다")
+    @DeleteMapping("/{subscriptionId}")
+    public void unsubscribe(@PathVariable Long subscriptionId) {
+        subsidyService.unsubscribe(subscriptionId);
     }
 }
