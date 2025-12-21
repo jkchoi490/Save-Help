@@ -3,14 +3,22 @@ package com.save_help.Save_Help.dailyNecessities.service;
 import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
+import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestCreateDto;
+import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestResponseDto;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesRequest;
 import com.save_help.Save_Help.dailyNecessities.entity.NecessityCategory;
 import com.save_help.Save_Help.dailyNecessities.entity.UserNecessityRequest;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
+import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRequestRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.UserNecessitiesRepository;
+import com.save_help.Save_Help.user.entity.User;
+import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,13 +31,17 @@ public class DailyNecessitiesService {
     private final CommunityCenterRepository centerRepository;
     private final UserNecessitiesRepository userNecessitiesRepository;
     private final DailyNecessitiesAlertService alertService;
+    private final DailyNecessitiesRequestRepository requestRepository;
+    private final UserRepository userRepository;
 
     public DailyNecessitiesService(DailyNecessitiesRepository necessitiesRepository,
-                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService) {
+                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository) {
         this.necessitiesRepository = necessitiesRepository;
         this.centerRepository = centerRepository;
         this.userNecessitiesRepository = userNecessitiesRepository;
         this.alertService = alertService;
+        this.requestRepository = requestRepository;
+        this.userRepository = userRepository;
     }
 
     // 생성
@@ -242,5 +254,107 @@ public class DailyNecessitiesService {
     public void alertLowStockItems() {
         alertService.sendLowStockAlerts();
     }
+
+
+    public DailyNecessitiesRequestResponseDto create(DailyNecessitiesRequestCreateDto dto) {
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        CommunityCenter center = null;
+        if (dto.getCenterId() != null) {
+            center = centerRepository.findById(dto.getCenterId())
+                    .orElseThrow(() -> new IllegalArgumentException("센터 없음"));
+        }
+
+        DailyNecessities item = null;
+        if (dto.getItemId() != null) {
+            item = necessitiesRepository.findById(dto.getItemId())
+                    .orElseThrow(() -> new IllegalArgumentException("품목 없음"));
+        }
+
+        // 최소 입력 검증: itemId가 없으면 itemName 필요
+        if (item == null && (dto.getItemName() == null || dto.getItemName().isBlank())) {
+            throw new IllegalArgumentException("itemId 또는 itemName 중 하나는 필수입니다.");
+        }
+
+        // 수량 기본값
+        Integer qty = dto.getQuantity();
+        if (qty == null || qty <= 0) qty = 1;
+
+        DailyNecessitiesRequest req = new DailyNecessitiesRequest();
+        req.setUser(user);
+        req.setCenter(center);
+        req.setItem(item);
+        req.setItemName(item != null ? null : dto.getItemName());
+        req.setQuantity(qty);
+        req.setMessage(dto.getMessage());
+        req.setContact(dto.getContact());
+        req.setAddress(dto.getAddress());
+
+        if (dto.getPriority() != null) req.setPriority(dto.getPriority());
+
+        requestRepository.save(req);
+
+        return DailyNecessitiesRequestResponseDto.from(req);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesRequestResponseDto> getByUser(Long userId) {
+        return requestRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(DailyNecessitiesRequestResponseDto::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesRequestResponseDto> getByCenter(Long centerId, DailyNecessitiesRequest.Status status) {
+        List<DailyNecessitiesRequest> list =
+                (status == null)
+                        ? requestRepository.findByCenterIdOrderByCreatedAtDesc(centerId)
+                        : requestRepository.findByCenterIdAndStatusOrderByCreatedAtDesc(centerId, status);
+
+        return list.stream().map(DailyNecessitiesRequestResponseDto::from).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesRequestResponseDto> getByStatus(DailyNecessitiesRequest.Status status) {
+        return requestRepository.findByStatusOrderByCreatedAtDesc(status)
+                .stream()
+                .map(DailyNecessitiesRequestResponseDto::from)
+                .toList();
+    }
+
+    public void updateStatus(Long requestId, DailyNecessitiesRequest.Status status, String adminNote) {
+        DailyNecessitiesRequest req = requestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("긴급 요청 없음"));
+
+        if (req.getStatus() == DailyNecessitiesRequest.Status.FULFILLED || req.getStatus() == DailyNecessitiesRequest.Status.REJECTED || req.getStatus() == DailyNecessitiesRequest.Status.CANCELLED) {
+            throw new IllegalStateException("종료된 요청은 상태 변경 불가");
+        }
+
+        req.setStatus(status);
+        req.setUpdatedAt(LocalDateTime.now());
+        if (adminNote != null) req.setAdminNote(adminNote);
+
+        // - status 변경 시 사용자에게 알림 발송
+        // - 센터 담당자에게 할당 알림 등
+    }
+
+    public void cancelByUser(Long requestId, Long userId) {
+        DailyNecessitiesRequest req = requestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("긴급 요청 없음"));
+
+        if (!req.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("본인 요청만 취소할 수 있습니다.");
+        }
+        if (req.getStatus() == DailyNecessitiesRequest.Status.FULFILLED || req.getStatus() == DailyNecessitiesRequest.Status.REJECTED) {
+            throw new IllegalStateException("이미 처리된 요청은 취소할 수 없습니다.");
+        }
+
+        req.setStatus(DailyNecessitiesRequest.Status.CANCELLED);
+        req.setUpdatedAt(LocalDateTime.now());
+    }
+
+
 
 }
