@@ -43,6 +43,17 @@ public class HelperAssignment {
     @Column(nullable = false)
     private AssignmentStatus status = AssignmentStatus.ACTIVE;
 
+    @Column(length = 2000)
+    private String memo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private AssignmentProgressStatus progressStatus = AssignmentProgressStatus.ASSIGNED;
+
+    private LocalDateTime updatedAt;
+    private LocalDateTime acceptedAt;
+    private LocalDateTime completedAt;
+
     public HelperAssignment(Helper helper, Emergency emergency, AssignmentType assignmentType) {
         this.helper = helper;
         this.emergency = emergency;
@@ -50,6 +61,7 @@ public class HelperAssignment {
         this.status = AssignmentStatus.ACTIVE;
     }
 
+    /*
     public void markCompleted() {
         this.status = AssignmentStatus.COMPLETED;
     }
@@ -57,4 +69,29 @@ public class HelperAssignment {
     public void cancel() {
         this.status = AssignmentStatus.CANCELLED;
     }
+    */
+    public void accept() {
+        this.progressStatus = AssignmentProgressStatus.ACCEPTED;
+        this.acceptedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void startProgress() {
+        this.progressStatus = AssignmentProgressStatus.IN_PROGRESS;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void markCompleted() {
+        this.status = AssignmentStatus.COMPLETED;
+        this.progressStatus = AssignmentProgressStatus.COMPLETED;
+        this.completedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void cancel() {
+        this.status = AssignmentStatus.CANCELLED;
+        this.progressStatus = AssignmentProgressStatus.CANCELLED;
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }

@@ -6,6 +6,7 @@ import com.save_help.Save_Help.helper.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,7 @@ public class HelperController {
     private final HelperFeedbackService feedbackService;
     private final HelperNotificationHistoryService helperNotificationHistoryService;
     private final HelperPostService helperPostService;
+    private final HelperInboxService inboxService;
 
     // 생성
     @Operation(summary = "Helper 생성", description = "새로운 Helper를 등록합니다.")
@@ -372,5 +374,40 @@ public class HelperController {
             @RequestBody HelperCommentRequestDto dto) {
         return ResponseEntity.ok(helperPostService.addComment(postId, dto));
     }
+
+
+
+    @Operation(summary = "헬퍼 긴급 요청 목록", description = "헬퍼에게 배치된 긴급 요청(업무함) 목록을 조회합니다")
+    @GetMapping("/{helperId}/assignments")
+    public ResponseEntity<Page<HelperInboxItemDto>> list(
+            @PathVariable Long helperId,
+            @RequestParam(required = false) AssignmentProgressStatus progressStatus,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(inboxService.list(helperId, progressStatus, page, size));
+    }
+
+    @Operation(summary = "헬퍼 긴급 요청 상세", description = "헬퍼가 배치받은 긴급 요청 상세를 조회합니다")
+    @GetMapping("/{helperId}/assignments/{assignmentId}")
+    public ResponseEntity<HelperInboxDetailDto> detail(
+            @PathVariable Long helperId,
+            @PathVariable Long assignmentId
+    ) {
+        return ResponseEntity.ok(inboxService.detail(helperId, assignmentId));
+    }
+
+    @Operation(summary = "헬퍼 메모 저장", description = "헬퍼가 배치된 건에 대한 메모를 저장합니다")
+    @PatchMapping("/{helperId}/assignments/{assignmentId}/memo")
+    public ResponseEntity<String> updateMemo(
+            @PathVariable Long helperId,
+            @PathVariable Long assignmentId,
+            @RequestBody Map<String, String> body
+    ) {
+        inboxService.updateMemo(helperId, assignmentId, body.get("memo"));
+        return ResponseEntity.ok("메모 저장 완료");
+    }
+
+
 
 }
