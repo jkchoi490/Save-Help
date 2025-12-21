@@ -83,4 +83,5 @@ public class DailyNecessities {
         PENDING, APPROVED, REJECTED
     }
 
+
 }

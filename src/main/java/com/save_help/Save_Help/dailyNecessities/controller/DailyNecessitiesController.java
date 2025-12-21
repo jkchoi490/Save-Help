@@ -31,6 +31,8 @@ public class DailyNecessitiesController {
     private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
     private final DailyNecessitiesDeliveryService deliveryService;
 
+
+
     public DailyNecessitiesController(
             DailyNecessitiesService necessitiesService,
             UserNecessityRequestService requestService,
@@ -470,5 +472,61 @@ public class DailyNecessitiesController {
     public ResponseEntity<String> triggerLowStockAlerts() {
         necessitiesService.alertLowStockItems();
         return ResponseEntity.ok("긴급 재고 알림이 발송되었습니다.");
+    }
+
+    //----------------------------------------
+    // 사용자 생필품 긴급요청 기능
+    //----------------------------------------
+
+    @Operation(summary = "긴급 생필품 요청 생성", description = "사용자가 생필품 긴급 요청을 생성합니다")
+    @PostMapping
+    public ResponseEntity<DailyNecessitiesRequestResponseDto> create(
+            @RequestBody DailyNecessitiesRequestCreateDto dto
+    ) {
+        return ResponseEntity.ok(necessitiesService.create(dto));
+    }
+
+    @Operation(summary = "유저 긴급 요청 목록 조회", description = "특정 유저의 긴급 요청 목록을 조회합니다")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<DailyNecessitiesRequestResponseDto>> byUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(necessitiesService.getByUser(userId));
+    }
+
+    @Operation(summary = "센터 긴급 요청 목록 조회", description = "특정 센터에 들어온 긴급 요청 목록을 조회합니다(상태 필터 가능)")
+    @GetMapping("/center/{centerId}")
+    public ResponseEntity<List<DailyNecessitiesRequestResponseDto>> byCenter(
+            @PathVariable Long centerId,
+            @RequestParam(required = false) DailyNecessitiesRequest.Status status
+    ) {
+        return ResponseEntity.ok(necessitiesService.getByCenter(centerId, status));
+    }
+
+    @Operation(summary = "전체 긴급 요청 조회", description = "상태별로 전체 긴급 요청을 조회합니다(관리자/운영용)")
+    @GetMapping
+    public ResponseEntity<List<DailyNecessitiesRequestResponseDto>> byStatus(
+            @RequestParam DailyNecessitiesRequest.Status status
+    ) {
+        return ResponseEntity.ok(necessitiesService.getByStatus(status));
+    }
+
+    @Operation(summary = "긴급 요청 상태 변경", description = "센터/관리자가 긴급 요청 상태를 변경합니다")
+    @PatchMapping("/{requestId}/status")
+    public ResponseEntity<String> updateStatus(
+            @PathVariable Long requestId,
+            @RequestParam DailyNecessitiesRequest.Status status,
+            @RequestParam(required = false) String adminNote
+    ) {
+        necessitiesService.updateStatus(requestId, status, adminNote);
+        return ResponseEntity.ok("긴급 요청 상태 변경 완료");
+    }
+
+    @Operation(summary = "긴급 요청 취소", description = "사용자가 본인 긴급 요청을 취소합니다")
+    @PatchMapping("/{requestId}/cancel")
+    public ResponseEntity<String> cancel(
+            @PathVariable Long requestId,
+            @RequestParam Long userId
+    ) {
+        necessitiesService.cancelByUser(requestId, userId);
+        return ResponseEntity.ok("긴급 요청 취소 완료");
     }
 }
