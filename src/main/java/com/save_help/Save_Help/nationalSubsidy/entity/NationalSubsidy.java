@@ -49,5 +49,14 @@ public class NationalSubsidy {
     private Boolean disabilityRequired;
     private Boolean emergencyOnly;
 
-
+    //공공데이터
+    private String baseDate;          //기준일자
+    private String policyAreaCode;    // 분야 코드
+    private String policyAreaName;    // 분야명
+    private String categoryCode;      // 부문 코드
+    private String categoryName;      // 부문명
+    private int fiscalYear;           // 사업연도
+    private long currentBudgetAmount; // 현행 예산액
+    private long originalBudgetAmount; // 기정 예산액
+    private long executedAmount;      // 집행 금액
 }
