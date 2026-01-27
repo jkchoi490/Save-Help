@@ -20,4 +20,5 @@ public class UserSubsidy {
 
     private LocalDateTime grantedAt;
     private Integer amountGranted;
+
 }
