@@ -39,7 +39,7 @@ public class CounselingNotification {
     @Column(length = 500)
     private String deeplink;
 
-    @Column(nullable = false)
+    @Column(name = "is_read", nullable = false)
     private boolean read = false;
 
     @Column(nullable = false)

@@ -182,7 +182,7 @@ public class NationalSubsidyController {
 
     // 구독 등록
     @Operation(summary = "보조금 알림 구독", description = "조건에 맞는 보조금 오픈/마감 알림을 구독합니다")
-    @PostMapping
+    @PostMapping("/subscribe")
     public NationalSubsidySubscriptionResponseDto subscribe(
             @RequestParam Long userId,
             @RequestBody NationalSubsidySubscriptionRequestDto dto
@@ -192,7 +192,7 @@ public class NationalSubsidyController {
 
     // 내 구독 목록 조회
     @Operation(summary = "내 보조금 구독 조회", description = "내가 설정한 보조금 알림 구독 목록을 조회합니다")
-    @GetMapping
+    @GetMapping("/subscribe")
     public List<NationalSubsidySubscriptionResponseDto> mySubscriptions(
             @RequestParam Long userId
     ) {

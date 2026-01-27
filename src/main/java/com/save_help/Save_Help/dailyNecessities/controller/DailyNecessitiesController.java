@@ -479,7 +479,7 @@ public class DailyNecessitiesController {
     //----------------------------------------
 
     @Operation(summary = "긴급 생필품 요청 생성", description = "사용자가 생필품 긴급 요청을 생성합니다")
-    @PostMapping
+    @PostMapping("/emergency-request")
     public ResponseEntity<DailyNecessitiesRequestResponseDto> create(
             @RequestBody DailyNecessitiesRequestCreateDto dto
     ) {
@@ -487,13 +487,13 @@ public class DailyNecessitiesController {
     }
 
     @Operation(summary = "유저 긴급 요청 목록 조회", description = "특정 유저의 긴급 요청 목록을 조회합니다")
-    @GetMapping("/user/{userId}")
+    @GetMapping("/emergency-request/user/{userId}")
     public ResponseEntity<List<DailyNecessitiesRequestResponseDto>> byUser(@PathVariable Long userId) {
         return ResponseEntity.ok(necessitiesService.getByUser(userId));
     }
 
     @Operation(summary = "센터 긴급 요청 목록 조회", description = "특정 센터에 들어온 긴급 요청 목록을 조회합니다(상태 필터 가능)")
-    @GetMapping("/center/{centerId}")
+    @GetMapping("/emergency-request/center/{centerId}")
     public ResponseEntity<List<DailyNecessitiesRequestResponseDto>> byCenter(
             @PathVariable Long centerId,
             @RequestParam(required = false) DailyNecessitiesRequest.Status status
@@ -502,7 +502,7 @@ public class DailyNecessitiesController {
     }
 
     @Operation(summary = "전체 긴급 요청 조회", description = "상태별로 전체 긴급 요청을 조회합니다(관리자/운영용)")
-    @GetMapping
+    @GetMapping("/emergency-request/all")
     public ResponseEntity<List<DailyNecessitiesRequestResponseDto>> byStatus(
             @RequestParam DailyNecessitiesRequest.Status status
     ) {
@@ -510,7 +510,7 @@ public class DailyNecessitiesController {
     }
 
     @Operation(summary = "긴급 요청 상태 변경", description = "센터/관리자가 긴급 요청 상태를 변경합니다")
-    @PatchMapping("/{requestId}/status")
+    @PatchMapping("/emergency-request/{requestId}/status")
     public ResponseEntity<String> updateStatus(
             @PathVariable Long requestId,
             @RequestParam DailyNecessitiesRequest.Status status,
@@ -521,7 +521,7 @@ public class DailyNecessitiesController {
     }
 
     @Operation(summary = "긴급 요청 취소", description = "사용자가 본인 긴급 요청을 취소합니다")
-    @PatchMapping("/{requestId}/cancel")
+    @PatchMapping("/emergency-request/{requestId}/cancel")
     public ResponseEntity<String> cancel(
             @PathVariable Long requestId,
             @RequestParam Long userId

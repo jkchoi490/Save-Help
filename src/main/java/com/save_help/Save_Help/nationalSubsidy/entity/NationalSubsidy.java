@@ -59,4 +59,5 @@ public class NationalSubsidy {
     private long currentBudgetAmount; // 현행 예산액
     private long originalBudgetAmount; // 기정 예산액
     private long executedAmount;      // 집행 금액
+
 }
