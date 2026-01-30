@@ -3,15 +3,13 @@ package com.save_help.Save_Help.user.controller;
 import com.save_help.Save_Help.user.dto.LoginRequestDto;
 import com.save_help.Save_Help.user.dto.SignUpRequestDto;
 import com.save_help.Save_Help.user.dto.TokenResponseDto;
+import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,5 +39,24 @@ public class UserController {
         return ResponseEntity.ok(null);
     }
 
+    @PostMapping
+    public Long create(@RequestBody User user) {
+        return userService.create(user);
+    }
 
+    @PatchMapping("/{userId}/eligibility")
+    public Long updateEligibility(
+            @PathVariable Long userId,
+            @RequestBody UpdateEligibilityRequest req
+    ) {
+        return userService.updateEligibility(userId, req.age, req.incomeLevel, req.disabled, req.inEmergency);
+    }
+
+    @Getter @Setter
+    public static class UpdateEligibilityRequest {
+        public Integer age;
+        public String incomeLevel;
+        public Boolean disabled;
+        public Boolean inEmergency;
+    }
 }
