@@ -5,17 +5,17 @@ import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRequestDto;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.entity.*;
-import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
-import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyRepository;
+import com.save_help.Save_Help.nationalSubsidy.repository.*;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
-import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidySubscriptionRepository;
-import com.save_help.Save_Help.nationalSubsidy.repository.SubsidyApplicationRepository;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +41,9 @@ public class NationalSubsidyService {
     private final NationalSubsidyRepository nationalSubsidyRepository;
     private final SubsidyApplicationRepository subsidyApplicationRepository;
     private final NationalSubsidySubscriptionRepository subscriptionRepository;
+    private final NationalSubsidyApplicationRepository appRepository;
+    private final ApplicationEventPublisher publisher;
+
 
 
     public NationalSubsidyResponseDto create(NationalSubsidyRequestDto dto) {
@@ -328,4 +331,99 @@ public class NationalSubsidyService {
                 .createdAt(s.getCreatedAt())
                 .build();
     }
+
+    //보조금 자동 신청
+    @Transactional
+    public void applyForSubsidyToUsers(Long subsidyId) {
+        NationalSubsidy subsidy = subsidyRepository.findById(subsidyId).orElseThrow();
+        if (!isSubsidyRunnable(subsidy)) return;
+
+        int page = 0;
+        int size = 500;
+
+        while (true) {
+            var users = userRepository.findEligibleUsersForSubsidy(
+                    subsidy.getMinAge(),
+                    subsidy.getMaxAge(),
+                    subsidy.getIncomeLevel(),
+                    Boolean.TRUE.equals(subsidy.getDisabilityRequired()),
+                    Boolean.TRUE.equals(subsidy.getEmergencyOnly()),
+                    PageRequest.of(page, size)
+            );
+
+            for (User u : users.getContent()) {
+                tryInsert(u, subsidy, "Matched by subsidy event");
+            }
+
+            if (!users.hasNext()) break;
+            page++;
+        }
+    }
+
+    @Transactional
+    public void applyForUserToSubsidies(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+
+        int page = 0;
+        int size = 200;
+        LocalDate today = LocalDate.now();
+
+        while (true) {
+            var subsidies = subsidyRepository.findEligibleSubsidiesForUser(
+                    user.getAge(),
+                    user.getIncomeLevel(),
+                    user.isDisabled(),
+                    user.isInEmergency(),
+                    today,
+                    PageRequest.of(page, size)
+            );
+
+            for (NationalSubsidy s : subsidies.getContent()) {
+                if (!isSubsidyRunnable(s)) continue;
+                tryInsert(user, s, "Matched by user event");
+            }
+
+            if (!subsidies.hasNext()) break;
+            page++;
+        }
+    }
+
+    private boolean isSubsidyRunnable(NationalSubsidy s) {
+        if (!s.isActive()) return false;
+
+        LocalDate today = LocalDate.now();
+        if (s.getStartDate() != null && s.getStartDate().isAfter(today)) return false;
+        if (s.getEndDate() != null && s.getEndDate().isBefore(today)) return false;
+
+        return true;
+    }
+
+    private void tryInsert(User u, NationalSubsidy s, String reason) {
+        try {
+            appRepository.save(
+                    NationalSubsidyApplication.builder()
+                            .user(u)
+                            .subsidy(s)
+                            .status(NationalSubsidyApplication.Status.APPLIED)
+                            .reason(reason)
+                            .build()
+            );
+        } catch (DataIntegrityViolationException dup) {
+            // 유니크 충돌 -> 이미 신청완료 적재됨 -> 멱등 OK
+        }
+
+
+    }
+
+    @Transactional
+    public Long create(NationalSubsidy s) {
+        NationalSubsidy saved = subsidyRepository.save(s);
+
+        // 활성화된 지원금만 이벤트 발행하고 싶다면 if(saved.isActive())로 감싸도 됨
+        publisher.publishEvent(new SubsidyCreatedInternalEvent(saved.getId()));
+        return saved.getId();
+    }
+
+
+
 }

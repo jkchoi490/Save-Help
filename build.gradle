@@ -56,6 +56,11 @@ dependencies {
 	//Twilio 의존성
 	implementation 'com.twilio.sdk:twilio:9.3.0'
 
+	//Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
+
+
 }
 
 tasks.named('test') {
