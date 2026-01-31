@@ -50,6 +50,7 @@ public class NationalSubsidyService {
         NationalSubsidy subsidy = new NationalSubsidy();
         updateEntityFromDto(subsidy, dto);
         NationalSubsidy saved = subsidyRepository.save(subsidy);
+        publisher.publishEvent(new SubsidyCreatedInternalEvent(saved.getId()));
         return toResponseDto(saved);
     }
 
@@ -408,6 +409,11 @@ public class NationalSubsidyService {
                             .reason(reason)
                             .build()
             );
+            publisher.publishEvent(new ApplicationCreatedInternalEvent(
+                    saved.getId(),
+                    u.getId(),
+                    s.getId()
+            ));
         } catch (DataIntegrityViolationException dup) {
             // 유니크 충돌 -> 이미 신청완료 적재됨 -> 멱등 OK
         }
@@ -423,7 +429,6 @@ public class NationalSubsidyService {
         publisher.publishEvent(new SubsidyCreatedInternalEvent(saved.getId()));
         return saved.getId();
     }
-
 
 
 }

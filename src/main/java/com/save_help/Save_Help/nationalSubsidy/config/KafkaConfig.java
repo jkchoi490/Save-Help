@@ -20,6 +20,10 @@ import java.util.*;
 @Configuration
 public class KafkaConfig {
 
+
+    @Bean public NewTopic nationalSubsidyScheduledTopic() { return new NewTopic(KafkaTopics.NATIONALSUBSIDY_SCHEDULED, 1, (short) 1); }
+
+
     @Bean
     public ProducerFactory<String, Object> producerFactory(org.springframework.core.env.Environment env) {
         Map<String, Object> props = new HashMap<>();
@@ -101,4 +105,5 @@ public class KafkaConfig {
     @Bean public NewTopic d1() { return new NewTopic(KafkaTopics.SUBSIDY_CREATED_DLQ, 3, (short) 1); }
     @Bean public NewTopic d2() { return new NewTopic(KafkaTopics.USER_CREATED_DLQ, 3, (short) 1); }
     @Bean public NewTopic d3() { return new NewTopic(KafkaTopics.USER_ELIGIBILITY_UPDATED_DLQ, 3, (short) 1); }
+
 }

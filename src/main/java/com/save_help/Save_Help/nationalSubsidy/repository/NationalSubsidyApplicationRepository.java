@@ -37,4 +37,13 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
             Pageable pageable
     );
 
+    @Query("""
+   SELECT a.id FROM NationalSubsidyApplication a
+   JOIN a.subsidy s
+   WHERE a.active = true
+     AND s.active = true
+     AND (s.startDate IS NULL OR s.startDate <= :today)
+     AND (s.endDate IS NULL OR s.endDate >= :today)
+""")
+    Page<Long> findNationalSubsidyApplicationIds(LocalDate today, Pageable pageable);
 }
