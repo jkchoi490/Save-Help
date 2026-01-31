@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
+@Table(name = "national_subsidy")
 public class NationalSubsidy {
 
     @Id

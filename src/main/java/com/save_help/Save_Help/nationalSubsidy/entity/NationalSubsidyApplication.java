@@ -49,4 +49,7 @@ public class NationalSubsidyApplication {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private boolean active = true;
 }

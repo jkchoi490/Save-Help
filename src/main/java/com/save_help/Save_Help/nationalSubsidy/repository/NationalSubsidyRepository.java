@@ -4,6 +4,7 @@ import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -40,6 +41,16 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
             """)
     List<NationalSubsidy> filter(SubsidyType type, String incomeLevel,
                                  Integer minAge, Integer maxAge, Boolean disabilityRequired);
+
+    @Query("""
+        select s
+        from NationalSubsidy s
+        where s.active = true
+          and (s.startDate is null or s.startDate <= :today)
+          and (s.endDate is null or s.endDate >= :today)
+    """)
+    List<NationalSubsidy> findActiveSubsidies(@Param("today") LocalDate today);
+
 
 }
 
