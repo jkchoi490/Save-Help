@@ -12,8 +12,5 @@ public final class KafkaTopics {
     public static final String SUBSIDY_CREATED_DLQ = "subsidy.created.dlq";
     public static final String USER_CREATED_DLQ = "user.created.dlq";
     public static final String USER_ELIGIBILITY_UPDATED_DLQ = "user.eligibility.updated.dlq";
+    public static final String NATIONALSUBSIDY_SCHEDULED = "nationalSubsidy.scheduled";
 }
-
-public record SubsidyCreatedEvent(Long subsidyId, String eventId, long occurredAt) {}
-public record UserCreatedEvent(Long userId, String eventId, long occurredAt) {}
-public record UserEligibilityUpdatedEvent(Long userId, Set<String> changedFields, String eventId, long occurredAt) {}

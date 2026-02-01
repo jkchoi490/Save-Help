@@ -5,6 +5,8 @@ import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRequestDto;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.entity.*;
+import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationCreatedInternalEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.SubsidyCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.repository.*;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import com.save_help.Save_Help.user.entity.User;
@@ -401,7 +403,7 @@ public class NationalSubsidyService {
 
     private void tryInsert(User u, NationalSubsidy s, String reason) {
         try {
-            appRepository.save(
+            NationalSubsidyApplication saved =appRepository.save(
                     NationalSubsidyApplication.builder()
                             .user(u)
                             .subsidy(s)

@@ -2,6 +2,8 @@ package com.save_help.Save_Help.nationalSubsidy.repository;
 
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -52,5 +54,24 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     List<NationalSubsidy> findActiveSubsidies(@Param("today") LocalDate today);
 
 
+    @Query("""
+        select s
+        from NationalSubsidy s
+        where s.minAge <= :age
+          and s.maxAge >= :age
+          and s.minIncomeLevel <= :incomeLevel
+          and (:disabled = false or s.disabledOnly = true)
+          and (:emergency = false or s.emergencyOnly = true)
+          and s.startDate <= :today
+          and s.endDate >= :today
+    """)
+    Page<NationalSubsidy> findEligibleSubsidiesForUser(
+            int age,
+            @Param("incomeLevel") String incomeLevel,
+            boolean disabled,
+            boolean emergency,
+            LocalDate today,
+            Pageable pageable
+    );
 }
 
