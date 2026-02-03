@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.nationalSubsidy.entity;
 
+import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationStatus;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class SubsidyApplication {
 
     private LocalDate appliedDate = LocalDate.now();
 
-    private String status = "PENDING"; // PENDING, APPROVED, REJECTED
-
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false, length=16)
+    private ApplicationStatus status;
 }
