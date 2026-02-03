@@ -62,4 +62,5 @@ public class NationalSubsidy {
     private long executedAmount;      // 집행 금액
 
 
+
 }
