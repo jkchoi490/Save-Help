@@ -32,13 +32,16 @@ public class NationalSubsidy {
     private String center; // 보조금 지원처
 
     // 최대 지원 금액
+    @Column(nullable = false)
     private Integer maxAmount;
 
     // 대상
     private String targetGroup;
 
     // 신청 시작일 / 종료일
+    @Column(nullable = false)
     private LocalDate startDate;
+    @Column(nullable = false)
     private LocalDate endDate;
 
     // 현재 활성화 여부

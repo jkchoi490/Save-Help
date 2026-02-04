@@ -30,7 +30,7 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 
     // 현재 신청 가능 보조금
     @Query("SELECT s FROM NationalSubsidy s WHERE s.startDate <= :today AND s.endDate >= :today AND s.active = true")
-    List<NationalSubsidy> findAvailableSubsidies(LocalDate today);
+    List<NationalSubsidy> findAvailableSubsidies(@Param("today")LocalDate today);
 
     // 세부 필터링
     @Query("""
@@ -55,23 +55,25 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 
 
     @Query("""
-        select s
-        from NationalSubsidy s
-        where s.minAge <= :age
-          and s.maxAge >= :age
-          and s.minIncomeLevel <= :incomeLevel
-          and (:disabled = false or s.disabledOnly = true)
-          and (:emergency = false or s.emergencyOnly = true)
-          and s.startDate <= :today
-          and s.endDate >= :today
-    """)
+    select s
+    from NationalSubsidy s
+    where s.active = true
+      and (s.startDate is null or s.startDate <= :today)
+      and (s.endDate is null or s.endDate >= :today)
+      and (s.minAge is null or s.minAge <= :age)
+      and (s.maxAge is null or s.maxAge >= :age)
+      and (:incomeLevel is null or s.incomeLevel = :incomeLevel)
+      and (:disabled = false or s.disabilityRequired = true)
+      and (:emergency = false or s.emergencyOnly = true)
+""")
     Page<NationalSubsidy> findEligibleSubsidiesForUser(
-            int age,
+            @Param("age") int age,
             @Param("incomeLevel") String incomeLevel,
-            boolean disabled,
-            boolean emergency,
-            LocalDate today,
+            @Param("disabled") boolean disabled,
+            @Param("emergency") boolean emergency,
+            @Param("today") LocalDate today,
             Pageable pageable
     );
+
 }
 

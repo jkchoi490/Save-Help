@@ -1,5 +1,7 @@
 package com.save_help.Save_Help.user.service;
 
+import com.save_help.Save_Help.nationalSubsidy.kafka.UserCreatedInternalEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.UserEligibilityChangedInternalEvent;
 import com.save_help.Save_Help.user.dto.LoginRequestDto;
 import com.save_help.Save_Help.user.dto.SignUpRequestDto;
 import com.save_help.Save_Help.user.dto.TokenResponseDto;
