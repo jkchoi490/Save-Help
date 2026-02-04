@@ -206,9 +206,10 @@ public class NationalSubsidyController {
         subsidyService.unsubscribe(subscriptionId);
     }
 
+    /*
     @PostMapping
     public Long create(@RequestBody NationalSubsidy subsidy) {
         return subsidyService.create(subsidy);
     }
-
+    */
 }

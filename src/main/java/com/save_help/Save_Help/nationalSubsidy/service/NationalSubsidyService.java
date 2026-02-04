@@ -6,6 +6,7 @@ import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRe
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.entity.*;
 import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationCreatedInternalEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationStatus;
 import com.save_help.Save_Help.nationalSubsidy.kafka.SubsidyCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.repository.*;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
@@ -269,7 +270,7 @@ public class NationalSubsidyService {
         SubsidyApplication app = new SubsidyApplication();
         app.setUser(user);
         app.setSubsidy(subsidy);
-        app.setStatus("PENDING"); // 접수됨(신청 완료)
+        app.setStatus(ApplicationStatus.valueOf("PENDING")); // 접수됨(신청 완료)
         SubsidyApplication saved = subsidyApplicationRepository.save(app);
 
         // 신청 완료 알림 저장

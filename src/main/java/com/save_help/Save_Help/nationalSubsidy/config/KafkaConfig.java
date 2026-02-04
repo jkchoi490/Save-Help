@@ -13,6 +13,7 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.*;
 import org.springframework.kafka.support.serializer.*;
 import org.springframework.util.backoff.FixedBackOff;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 
 import java.util.*;
 
@@ -20,20 +21,24 @@ import java.util.*;
 @Configuration
 public class KafkaConfig {
 
+    private final KafkaProperties kafkaProperties;
+
+    public KafkaConfig(KafkaProperties kafkaProperties) {
+        this.kafkaProperties = kafkaProperties;
+    }
 
     @Bean public NewTopic nationalSubsidyScheduledTopic() { return new NewTopic(KafkaTopics.NATIONALSUBSIDY_SCHEDULED, 1, (short) 1); }
 
 
     @Bean
-    public ProducerFactory<String, Object> producerFactory(org.springframework.core.env.Environment env) {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, env.getProperty("spring.kafka.bootstrap-servers"));
+    public ProducerFactory<String, Object> producerFactory() {
+        Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties());
+
+
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        // 권장 옵션
-        props.put(ProducerConfig.ACKS_CONFIG, "all");
-        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
 
         return new DefaultKafkaProducerFactory<>(props);
     }
@@ -44,18 +49,21 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, Object> consumerFactory(org.springframework.core.env.Environment env) {
-        JsonDeserializer<Object> jsonDeserializer = new JsonDeserializer<>();
-        jsonDeserializer.addTrustedPackages("*"); // 내부 DTO만 신뢰하도록 좁혀도 됨
+    public ConsumerFactory<String, Object> consumerFactory() {
+        Map<String, Object> props = new HashMap<>(kafkaProperties.buildConsumerProperties());
 
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, env.getProperty("spring.kafka.bootstrap-servers"));
+
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, jsonDeserializer);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), jsonDeserializer);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.save_help.Save_Help.*");
+        props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
+
+        return new DefaultKafkaConsumerFactory<>(
+                props,
+                new StringDeserializer(),
+                new JsonDeserializer<>(Object.class, false)
+        );
     }
 
     @Bean
