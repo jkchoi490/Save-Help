@@ -13,5 +13,5 @@ public interface SubsidyApplicationRepository extends JpaRepository<SubsidyAppli
     Optional<SubsidyApplication> findByUserIdAndSubsidyId(Long userId, Long subsidyId);
     List<SubsidyApplication> findByUser_Id(Long userId);
     List<SubsidyApplication> findByStatus(ApplicationStatus status);
-
+    boolean existsByUserIdAndSubsidyId(Long userId, Long subsidyId);
 }
