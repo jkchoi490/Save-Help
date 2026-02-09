@@ -11,6 +11,7 @@ public final class KafkaTopics {
     public static final String SUBSIDY_APP_STATUS    = "subsidy.application.status.v1";
 
     public static final String SUBSIDY_CREATED = "subsidy.created";
+    public static final String USER_ELIGIBILITY_APPLIED = "user-eligibility-applied";
     public static final String USER_CREATED = "user.created";
     public static final String USER_ELIGIBILITY_UPDATED = "user.eligibility.updated";
 
