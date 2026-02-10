@@ -13,6 +13,7 @@ public enum SubsidyType {
     SENIOR,         // 노인 지원
     DISABILITY,     // 몸이 불편한 분들 지원
     YOUTH,          // 청년 지원
+    WELFARE,        // 복지 일반
     OTHER       // 기타
 
 }

@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.user.service;
 
+import com.save_help.Save_Help.nationalSubsidy.kafka.SavedNationalSubsidyUser;
 import com.save_help.Save_Help.nationalSubsidy.kafka.UserCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.UserEligibilityChangedInternalEvent;
 import com.save_help.Save_Help.user.dto.LoginRequestDto;
@@ -98,6 +99,17 @@ public class UserService {
 
         return userId;
     }
+
+    @Transactional
+    public User saveOrUpdate(User user, String reason) {
+        User saved = userRepository.save(user);
+
+        // 커밋 이후 Kafka 발행은 Publisher에서 AFTER_COMMIT로 처리
+        publisher.publishEvent(new SavedNationalSubsidyUser(saved.getId(), reason));
+
+        return saved;
+    }
+
 
 
 }

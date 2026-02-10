@@ -44,4 +44,20 @@ public class KafkaPublishers {
         );
         kafkaTemplate.send(KafkaTopics.USER_ELIGIBILITY_UPDATED, String.valueOf(e.userId()), event);
     }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(SavedNationalSubsidyUser e) {
+        RequirementsNationalSubsidy event = new RequirementsNationalSubsidy(
+                UUID.randomUUID().toString(),
+                e.userId(),
+                System.currentTimeMillis(),
+                e.reason()
+        );
+
+        kafkaTemplate.send(
+                KafkaTopics.USER_ELIGIBILITY_APPLIED,
+                String.valueOf(e.userId()),
+                event
+        );
+    }
 }
