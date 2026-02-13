@@ -60,4 +60,17 @@ public class KafkaPublishers {
                 event
         );
     }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onUserSaved(SavedNationalSubsidyUser e) {
+        RequirementsNationalSubsidy event = new RequirementsNationalSubsidy(
+                UUID.randomUUID().toString(),
+                e.userId(),
+                System.currentTimeMillis(),
+                e.reason()
+        );
+
+        // key=userId로 보내면 같은 유저는 같은 파티션
+        kafkaTemplate.send(KafkaTopics.USER_ELIGIBILITY_APPLIED, String.valueOf(e.userId()), event);
+    }
 }

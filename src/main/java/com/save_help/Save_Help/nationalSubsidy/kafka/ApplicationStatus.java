@@ -6,5 +6,6 @@ public enum ApplicationStatus {
     SUBMITTED,
     APPROVED,
     REJECTED,
-    APPLIED      // 신청내역 DB 기록
+    APPLIED,      // 신청내역 DB 기록
+    PENDING // 처리중인 상태
 }
