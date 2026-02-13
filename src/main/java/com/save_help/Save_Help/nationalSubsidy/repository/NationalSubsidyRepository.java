@@ -83,5 +83,16 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 """)
     List<NationalSubsidy> findOpenForApplication();
 
+
+    @Query("""
+ select s from NationalSubsidy s
+ where s.active = true
+   and (s.startDate is null or s.startDate <= current_date)
+   and (s.endDate is null or s.endDate >= current_date)
+   and (s.emergencyOnly is null or s.emergencyOnly = false or :inEmergency = true)
+""")
+    List<NationalSubsidy> findOpenForApplicationConsideringEmergency(boolean inEmergency);
+
+
 }
 
