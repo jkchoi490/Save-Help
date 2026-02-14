@@ -93,6 +93,11 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 """)
     List<NationalSubsidy> findOpenForApplicationConsideringEmergency(boolean inEmergency);
 
-
+    @Query("""
+        select s
+        from NationalSubsidy s
+        where s.isOpen = true
+    """)
+    List<NationalSubsidy> findOpenSubsidiesForUser(Long userId);
 }
 
