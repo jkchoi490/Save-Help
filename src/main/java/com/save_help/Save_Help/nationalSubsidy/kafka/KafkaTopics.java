@@ -19,4 +19,8 @@ public final class KafkaTopics {
     public static final String USER_CREATED_DLQ = "user.created.dlq";
     public static final String USER_ELIGIBILITY_UPDATED_DLQ = "user.eligibility.updated.dlq";
     public static final String NATIONALSUBSIDY_SCHEDULED = "nationalSubsidy.scheduled";
+
+    public static final String SUBSIDY_OPENED_DLT = "subsidy.opened.DLT";
+    public static final String USER_ELIGIBILITY_UPDATED_DLT = "user.eligibility.updated.DLT";
+
 }

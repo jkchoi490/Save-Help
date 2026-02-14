@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,4 +33,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("emergencyOnly") boolean emergencyOnly,
             Pageable pageable
     );
+
+    @Query("""
+        select u
+        from User u
+        where u.isOpen = true
+          and u.eligibilityGrade is not null
+    """)
+    List<User> findEligibleUsersForSubsidy(Long subsidyId);
 }

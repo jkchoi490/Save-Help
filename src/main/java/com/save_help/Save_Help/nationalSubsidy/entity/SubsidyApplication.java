@@ -3,6 +3,7 @@ package com.save_help.Save_Help.nationalSubsidy.entity;
 import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationStatus;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,4 +53,12 @@ public class SubsidyApplication {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Builder
+    public SubsidyApplication(User user, NationalSubsidy subsidy, ApplicationStatus status) {
+        this.user = user;
+        this.subsidy = subsidy;
+        this.status = status;
+        this.appliedDate = LocalDate.now(); // 기본값을 여기서 보장
+    }
 }

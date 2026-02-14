@@ -46,6 +46,7 @@ public class NationalSubsidy {
 
     // 현재 활성화 여부
     private boolean active = true;
+    private boolean isOpen;
 
     private Integer minAge;
     private Integer maxAge;
