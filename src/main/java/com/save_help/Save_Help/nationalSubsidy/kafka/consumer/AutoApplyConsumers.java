@@ -1,6 +1,7 @@
 package com.save_help.Save_Help.nationalSubsidy.kafka.consumer;
 
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
+import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyApplication;
 import com.save_help.Save_Help.nationalSubsidy.kafka.*;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyRepository;
 import com.save_help.Save_Help.nationalSubsidy.repository.SubsidyApplicationRepository;
@@ -70,12 +71,14 @@ public class AutoApplyConsumers {
             if (applicationRepository.existsByUserIdAndSubsidyId(user.getId(), s.getId())) continue;
 
             try {
-                applicationRepository.save(SubsidyApplication.builder()
-                        .userId(user.getId())
-                        .subsidyId(s.getId())
-                        .status(ApplicationStatus.APPLIED) // 현재는 DB 생성=완료
-                        .triggerEventId(event.eventId())
-                        .build());
+                applicationRepository.save(
+                        SubsidyApplication.builder()
+                                .user(user)
+                                .subsidy(s)
+                                .status(ApplicationStatus.APPLIED)
+                                .build()
+                );
+
             } catch (DataIntegrityViolationException dup) {
 
             }

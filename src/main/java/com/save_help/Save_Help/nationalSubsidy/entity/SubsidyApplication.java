@@ -59,6 +59,6 @@ public class SubsidyApplication {
         this.user = user;
         this.subsidy = subsidy;
         this.status = status;
-        this.appliedDate = LocalDate.now(); // 기본값을 여기서 보장
+        this.appliedDate = LocalDate.now();
     }
 }

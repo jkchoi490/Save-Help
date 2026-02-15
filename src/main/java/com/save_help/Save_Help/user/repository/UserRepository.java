@@ -35,10 +35,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
 
     @Query("""
-        select u
-        from User u
-        where u.isOpen = true
-          and u.eligibilityGrade is not null
+    select u
+    from User u
+    where not exists (
+    select 1
+    from SubsidyApplication a
+    where a.user = u
+    and a.subsidy.id = :subsidyId
+    )
     """)
-    List<User> findEligibleUsersForSubsidy(Long subsidyId);
+    List<User> findEligibleUsersForSubsidy(@Param("subsidyId") Long subsidyId);
+
 }
