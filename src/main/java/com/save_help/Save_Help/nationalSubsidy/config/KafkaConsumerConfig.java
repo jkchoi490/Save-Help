@@ -13,8 +13,9 @@ import org.springframework.util.backoff.FixedBackOff;
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Bean
-    public DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
+
+    @Bean(name = "kafkaDefaultErrorHandler")
+    public DefaultErrorHandler kafkaDefaultErrorHandler(KafkaTemplate<Object, Object> template) {
         DeadLetterPublishingRecoverer recoverer =
                 new DeadLetterPublishingRecoverer(template,
                         (record, ex) -> new TopicPartition(record.topic() + ".DLQ", record.partition()));

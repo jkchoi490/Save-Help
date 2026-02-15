@@ -43,10 +43,6 @@ public class KafkaConfig {
         return new DefaultKafkaProducerFactory<>(props);
     }
 
-    @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> pf) {
-        return new KafkaTemplate<>(pf);
-    }
 
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
@@ -113,5 +109,14 @@ public class KafkaConfig {
     @Bean public NewTopic d1() { return new NewTopic(KafkaTopics.SUBSIDY_CREATED_DLQ, 3, (short) 1); }
     @Bean public NewTopic d2() { return new NewTopic(KafkaTopics.USER_CREATED_DLQ, 3, (short) 1); }
     @Bean public NewTopic d3() { return new NewTopic(KafkaTopics.USER_ELIGIBILITY_UPDATED_DLQ, 3, (short) 1); }
+
+
+
+    @Bean
+    public org.springframework.kafka.core.KafkaTemplate<Object, Object> kafkaTemplate(
+            org.springframework.kafka.core.ProducerFactory<Object, Object> pf
+    ) {
+        return new org.springframework.kafka.core.KafkaTemplate<>(pf);
+    }
 
 }
