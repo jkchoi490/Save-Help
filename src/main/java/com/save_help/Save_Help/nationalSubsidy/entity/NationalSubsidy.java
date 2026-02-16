@@ -54,6 +54,9 @@ public class NationalSubsidy {
     private Boolean disabilityRequired;
     private Boolean emergencyOnly;
 
+    private String subsidyType; // 보조금 종류
+    private String subsidyField; // 보조금 분야
+
     //공공데이터
     private String baseDate;          //기준일자
     private String policyAreaCode;    // 분야 코드

@@ -84,4 +84,26 @@ public class AutoApplyConsumers {
             }
         }
     }
+
+    @KafkaListener(topics = "user.created", groupId = "user-auto-apply")
+    public void onUserCreated(UserCreatedEvent e) {
+        autoApplyService.autoApplyForUser(e.userId());
+    }
+
+    @KafkaListener(topics = "user.eligibility.updated", groupId = "user-auto-apply")
+    public void onUserEligibilityUpdated(UserEligibilityUpdatedEvent e) {
+        autoApplyService.autoApplyForUser(e.userId());
+    }
+
+    @KafkaListener(topics = "subsidy.created", groupId = "subsidy-auto-apply")
+    public void onSubsidyCreated(SubsidyCreatedEvent e) {
+        autoApplyService.autoApplyForSubsidy(e.subsidyId());
+    }
+
+    @KafkaListener(topics = "subsidy.eligibility.updated", groupId = "subsidy-auto-apply")
+    public void onSubsidyEligibilityUpdated(SubsidyEligibilityUpdatedEvent e) {
+        autoApplyService.autoApplyForSubsidy(e.subsidyId());
+    }
+
+
 }

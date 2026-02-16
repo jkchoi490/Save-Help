@@ -15,7 +15,7 @@ public class KafkaConsumerConfig {
 
 
     @Bean(name = "kafkaDefaultErrorHandler")
-    public DefaultErrorHandler kafkaDefaultErrorHandler(KafkaTemplate<Object, Object> template) {
+    public DefaultErrorHandler kafkaDefaultErrorHandler(KafkaTemplate<String, Object> template) {
         DeadLetterPublishingRecoverer recoverer =
                 new DeadLetterPublishingRecoverer(template,
                         (record, ex) -> new TopicPartition(record.topic() + ".DLQ", record.partition()));
@@ -29,6 +29,7 @@ public class KafkaConsumerConfig {
                     record.topic(), record.partition(), record.offset(), deliveryAttempt, ex.toString());
         });
 
-        return new DefaultErrorHandler(recoverer, backOff);
+        return errorHandler; // <- 여기 꼭 errorHandler를 반환
     }
+
 }

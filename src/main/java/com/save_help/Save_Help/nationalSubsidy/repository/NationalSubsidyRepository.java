@@ -99,5 +99,21 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
         where s.isOpen = true
     """)
     List<NationalSubsidy> findOpenSubsidiesForUser(Long userId);
+
+    @Query("""
+    select s from NationalSubsidy s
+    where s.active = true
+      and s.isOpen = true
+      and s.startDate <= :today and s.endDate >= :today
+      and (s.minAge is null or s.minAge <= :age)
+      and (s.maxAge is null or s.maxAge >= :age)
+      and (s.incomeLevel is null or s.incomeLevel = :income)
+""")
+    List<NationalSubsidy> findOpenCandidates(
+            @Param("today") LocalDate today,
+            @Param("age") int age,
+            @Param("income") String income
+    );
+
 }
 
