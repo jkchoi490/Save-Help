@@ -140,7 +140,8 @@ public class NationalSubsidyService {
                 .toList();
     }
 
-    public void autoApplyForUser(Long userId) {
+
+    public void autoApplyForUsers(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -433,5 +434,72 @@ public class NationalSubsidyService {
         return saved.getId();
     }
 
+
+    @Transactional
+    public int autoApplyForUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        LocalDate today = LocalDate.now();
+
+        List<NationalSubsidy> candidates =
+                nationalSubsidyRepository.findOpenCandidates(today, user.getAge(), user.getIncomeLevel());
+
+        int created = 0;
+        for (NationalSubsidy s : candidates) {
+            created += createIfEligible(user, s) ? 1 : 0;
+        }
+        return created;
+    }
+
+    @Transactional
+    public int autoApplyForSubsidy(Long subsidyId) {
+        NationalSubsidy subsidy = nationalSubsidyRepository.findById(subsidyId).orElseThrow();
+
+
+        List<User> users = userRepository.findCandidateUsersForSubsidy(
+                subsidy.getMinAge(), subsidy.getMaxAge(), subsidy.getIncomeLevel()
+        );
+
+        int created = 0;
+        for (User u : users) {
+            created += createIfEligible(u, subsidy) ? 1 : 0;
+        }
+        return created;
+    }
+
+    private boolean createIfEligible(User user, NationalSubsidy subsidy) {
+        if (!isEligible(user, subsidy)) return false;
+
+        if (subsidyApplicationRepository.existsByUser_IdAndSubsidy_Id(user.getId(), subsidy.getId())) return false;
+
+        try {
+            subsidyApplicationRepository.save(SubsidyApplication.builder()
+                    .user(user)
+                    .subsidy(subsidy)
+                    .status(ApplicationStatus.SUBMITTED)
+                    .build());
+            return true;
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+
+            return false;
+        }
+    }
+
+    private boolean isEligible(User u, NationalSubsidy s) {
+        LocalDate today = LocalDate.now();
+        if (!s.isActive() || !s.isOpen()) return false;
+        if (s.getStartDate().isAfter(today) || s.getEndDate().isBefore(today)) return false;
+
+        Integer minAge = s.getMinAge();
+        Integer maxAge = s.getMaxAge();
+        if (minAge != null && u.getAge() < minAge) return false;
+        if (maxAge != null && u.getAge() > maxAge) return false;
+
+        if (s.getIncomeLevel() != null && !s.getIncomeLevel().equals(u.getIncomeLevel())) return false;
+
+        if (Boolean.TRUE.equals(s.getDisabilityRequired()) && !u.isDisabled()) return false;
+        if (Boolean.TRUE.equals(s.getEmergencyOnly()) && !u.isInEmergency()) return false;
+
+        return true;
+    }
 
 }

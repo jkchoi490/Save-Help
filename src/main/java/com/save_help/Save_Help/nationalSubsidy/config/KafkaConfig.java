@@ -111,12 +111,11 @@ public class KafkaConfig {
     @Bean public NewTopic d3() { return new NewTopic(KafkaTopics.USER_ELIGIBILITY_UPDATED_DLQ, 3, (short) 1); }
 
 
-
     @Bean
-    public org.springframework.kafka.core.KafkaTemplate<Object, Object> kafkaTemplate(
-            org.springframework.kafka.core.ProducerFactory<Object, Object> pf
-    ) {
-        return new org.springframework.kafka.core.KafkaTemplate<>(pf);
+    public KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> pf) {
+        return new KafkaTemplate<>(pf);
     }
+
+
 
 }
