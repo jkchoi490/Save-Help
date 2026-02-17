@@ -14,6 +14,7 @@ import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class NationalSubsidyService {
 
     private final NationalSubsidyRepository subsidyRepository;
@@ -501,5 +503,47 @@ public class NationalSubsidyService {
 
         return true;
     }
+
+    public int handleSubsidyChanged(Long subsidyId, String reason) {
+        LocalDate today = LocalDate.now();
+        if (!subsidyRepository.existsRunnable(subsidyId, today)) {
+            log.info("[AutoApply][Subsidy] subsidyId={} is not runnable today -> skip", subsidyId);
+            return 0;
+        }
+
+        NationalSubsidy subsidy = subsidyRepository.findById(subsidyId).orElseThrow();
+
+        int page = 0;
+        int size = 700;
+        int created = 0;
+        int processed = 0;
+
+        while (true) {
+            var users = userRepository.findEligibleUsersForSubsidy(
+                    subsidy.getMinAge(),
+                    subsidy.getMaxAge(),
+                    subsidy.getIncomeLevel(),
+                    Boolean.TRUE.equals(subsidy.getDisabilityRequired()),
+                    Boolean.TRUE.equals(subsidy.getEmergencyOnly()),
+                    PageRequest.of(page, size)
+            );
+
+            for (User u : users.getContent()) {
+                if (isEligible(u, subsidy)) {
+                    tryInsert(u, subsidy, reason);
+                    created++;
+                }
+                processed++;
+
+            }
+
+            if (!users.hasNext()) break;
+            page++;
+        }
+
+        log.info("[AutoApply][Subsidy] subsidyId={}, created={}, processed={}", subsidyId, created, processed);
+        return created;
+    }
+
 
 }

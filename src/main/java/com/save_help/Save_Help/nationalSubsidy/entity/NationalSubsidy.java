@@ -68,7 +68,13 @@ public class NationalSubsidy {
     private long originalBudgetAmount; // 기정 예산액
     private long executedAmount;      // 집행 금액
 
-
+    public boolean isRunnable(LocalDate today) {
+        if (!active) return false;
+        if (!isOpen) return false;
+        if (startDate != null && startDate.isAfter(today)) return false;
+        if (endDate != null && endDate.isBefore(today)) return false;
+        return true;
+    }
 
 
 }

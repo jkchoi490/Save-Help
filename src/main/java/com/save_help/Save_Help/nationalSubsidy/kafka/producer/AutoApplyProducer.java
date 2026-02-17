@@ -1,7 +1,7 @@
 package com.save_help.Save_Help.nationalSubsidy.kafka.producer;
 
-import com.save_help.Save_Help.nationalSubsidy.kafka.SubsidyCreatedEvent;
-import com.save_help.Save_Help.nationalSubsidy.kafka.UserEligibilityUpdatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserEligibilityUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
