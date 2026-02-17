@@ -1,6 +1,6 @@
 package com.save_help.Save_Help.nationalSubsidy.config;
 
-import com.save_help.Save_Help.nationalSubsidy.kafka.KafkaTopics;
+import com.save_help.Save_Help.nationalSubsidy.kafka.topic.KafkaTopics;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;

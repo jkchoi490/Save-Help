@@ -52,4 +52,12 @@ public class NationalSubsidyApplication {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 100, nullable = false)
+    private AppliedBy appliedBy;
+
+    public enum AppliedBy {
+        AUTO, MANUAL, ADMIN, SYSTEM
+    }
 }

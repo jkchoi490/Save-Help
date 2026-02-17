@@ -1,13 +1,19 @@
 package com.save_help.Save_Help.nationalSubsidy.kafka.publisher;
 
 import com.save_help.Save_Help.nationalSubsidy.kafka.*;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserCreatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserEligibilityUpdatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.topic.KafkaTopics;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.*;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KafkaPublishers {
@@ -21,7 +27,18 @@ public class KafkaPublishers {
                 UUID.randomUUID().toString(),
                 System.currentTimeMillis()
         );
-        kafkaTemplate.send(KafkaTopics.SUBSIDY_CREATED, String.valueOf(e.subsidyId()), event);
+
+        kafkaTemplate.send(KafkaTopics.SUBSIDY_CREATED, String.valueOf(e.subsidyId()), event)
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        log.error("[Kafka Publish FAIL] topic={}, key={}, event={}",
+                                KafkaTopics.SUBSIDY_CREATED, e.subsidyId(), event, ex);
+                        return;
+                    }
+                    var md = result.getRecordMetadata();
+                    log.info("[Kafka Publish OK] topic={}, key={}, partition={}, offset={}, ts={}",
+                            KafkaTopics.SUBSIDY_CREATED, e.subsidyId(), md.partition(), md.offset(), md.timestamp());
+                });
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -32,6 +49,7 @@ public class KafkaPublishers {
                 System.currentTimeMillis()
         );
         kafkaTemplate.send(KafkaTopics.USER_CREATED, String.valueOf(e.userId()), event);
+
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -72,5 +90,6 @@ public class KafkaPublishers {
 
         // key=userId로 보내면 같은 유저는 같은 파티션
         kafkaTemplate.send(KafkaTopics.USER_ELIGIBILITY_APPLIED, String.valueOf(e.userId()), event);
+
     }
 }
