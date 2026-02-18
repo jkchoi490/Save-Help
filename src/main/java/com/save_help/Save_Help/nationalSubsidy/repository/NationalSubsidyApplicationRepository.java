@@ -46,4 +46,7 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
      AND (s.endDate IS NULL OR s.endDate >= :today)
 """)
     Page<Long> findNationalSubsidyApplicationIds(LocalDate today, Pageable pageable);
+
+    boolean existsByUser_IdAndSubsidy_IdAndActiveTrue(Long userId, Long subsidyId);
+
 }

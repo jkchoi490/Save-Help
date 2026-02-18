@@ -132,6 +132,35 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     );
 
 
-    boolean existsRunnable(Long subsidyId, LocalDate today);
+    @Query("""
+    select (count(s) > 0)
+    from NationalSubsidy s
+    where s.id = :subsidyId
+    and s.active = true
+    and s.isOpen = true
+    and (s.startDate is null or s.startDate <= :today)
+    and (s.endDate   is null or s.endDate   >= :today)
+    """)
+    boolean existsRunnable(@Param("subsidyId") Long subsidyId,
+                           @Param("today") LocalDate today);
+
+
+    @Query("""
+        select s
+        from NationalSubsidy s
+        where (:type is null or s.type = :type)
+        and (:center is null or lower(s.center) like lower(concat('%', :center, '%')))
+        and (:from is null or s.startDate >= :from)
+        and (:to is null or s.endDate <= :to)
+        order by s.id desc
+    """)
+    Page<NationalSubsidy> searchAdmin(
+            @Param("type") SubsidyType type,
+            @Param("center") String center,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to,
+            Pageable pageable
+    );
+
 }
 

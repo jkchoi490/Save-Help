@@ -545,5 +545,12 @@ public class NationalSubsidyService {
         return created;
     }
 
+    @Transactional
+    public void updateOpen(Long id, boolean open) {
+        NationalSubsidy subsidy = subsidyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 보조금이 존재하지 않습니다. id=" + id));
+
+        subsidy.setOpen(open);
+    }
 
 }

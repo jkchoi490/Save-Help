@@ -76,5 +76,11 @@ public class NationalSubsidy {
         return true;
     }
 
+    public void open() { this.isOpen = true; }
+    public void close() { this.isOpen = false; }
+    public void activate() { this.active = true; }
+    public void deactivate() { this.active = false; }
+
+
 
 }
