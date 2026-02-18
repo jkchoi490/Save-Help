@@ -60,4 +60,10 @@ public class NationalSubsidyApplication {
     public enum AppliedBy {
         AUTO, MANUAL, ADMIN, SYSTEM
     }
+
+    @PrePersist
+    void prePersist() {
+        if (status == null) status = Status.PENDING;
+        if (appliedBy == null) appliedBy = AppliedBy.SYSTEM;
+    }
 }

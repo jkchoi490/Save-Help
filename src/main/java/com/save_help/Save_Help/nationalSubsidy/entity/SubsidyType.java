@@ -14,6 +14,7 @@ public enum SubsidyType {
     DISABILITY,     // 몸이 불편한 분들 지원
     YOUTH,          // 청년 지원
     WELFARE,        // 복지 일반
+    HEALTHCARE,     // 건강관리 지원
     OTHER       // 기타
 
 }

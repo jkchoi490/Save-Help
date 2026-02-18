@@ -212,4 +212,12 @@ public class NationalSubsidyController {
         return subsidyService.create(subsidy);
     }
     */
+
+    @Operation(summary = "보조금 신청 가능 상태", description = "보조금 신청 가능 상태(isOpen)를 변경합니다")
+    @PatchMapping("/{id}/open")
+    public ResponseEntity<String> updateOpen(@PathVariable Long id, @RequestParam boolean open) {
+        subsidyService.updateOpen(id, open);
+        return ResponseEntity.ok("보조금 open 상태로 완료 id=" + id + ", open=" + open);
+    }
+
 }
