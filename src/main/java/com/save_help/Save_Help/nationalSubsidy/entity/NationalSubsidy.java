@@ -3,8 +3,11 @@ package com.save_help.Save_Help.nationalSubsidy.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -46,7 +49,20 @@ public class NationalSubsidy {
 
     // 현재 활성화 여부
     private boolean active = true;
-    private boolean isOpen;
+
+    @Column(name = "is_open", nullable = false)
+    private boolean isOpen = false;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime openedAt;
+    private LocalDateTime closedAt;
+
 
     private Integer minAge;
     private Integer maxAge;
@@ -76,8 +92,15 @@ public class NationalSubsidy {
         return true;
     }
 
-    public void open() { this.isOpen = true; }
-    public void close() { this.isOpen = false; }
+    public void open() {
+        this.isOpen = true;
+        this.openedAt = LocalDateTime.now();
+        this.closedAt = null;
+    }
+    public void close() {
+        this.isOpen = false;
+        this.closedAt = LocalDateTime.now();
+    }
     public void activate() { this.active = true; }
     public void deactivate() { this.active = false; }
 
