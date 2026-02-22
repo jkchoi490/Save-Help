@@ -4,6 +4,7 @@ import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -50,12 +51,20 @@ public class NationalSubsidyApplication {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     @Column(nullable = false)
     private boolean active = true;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 100, nullable = false)
     private AppliedBy appliedBy;
+
+    @Column(name = "event_id", length = 100)
+    private String eventId;
+
+    private LocalDateTime appliedAt; // 신청 완료 시간
 
     public enum AppliedBy {
         AUTO, MANUAL, ADMIN, SYSTEM
@@ -65,5 +74,11 @@ public class NationalSubsidyApplication {
     void prePersist() {
         if (status == null) status = Status.PENDING;
         if (appliedBy == null) appliedBy = AppliedBy.SYSTEM;
+    }
+
+    public void markApplied(String reason) {
+        this.status = Status.APPLIED;
+        this.reason = reason;
+        this.appliedAt = LocalDateTime.now();
     }
 }

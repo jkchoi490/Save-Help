@@ -19,7 +19,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -551,6 +553,18 @@ public class NationalSubsidyService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 보조금이 존재하지 않습니다. id=" + id));
 
         subsidy.setOpen(open);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<NationalSubsidyResponseDto> searchAdmin(
+            SubsidyType type,
+            String center,
+            LocalDate from,
+            LocalDate to,
+            Pageable pageable
+    ) {
+        return subsidyRepository.searchAdmin(type, center, from, to, pageable)
+                .map(this::toResponseDto);
     }
 
 }

@@ -12,11 +12,13 @@ import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ public class NationalSubsidyController {
 
     private final NationalSubsidyService subsidyService;
     private final NationalSubsidyNotificationRepository notificationRepository;
+
 
     // 보조금 등록
     @Operation(summary = "보조금 등록", description = "보조금을 등록합니다")
@@ -219,5 +222,19 @@ public class NationalSubsidyController {
         subsidyService.updateOpen(id, open);
         return ResponseEntity.ok("보조금 open 상태로 완료 id=" + id + ", open=" + open);
     }
+
+    @Operation(summary = "관리자 보조금 검색", description = "관리자용으로 타입/센터/기간 조건으로 검색(페이징)합니다")
+    @GetMapping("/admin/search")
+    public ResponseEntity<Page<NationalSubsidyResponseDto>> adminSearch(
+            @RequestParam(required = false) SubsidyType type,
+            @RequestParam(required = false) String center,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(subsidyService.searchAdmin(type, center, from, to, PageRequest.of(page, size)));
+    }
+
 
 }
