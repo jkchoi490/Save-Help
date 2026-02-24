@@ -27,5 +27,7 @@ public final class KafkaTopics {
 
     public static final String SUBSIDY_ELIGIBILITY_UPDATED_DLQ = "subsidy.eligibility.updated.dlq";
     public static final String SUBSIDY_ELIGIBILITY_UPDATED_DLT = "subsidy.eligibility.updated.dlt";
+    public static final String SUBSIDY_OPENED = "subsidy.opened";
+    public static final String SUBSIDY_ACTIVATED = "subsidy.activated";
 
 }

@@ -81,4 +81,21 @@ public class NationalSubsidyApplication {
         this.reason = reason;
         this.appliedAt = LocalDateTime.now();
     }
+
+    public void markPending(String reason) {
+        this.status = Status.PENDING;
+        this.reason = reason;
+    }
+
+    public void markAppliedAuto(String reason, String eventId) {
+        this.appliedBy = AppliedBy.AUTO;
+        this.eventId = eventId;
+        markApplied(reason);
+    }
+
+    public void markAppliedManual(String reason, String eventId) {
+        this.appliedBy = AppliedBy.MANUAL;
+        this.eventId = eventId;
+        markApplied(reason);
+    }
 }

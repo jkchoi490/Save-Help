@@ -1,6 +1,7 @@
 package com.save_help.Save_Help.nationalSubsidy.repository;
 
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyApplication;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -172,5 +174,27 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     """)
     List<NationalSubsidy> findRunnableSubsidies(@Param("today") LocalDate today);
 
+
+    @Query("""
+    select s
+    from NationalSubsidy s
+    where s.active = true
+      and s.isOpen = true
+      and (s.startDate is null or s.startDate <= :today)
+      and (s.endDate   is null or s.endDate   >= :today)
+""")
+    Page<NationalSubsidy> findRunnableSubsidies(@Param("today") LocalDate today, Pageable pageable);
+
+    public interface NationalSubsidyApplicationRepository extends JpaRepository<NationalSubsidyApplication, Long> {
+
+        boolean existsByUser_IdAndSubsidy_Id(Long userId, Long subsidyId);
+
+        @Query("""
+        select a.id
+        from NationalSubsidyApplication a
+        where a.user.id = :userId and a.subsidy.id = :subsidyId
+    """)
+        Optional<Long> findIdByUserIdAndSubsidyId(@Param("userId") Long userId, @Param("subsidyId") Long subsidyId);
+    }
 }
 

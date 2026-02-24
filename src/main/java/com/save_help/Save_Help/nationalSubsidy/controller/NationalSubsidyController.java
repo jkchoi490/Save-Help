@@ -236,5 +236,11 @@ public class NationalSubsidyController {
         return ResponseEntity.ok(subsidyService.searchAdmin(type, center, from, to, PageRequest.of(page, size)));
     }
 
+    @Operation(summary = "보조금 오픈", description = "보조금 신청 가능 상태로 전환(open)합니다")
+    @PostMapping("/{id}/open")
+    public ResponseEntity<String> open(@PathVariable Long id) {
+        subsidyService.openSubsidy(id);
+        return ResponseEntity.ok("보조금 오픈 완료 id=" + id);
+    }
 
 }

@@ -567,4 +567,11 @@ public class NationalSubsidyService {
                 .map(this::toResponseDto);
     }
 
+    public void openSubsidy(Long subsidyId) {
+        NationalSubsidy s = subsidyRepository.findById(subsidyId)
+                .orElseThrow(() -> new IllegalArgumentException("보조금에 대한 예외 id=" + subsidyId));
+        s.open();
+    }
+
+
 }
