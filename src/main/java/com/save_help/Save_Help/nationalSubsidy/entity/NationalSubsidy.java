@@ -105,5 +105,14 @@ public class NationalSubsidy {
     public void deactivate() { this.active = false; }
 
 
+    @PrePersist
+    @PreUpdate
+    void validate() {
+        if (name == null || name.isBlank()) throw new IllegalStateException("name is required");
+        if (maxAmount == null || maxAmount < 0) throw new IllegalStateException("maxAmount must be >= 0");
 
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            throw new IllegalStateException("startDate must be <= endDate");
+        }
+    }
 }
