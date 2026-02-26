@@ -98,4 +98,8 @@ public class NationalSubsidyApplication {
         this.eventId = eventId;
         markApplied(reason);
     }
+
+    public boolean isApplied() {
+        return this.status == Status.APPLIED;
+    }
 }

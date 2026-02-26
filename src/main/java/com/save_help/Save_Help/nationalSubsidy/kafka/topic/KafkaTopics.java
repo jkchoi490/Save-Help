@@ -30,4 +30,7 @@ public final class KafkaTopics {
     public static final String SUBSIDY_OPENED = "subsidy.opened";
     public static final String SUBSIDY_ACTIVATED = "subsidy.activated";
 
+    public static final String SUBSIDY_SUBSCRIPTION_CREATED  = "subsidy.subscription.created.v1";
+    public static final String SUBSIDY_SUBSCRIPTION_CANCELED = "subsidy.subscription.canceled.v1";
+
 }
