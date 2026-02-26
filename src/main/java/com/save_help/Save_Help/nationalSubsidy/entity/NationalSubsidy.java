@@ -63,6 +63,8 @@ public class NationalSubsidy {
     private LocalDateTime openedAt;
     private LocalDateTime closedAt;
 
+    @Column(nullable = false)
+    private long applicationCount; //신청 수
 
     private Integer minAge;
     private Integer maxAge;

@@ -573,5 +573,9 @@ public class NationalSubsidyService {
         s.open();
     }
 
+    @Transactional(readOnly = true)
+    public Page<NationalSubsidyResponseDto> findAll(Pageable pageable) {
+        return subsidyRepository.findAll(pageable).map(this::toResponseDto);
+    }
 
 }

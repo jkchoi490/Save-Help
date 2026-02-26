@@ -243,4 +243,13 @@ public class NationalSubsidyController {
         return ResponseEntity.ok("보조금 오픈 완료 id=" + id);
     }
 
+    @Operation(summary = "보조금 전체 조회(페이징)", description = "보조금 전체를 페이징하여 조회합니다")
+    @GetMapping("/page")
+    public ResponseEntity<Page<NationalSubsidyResponseDto>> getAllPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(subsidyService.findAll(PageRequest.of(page, size)));
+    }
+
 }
