@@ -202,6 +202,9 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     @Query("update NationalSubsidy s set s.isOpen = :open where s.id = :id")
     int updateOpen(@Param("id") Long id, @Param("open") boolean open);
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("update NationalSubsidy s set s.applicationCount = s.applicationCount + :delta where s.id = :id")
+    int increaseApplicationCount(@Param("id") Long id, @Param("delta") long delta);
 
 }
 

@@ -66,6 +66,9 @@ public class NationalSubsidyApplication {
 
     private LocalDateTime appliedAt; // 신청 완료 시간
 
+    @Version
+    private Long version;
+
     public enum AppliedBy {
         AUTO, MANUAL, ADMIN, SYSTEM
     }

@@ -75,6 +75,9 @@ public class NationalSubsidy {
     private String subsidyType; // 보조금 종류
     private String subsidyField; // 보조금 분야
 
+    @Version
+    private Long version;
+
     //공공데이터
     private String baseDate;          //기준일자
     private String policyAreaCode;    // 분야 코드
