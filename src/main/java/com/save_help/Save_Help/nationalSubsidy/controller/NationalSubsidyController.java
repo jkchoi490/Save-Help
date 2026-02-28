@@ -10,6 +10,7 @@ import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -67,12 +68,13 @@ public class NationalSubsidyController {
     }
 
     // 수정
-    @Operation(summary = "보조금 수정", description = "보조금을 수정합니다")
     @PutMapping("/{id}")
-    public NationalSubsidyResponseDto update(@PathVariable Long id, @RequestBody NationalSubsidyRequestDto dto) {
-        return subsidyService.update(id, dto);
+    public ResponseEntity<NationalSubsidyResponseDto> update(
+            @PathVariable Long id,
+            @Valid @RequestBody NationalSubsidyRequestDto dto
+    ) {
+        return ResponseEntity.ok(subsidyService.update(id, dto));
     }
-
     // 삭제
     @Operation(summary = "보조금 삭제", description = "보조금을 삭제합니다")
     @DeleteMapping("/{id}")

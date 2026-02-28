@@ -578,4 +578,8 @@ public class NationalSubsidyService {
         return subsidyRepository.findAll(pageable).map(this::toResponseDto);
     }
 
+    private LocalDate today() {
+        return LocalDate.now();
+    }
+
 }
