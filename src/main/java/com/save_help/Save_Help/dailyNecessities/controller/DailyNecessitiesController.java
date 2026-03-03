@@ -7,6 +7,8 @@ import com.save_help.Save_Help.dailyNecessities.service.*;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,7 +75,7 @@ public class DailyNecessitiesController {
 
     @Operation(summary = "카테고리별 생필품 조회", description = "카테고리 정보를 통해 해당 카테고리의 생필품 목록을 조회합니다.")
     @GetMapping("/category/{category}")
-    public List<DailyNecessitiesDto> getByCategory(@PathVariable NecessityCategory category) {
+    public List<DailyNecessitiesDto> getByCategory(@PathVariable DailyNecessitiesCategory category) {
         return necessitiesService.getByCategory(category);
     }
 
@@ -528,5 +530,21 @@ public class DailyNecessitiesController {
     ) {
         necessitiesService.cancelByUser(requestId, userId);
         return ResponseEntity.ok("긴급 요청 취소 완료");
+    }
+
+    @Operation(summary = "생필품 목록 필터 조회(페이징)", description = "센터/카테고리/승인상태/활성여부/키워드로 생필품을 페이징 조회합니다.")
+    @GetMapping("/items")
+    public ResponseEntity<Page<DailyNecessitiesDto>> getItems(
+            @RequestParam(required = false) Long centerId,
+            @RequestParam(required = false) DailyNecessitiesCategory category,
+            @RequestParam(required = false) DailyNecessities.ApprovalStatus approvalStatus,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(
+                necessitiesService.searchItems(centerId, category, approvalStatus, active, keyword, PageRequest.of(page, size))
+        );
     }
 }
