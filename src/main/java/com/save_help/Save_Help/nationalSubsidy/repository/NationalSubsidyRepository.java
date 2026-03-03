@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -205,6 +206,20 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update NationalSubsidy s set s.applicationCount = s.applicationCount + :delta where s.id = :id")
     int increaseApplicationCount(@Param("id") Long id, @Param("delta") long delta);
+
+    Optional<NationalSubsidyApplication> findByEventId(String eventId);
+    @Query("""
+        select a
+        from NationalSubsidyApplication a
+        where a.createdAt between :from and :to
+    """)
+    Page<NationalSubsidyApplication> findCreatedBetween(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            Pageable pageable
+    );
+
+    Page<NationalSubsidyApplication> findByStatus(NationalSubsidyApplication.Status status, Pageable pageable);
 
 }
 

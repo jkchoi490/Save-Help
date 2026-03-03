@@ -254,4 +254,17 @@ public class NationalSubsidyController {
         return ResponseEntity.ok(subsidyService.findAll(PageRequest.of(page, size)));
     }
 
+
+    @PostMapping("/{id}/activate")
+    public ResponseEntity<String> activate(@PathVariable Long id) {
+        subsidyService.activate(id);
+        return ResponseEntity.ok("활성화 완료 id=" + id);
+    }
+
+    @GetMapping("/available/count")
+    public ResponseEntity<Map<String, Object>> countAvailable() {
+        long count = subsidyService.countRunnable();
+        return ResponseEntity.ok(Map.of("count", count));
+    }
+
 }
