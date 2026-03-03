@@ -120,4 +120,9 @@ public class NationalSubsidy {
             throw new IllegalStateException("startDate must be <= endDate");
         }
     }
+
+    public void increaseApplicationCount(long delta) {
+        if (delta <= 0) return;
+        this.applicationCount += delta;
+    }
 }

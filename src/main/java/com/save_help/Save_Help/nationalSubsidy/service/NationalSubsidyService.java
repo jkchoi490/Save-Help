@@ -7,7 +7,7 @@ import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRe
 import com.save_help.Save_Help.nationalSubsidy.entity.*;
 import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationStatus;
-import com.save_help.Save_Help.nationalSubsidy.kafka.SubsidyCreatedInternalEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.repository.*;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import com.save_help.Save_Help.user.entity.User;
@@ -582,4 +582,20 @@ public class NationalSubsidyService {
         return LocalDate.now();
     }
 
+
+    @Transactional
+    public void activate(Long id) {
+        NationalSubsidy subsidy = nationalSubsidyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("IllegalArgumentException"));
+
+        subsidy.activate();
+
+        nationalSubsidyRepository.save(subsidy);
+    }
+
+    @Transactional(readOnly = true)
+    public long countRunnable() {
+        LocalDate today = LocalDate.now();
+        return nationalSubsidyRepository.findRunnableSubsidies(today).size();
+    }
 }

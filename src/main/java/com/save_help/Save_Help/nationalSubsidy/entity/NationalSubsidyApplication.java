@@ -105,4 +105,10 @@ public class NationalSubsidyApplication {
     public boolean isApplied() {
         return this.status == Status.APPLIED;
     }
+
+
+    public boolean isSameEvent(String eventId) {
+        return eventId != null && eventId.equals(this.eventId);
+    }
+
 }
