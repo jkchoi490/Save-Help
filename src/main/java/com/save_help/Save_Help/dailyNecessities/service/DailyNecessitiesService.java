@@ -7,7 +7,7 @@ import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestCreat
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestResponseDto;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesRequest;
-import com.save_help.Save_Help.dailyNecessities.entity.NecessityCategory;
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
 import com.save_help.Save_Help.dailyNecessities.entity.UserNecessityRequest;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRequestRepository;
@@ -15,6 +15,8 @@ import com.save_help.Save_Help.dailyNecessities.repository.UserNecessitiesReposi
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,7 +73,7 @@ public class DailyNecessitiesService {
     }
 
     // 카테고리별 조회
-    public List<DailyNecessitiesDto> getByCategory(NecessityCategory category) {
+    public List<DailyNecessitiesDto> getByCategory(DailyNecessitiesCategory category) {
         return necessitiesRepository.findByCategory(category)
                 .stream()
                 .map(DailyNecessitiesDto::fromEntity)
@@ -200,7 +202,7 @@ public class DailyNecessitiesService {
     }
 
     // 기부 승인 시 기존 품목이 있으면 반환, 없으면 생성
-    public DailyNecessities findOrCreateItem(String name, NecessityCategory category, String unit, CommunityCenter center) {
+    public DailyNecessities findOrCreateItem(String name, DailyNecessitiesCategory category, String unit, CommunityCenter center) {
         return necessitiesRepository.findByNameAndProvidedBy_Id(name, center.getId())
                 .orElseGet(() -> necessitiesRepository.save(new DailyNecessities(name, category, unit, 0, null, center)));
     }
@@ -228,14 +230,14 @@ public class DailyNecessitiesService {
         }
 
         // 2️. 사용자가 자주 신청한 카테고리 상위 7개 추출
-        Map<NecessityCategory, Long> categoryCount = recentRequests.stream()
+        Map<DailyNecessitiesCategory, Long> categoryCount = recentRequests.stream()
                 .collect(Collectors.groupingBy(
                         req -> req.getItem().getCategory(),
                         Collectors.counting()
                 ));
 
-        List<NecessityCategory> topCategories = categoryCount.entrySet().stream()
-                .sorted(Map.Entry.<NecessityCategory, Long>comparingByValue().reversed())
+        List<DailyNecessitiesCategory> topCategories = categoryCount.entrySet().stream()
+                .sorted(Map.Entry.<DailyNecessitiesCategory, Long>comparingByValue().reversed())
                 .limit(7)
                 .map(Map.Entry::getKey)
                 .toList();
@@ -355,6 +357,13 @@ public class DailyNecessitiesService {
         req.setUpdatedAt(LocalDateTime.now());
     }
 
-
+    public Page<DailyNecessitiesDto> searchItems(Long centerId,
+                                                 DailyNecessitiesCategory category,
+                                                 DailyNecessities.ApprovalStatus approvalStatus,
+                                                 Boolean active,
+                                                 String keyword,
+                                                 Pageable pageable) {
+        throw new UnsupportedOperationException("Specification/QueryDSL로 구현 예정");
+    }
 
 }
