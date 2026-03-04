@@ -29,7 +29,7 @@ public class NationalSubsidy {
 
     // 보조금 종류 (의료, 상담, 재난, 생활비 등)
     @Enumerated(EnumType.STRING)
-    private SubsidyType type;
+    private NationalSubsidyType type;
 
     @Column(length = 1000)
     private String center; // 보조금 지원처
@@ -88,6 +88,9 @@ public class NationalSubsidy {
     private long currentBudgetAmount; // 현행 예산액
     private long originalBudgetAmount; // 기정 예산액
     private long executedAmount;      // 집행 금액
+
+    @Column(name = "event_id", unique = true, nullable = false, length = 100)
+    private String eventId;
 
     public boolean isRunnable(LocalDate today) {
         if (!active) return false;

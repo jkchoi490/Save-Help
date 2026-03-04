@@ -2,7 +2,7 @@ package com.save_help.Save_Help.nationalSubsidy.repository;
 
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyApplication;
-import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy, Long> {
 
     // 타입별 검색
-    List<NationalSubsidy> findByType(SubsidyType type);
+    List<NationalSubsidy> findByType(NationalSubsidyType type);
 
     // 활성화된 보조금만 조회
     List<NationalSubsidy> findByActiveTrue();
@@ -45,7 +45,7 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
               AND (:maxAge IS NULL OR s.maxAge >= :maxAge)
               AND (:disabilityRequired IS NULL OR s.disabilityRequired = :disabilityRequired)
             """)
-    List<NationalSubsidy> filter(SubsidyType type, String incomeLevel,
+    List<NationalSubsidy> filter(NationalSubsidyType type, String incomeLevel,
                                  Integer minAge, Integer maxAge, Boolean disabilityRequired);
 
     @Query("""
@@ -159,7 +159,7 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
         order by s.id desc
     """)
     Page<NationalSubsidy> searchAdmin(
-            @Param("type") SubsidyType type,
+            @Param("type") NationalSubsidyType type,
             @Param("center") String center,
             @Param("from") LocalDate from,
             @Param("to") LocalDate to,
@@ -219,7 +219,6 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
             Pageable pageable
     );
 
-    Page<NationalSubsidyApplication> findByStatus(NationalSubsidyApplication.Status status, Pageable pageable);
 
 }
 

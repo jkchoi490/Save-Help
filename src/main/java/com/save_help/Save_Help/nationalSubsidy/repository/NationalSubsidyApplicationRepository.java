@@ -49,4 +49,5 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
 
     boolean existsByUser_IdAndSubsidy_IdAndActiveTrue(Long userId, Long subsidyId);
 
+    Page<NationalSubsidyApplication> findByStatus(NationalSubsidyApplication.Status status, Pageable pageable);
 }
