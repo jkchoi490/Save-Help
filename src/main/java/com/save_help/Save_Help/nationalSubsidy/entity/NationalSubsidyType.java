@@ -1,6 +1,6 @@
 package com.save_help.Save_Help.nationalSubsidy.entity;
 
-public enum SubsidyType {
+public enum NationalSubsidyType {
     MEDICAL,    // 의료 지원
     COUNSELING, // 상담 지원
     DISASTER,   // 재난 지원
@@ -15,6 +15,7 @@ public enum SubsidyType {
     YOUTH,          // 청년 지원
     WELFARE,        // 복지 일반
     HEALTHCARE,     // 건강관리 지원
+    MENTALCARE,  // 멘탈관리 지원
     OTHER       // 기타
 
 }

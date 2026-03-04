@@ -2,12 +2,17 @@ package com.save_help.Save_Help.nationalSubsidy.kafka.publisher;
 
 import com.save_help.Save_Help.nationalSubsidy.kafka.*;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserCreatedEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserEligibilityUpdatedEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.topic.KafkaTopics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.*;
 
@@ -17,6 +22,10 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class KafkaPublishers {
+
+    private static final String EVENT_VERSION = "v1";
+    private static final String PRODUCER = "save-help-national-subsidy";
+
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -91,5 +100,48 @@ public class KafkaPublishers {
         // key=userId로 보내면 같은 유저는 같은 파티션
         kafkaTemplate.send(KafkaTopics.USER_ELIGIBILITY_APPLIED, String.valueOf(e.userId()), event);
 
+    }
+
+    private void send(String topic, String key, Object payload, String eventId) {
+
+        long occurredAt = System.currentTimeMillis();
+
+        String traceId = mdc("traceId");
+
+        Message<Object> msg = MessageBuilder.withPayload(payload)
+                .setHeader(KafkaHeaders.TOPIC, topic)
+                .setHeader(KafkaHeaders.KEY, key)
+
+                .setHeader("eventId", eventId)
+                .setHeader("eventType", payload.getClass().getSimpleName())
+                .setHeader("eventVersion", EVENT_VERSION)
+                .setHeader("occurredAt", occurredAt)
+                .setHeader("producer", PRODUCER)
+                .setHeader("traceId", traceId)
+
+                .build();
+
+        kafkaTemplate.send(msg).whenComplete((result, ex) -> {
+
+            if (ex != null) {
+                log.error("[Kafka Publish FAIL] topic={}, key={}, eventId={}, payload={}",
+                        topic, key, eventId, payload, ex);
+                return;
+            }
+
+            var md = result.getRecordMetadata();
+
+            log.info("[Kafka Publish OK] topic={}, key={}, eventId={}, partition={}, offset={}, ts={}",
+                    topic, key, eventId,
+                    md.partition(), md.offset(), md.timestamp());
+        });
+    }
+
+    private static String mdc(String key) {
+        try {
+            return MDC.get(key);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
