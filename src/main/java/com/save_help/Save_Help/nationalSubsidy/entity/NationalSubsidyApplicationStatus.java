@@ -4,6 +4,7 @@ public enum NationalSubsidyApplicationStatus {
     MATCHED,
     REQUESTED,
     SUBMITTED,
+    REVIEWING,    // 심사 중
     APPROVED,
     REJECTED,
     APPLIED,      // 신청내역 DB 기록

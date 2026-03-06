@@ -6,7 +6,7 @@ import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRe
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.entity.*;
 import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationCreatedInternalEvent;
-import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationStatus;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyApplicationStatus;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.repository.*;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
@@ -73,7 +73,7 @@ public class NationalSubsidyService {
         return toResponseDto(subsidy);
     }
 
-    public List<NationalSubsidyResponseDto> findByType(SubsidyType type) {
+    public List<NationalSubsidyResponseDto> findByType(NationalSubsidyType type) {
         return subsidyRepository.findByType(type).stream()
                 .map(this::toResponseDto)
                 .toList();
@@ -194,7 +194,7 @@ public class NationalSubsidyService {
     }
 
     // 세부 필터 검색
-    public List<NationalSubsidyResponseDto> filter(SubsidyType type, String incomeLevel, Integer minAge,
+    public List<NationalSubsidyResponseDto> filter(NationalSubsidyType type, String incomeLevel, Integer minAge,
                                                    Integer maxAge, Boolean disabilityRequired) {
         return subsidyRepository.filter(type, incomeLevel, minAge, maxAge, disabilityRequired)
                 .stream()
@@ -217,7 +217,7 @@ public class NationalSubsidyService {
         Map<String, Long> byCenter = all.stream()
                 .collect(Collectors.groupingBy(NationalSubsidy::getCenter, Collectors.counting()));
 
-        Map<SubsidyType, Long> byType = all.stream()
+        Map<NationalSubsidyType, Long> byType = all.stream()
                 .collect(Collectors.groupingBy(NationalSubsidy::getType, Collectors.counting()));
 
         Map<String, Object> stats = new HashMap<>();
@@ -275,7 +275,7 @@ public class NationalSubsidyService {
         SubsidyApplication app = new SubsidyApplication();
         app.setUser(user);
         app.setSubsidy(subsidy);
-        app.setStatus(ApplicationStatus.valueOf("PENDING")); // 접수됨(신청 완료)
+        app.setStatus(NationalSubsidyApplicationStatus.valueOf("PENDING")); // 접수됨(신청 완료)
         SubsidyApplication saved = subsidyApplicationRepository.save(app);
 
         // 신청 완료 알림 저장
@@ -479,7 +479,7 @@ public class NationalSubsidyService {
             subsidyApplicationRepository.save(SubsidyApplication.builder()
                     .user(user)
                     .subsidy(subsidy)
-                    .status(ApplicationStatus.SUBMITTED)
+                    .status(NationalSubsidyApplicationStatus.SUBMITTED)
                     .build());
             return true;
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
@@ -557,7 +557,7 @@ public class NationalSubsidyService {
 
     @Transactional(readOnly = true)
     public Page<NationalSubsidyResponseDto> searchAdmin(
-            SubsidyType type,
+            NationalSubsidyType type,
             String center,
             LocalDate from,
             LocalDate to,
@@ -597,5 +597,13 @@ public class NationalSubsidyService {
     public long countRunnable() {
         LocalDate today = LocalDate.now();
         return nationalSubsidyRepository.findRunnableSubsidies(today).size();
+    }
+
+    @Transactional
+    public void approveApplication(Long applicationId) {
+        NationalSubsidyApplication app = appRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("신청 내역이 없습니다. id=" + applicationId));
+
+        app.approve("관리자 승인");
     }
 }
