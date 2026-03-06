@@ -4,10 +4,9 @@ package com.save_help.Save_Help.nationalSubsidy.controller;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRequestDto;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
-import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
 import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
-import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyType;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyType;
 import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -56,7 +55,7 @@ public class NationalSubsidyController {
     // 유형별 조회
     @Operation(summary = "보조금 유형별 조회", description = "보조금을 유형별로 조회합니다")
     @GetMapping("/type/{type}")
-    public List<NationalSubsidyResponseDto> getByType(@PathVariable SubsidyType type) {
+    public List<NationalSubsidyResponseDto> getByType(@PathVariable NationalSubsidyType type) {
         return subsidyService.findByType(type);
     }
 
@@ -120,7 +119,7 @@ public class NationalSubsidyController {
     @Operation(summary = "보조금 세부 검색", description = "다양한 조건으로 보조금을 검색합니다")
     @GetMapping("/filter")
     public List<NationalSubsidyResponseDto> filter(
-            @RequestParam(required = false) SubsidyType type,
+            @RequestParam(required = false) NationalSubsidyType type,
             @RequestParam(required = false) String incomeLevel,
             @RequestParam(required = false) Integer minAge,
             @RequestParam(required = false) Integer maxAge,
@@ -228,7 +227,7 @@ public class NationalSubsidyController {
     @Operation(summary = "관리자 보조금 검색", description = "관리자용으로 타입/센터/기간 조건으로 검색(페이징)합니다")
     @GetMapping("/admin/search")
     public ResponseEntity<Page<NationalSubsidyResponseDto>> adminSearch(
-            @RequestParam(required = false) SubsidyType type,
+            @RequestParam(required = false) NationalSubsidyType type,
             @RequestParam(required = false) String center,
             @RequestParam(required = false) LocalDate from,
             @RequestParam(required = false) LocalDate to,
@@ -265,6 +264,13 @@ public class NationalSubsidyController {
     public ResponseEntity<Map<String, Object>> countAvailable() {
         long count = subsidyService.countRunnable();
         return ResponseEntity.ok(Map.of("count", count));
+    }
+
+    @Operation(summary = "보조금 신청 승인", description = "신청 건을 승인합니다")
+    @PostMapping("/applications/{applicationId}/approve")
+    public ResponseEntity<String> approveApplication(@PathVariable Long applicationId) {
+        subsidyService.approveApplication(applicationId);
+        return ResponseEntity.ok("신청 승인 완료 applicationId=" + applicationId);
     }
 
 }

@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 )
 public class NationalSubsidyApplication {
 
-    public enum Status { PENDING, APPLIED }
+    public enum Status { PENDING, APPLIED, APPROVED }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -111,4 +111,8 @@ public class NationalSubsidyApplication {
         return eventId != null && eventId.equals(this.eventId);
     }
 
+    public void approve(String reason) {
+        this.status = Status.APPROVED;
+        this.reason = reason;
+    }
 }

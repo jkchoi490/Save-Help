@@ -219,6 +219,9 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
             Pageable pageable
     );
 
+    Page<NationalSubsidy> findAllByOrderByApplicationCountDesc(Pageable pageable);
+
+    Page<NationalSubsidy> findByCreatedAtBetween(LocalDateTime from, LocalDateTime to, Pageable pageable);
 
 }
 
