@@ -3,6 +3,7 @@ package com.save_help.Save_Help.dailyNecessities.spec;
 
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesSearchConditionDto;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import org.springframework.data.jpa.domain.Specification;
@@ -59,4 +60,38 @@ public final class DailyNecessitiesSpecs {
     public static Predicate lteIfNotNull(CriteriaBuilder cb, Path<Integer> path, Integer value) {
         return value == null ? cb.conjunction() : cb.lessThanOrEqualTo(path, value);
     }
+
+
+
+        public static Specification<DailyNecessities> hasCenterId(Long centerId) {
+            return (root, query, cb) ->
+                    centerId == null ? null : cb.equal(root.get("providedBy").get("id"), centerId);
+        }
+
+        public static Specification<DailyNecessities> hasCategory(DailyNecessitiesCategory category) {
+            return (root, query, cb) ->
+                    category == null ? null : cb.equal(root.get("category"), category);
+        }
+
+        public static Specification<DailyNecessities> hasApprovalStatus(DailyNecessities.ApprovalStatus approvalStatus) {
+            return (root, query, cb) ->
+                    approvalStatus == null ? null : cb.equal(root.get("approvalStatus"), approvalStatus);
+        }
+
+        public static Specification<DailyNecessities> isActive(Boolean active) {
+            return (root, query, cb) ->
+                    active == null ? null : cb.equal(root.get("active"), active);
+        }
+
+        public static Specification<DailyNecessities> containsKeyword(String keyword) {
+            return (root, query, cb) -> {
+                if (keyword == null || keyword.isBlank()) return null;
+                String pattern = "%" + keyword.toLowerCase() + "%";
+                return cb.or(
+                        cb.like(cb.lower(root.get("name")), pattern),
+                        cb.like(cb.lower(root.get("unit")), pattern)
+                );
+            };
+        }
+
 }

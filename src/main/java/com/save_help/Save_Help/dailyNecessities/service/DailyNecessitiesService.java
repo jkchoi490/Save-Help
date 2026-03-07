@@ -12,11 +12,13 @@ import com.save_help.Save_Help.dailyNecessities.entity.UserNecessityRequest;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRequestRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.UserNecessitiesRepository;
+import com.save_help.Save_Help.dailyNecessities.spec.DailyNecessitiesSpecs;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -357,13 +359,30 @@ public class DailyNecessitiesService {
         req.setUpdatedAt(LocalDateTime.now());
     }
 
+    @Transactional(readOnly = true)
     public Page<DailyNecessitiesDto> searchItems(Long centerId,
                                                  DailyNecessitiesCategory category,
                                                  DailyNecessities.ApprovalStatus approvalStatus,
                                                  Boolean active,
                                                  String keyword,
                                                  Pageable pageable) {
-        throw new UnsupportedOperationException("Specification/QueryDSL로 구현 예정");
+        Specification<DailyNecessities> spec = Specification.<DailyNecessities>unrestricted()
+                .and(DailyNecessitiesSpecs.hasCenterId(centerId))
+                .and(DailyNecessitiesSpecs.hasCategory(category))
+                .and(DailyNecessitiesSpecs.hasApprovalStatus(approvalStatus))
+                .and(DailyNecessitiesSpecs.isActive(active))
+                .and(DailyNecessitiesSpecs.containsKeyword(keyword));
+
+        return necessitiesRepository.findAll(spec, pageable)
+                .map(DailyNecessitiesDto::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesDto> getByCenterAndCategory(Long centerId, DailyNecessitiesCategory category) {
+        return necessitiesRepository.findByProvidedBy_IdAndCategory(centerId, category)
+                .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
     }
 
 }

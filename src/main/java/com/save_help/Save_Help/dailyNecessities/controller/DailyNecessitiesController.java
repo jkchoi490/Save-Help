@@ -547,4 +547,16 @@ public class DailyNecessitiesController {
                 necessitiesService.searchItems(centerId, category, approvalStatus, active, keyword, PageRequest.of(page, size))
         );
     }
+
+    @Operation(summary = "센터/카테고리별 생필품 조회", description = "특정 센터의 특정 카테고리 생필품을 조회합니다.")
+    @GetMapping("/center/{centerId}/category/{category}")
+    public ResponseEntity<List<DailyNecessitiesDto>> getByCenterAndCategory(
+            @PathVariable Long centerId,
+            @PathVariable DailyNecessitiesCategory category
+    ) {
+        return ResponseEntity.ok(necessitiesService.getByCenterAndCategory(centerId, category));
+    }
+
+
+
 }
