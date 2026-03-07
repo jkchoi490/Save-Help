@@ -36,4 +36,11 @@ public final class KafkaTopics {
     public static final String SUBSIDY_APPLICATION_CREATED = "subsidy.application.created.v1";
     public static final String SUBSIDY_APPLICATION_STATUS = "subsidy.application.status.v1";
     public static final String SUBSIDY_NOTIFICATION_REQUESTED = "subsidy.notification.requested.v1";
+
+    // 생필품 관련 topic
+    public static final String NECESSITY_AUTO_APPLY_REQUESTED = "necessity.auto.apply.requested.v1";
+    public static final String NECESSITY_AUTO_APPLY_VALIDATED = "necessity.auto.apply.validated.v1";
+    public static final String NECESSITY_AUTO_APPLY_CREATED = "necessity.auto.apply.created.v1";
+    public static final String NECESSITY_AUTO_APPLY_COMPLETED = "necessity.auto.apply.completed.v1";
+
 }

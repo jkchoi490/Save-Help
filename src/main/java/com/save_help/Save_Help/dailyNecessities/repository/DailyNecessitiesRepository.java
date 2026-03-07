@@ -34,4 +34,12 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     Long findLowStockCountByCenter(@Param("centerId") Long centerId, @Param("threshold") int threshold);
 
     List<DailyNecessities> findByStockLessThan(int threshold);
+
+    // 승인 품목 중 이름 검색
+    List<DailyNecessities> findByNameContainingIgnoreCaseAndApprovalStatus(
+            String keyword,
+            DailyNecessities.ApprovalStatus approvalStatus
+    );
+
+    List<DailyNecessities> findByProvidedBy_IdAndCategory(Long centerId, DailyNecessitiesCategory category);
 }

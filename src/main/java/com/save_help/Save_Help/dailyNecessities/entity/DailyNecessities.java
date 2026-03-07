@@ -50,16 +50,11 @@ public class DailyNecessities {
     @Column(nullable = false)
     private int requestCount;
 
-    @Column(nullable = false)
-    private java.time.LocalDate deliveryDate;
+    //안전 재고
+    private Integer safetyStock;
 
-    // 사용자 요청 사항(선택)
-    @Column(length = 300)
-    private String deliveryNote;
-
-    // 주소/연락처
-    @Column(length = 200)
-    private String deliveryAddress;
+    //최대 재고
+    private Integer maxStock;
 
     // 기본 생성자
     protected DailyNecessities() {}
