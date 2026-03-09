@@ -115,4 +115,8 @@ public class NationalSubsidyApplication {
         this.status = Status.APPROVED;
         this.reason = reason;
     }
+
+    public boolean isAutoApplied() {
+        return this.appliedBy == AppliedBy.AUTO;
+    }
 }

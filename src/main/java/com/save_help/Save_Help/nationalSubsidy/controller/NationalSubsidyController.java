@@ -1,13 +1,10 @@
 package com.save_help.Save_Help.nationalSubsidy.controller;
 
 
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRequestDto;
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.dto.*;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
 import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyType;
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -273,4 +270,15 @@ public class NationalSubsidyController {
         return ResponseEntity.ok("신청 승인 완료 applicationId=" + applicationId);
     }
 
+    @Operation(summary = "보조금 자동 신청 확인", description = "보조금 자동 신청 건을 확인합니다")
+    @GetMapping("/applications/{userId}/auto")
+    public ResponseEntity<Page<NationalSubsidyApplicationResponseDto>> getAutoApplicationsByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "4") int page,
+            @RequestParam(defaultValue = "9") int size
+    ) {
+        return ResponseEntity.ok(
+                subsidyService.findAutoApplicationsByUser(userId, PageRequest.of(page, size))
+        );
+    }
 }
