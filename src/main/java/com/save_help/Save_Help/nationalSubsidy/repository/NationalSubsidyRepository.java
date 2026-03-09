@@ -223,5 +223,35 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 
     Page<NationalSubsidy> findByCreatedAtBetween(LocalDateTime from, LocalDateTime to, Pageable pageable);
 
+    @Query("""
+    select a
+    from NationalSubsidyApplication a
+    join fetch a.subsidy s
+    where a.user.id = :userId
+    order by a.createdAt desc
+    """)
+    List<NationalSubsidyApplication> findDetailByUserId(Long userId);
+
+
+    @Query("""
+    select s
+    from NationalSubsidy s
+    where s.id in (
+        select a.subsidy.id
+        from NationalSubsidyApplication a
+        where a.user.id = :userId
+    )
+""")
+    List<NationalSubsidy> findAppliedSubsidiesByUserId(@Param("userId") Long userId);
+
+    @Query("""
+    select s
+    from NationalSubsidy s
+    where s.applicationCount >= :minCount
+    order by s.applicationCount desc
+""")
+    Page<NationalSubsidy> findPopularSubsidies(@Param("minCount") long minCount, Pageable pageable);
+
+
 }
 

@@ -1,15 +1,12 @@
 package com.save_help.Save_Help.nationalSubsidy.service;
 
 
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyResponseDto;
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionRequestDto;
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidySubscriptionResponseDto;
+import com.save_help.Save_Help.nationalSubsidy.dto.*;
 import com.save_help.Save_Help.nationalSubsidy.entity.*;
 import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyApplicationStatus;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.repository.*;
-import com.save_help.Save_Help.nationalSubsidy.dto.NationalSubsidyRequestDto;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -606,4 +603,16 @@ public class NationalSubsidyService {
 
         app.approve("관리자 승인");
     }
+
+    @Transactional(readOnly = true)
+    public Page<NationalSubsidyApplicationResponseDto> findAutoApplicationsByUser(Long userId, Pageable pageable) {
+        return appRepository.findByUser_IdAndAppliedByOrderByCreatedAtDesc(
+                        userId,
+                        NationalSubsidyApplication.AppliedBy.AUTO,
+                        pageable
+                )
+                .map(NationalSubsidyApplicationResponseDto::fromEntity);
+    }
+
+
 }
