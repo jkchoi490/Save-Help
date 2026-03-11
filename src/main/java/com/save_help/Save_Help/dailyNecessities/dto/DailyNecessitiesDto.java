@@ -1,7 +1,7 @@
 package com.save_help.Save_Help.dailyNecessities.dto;
 
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
-import com.save_help.Save_Help.dailyNecessities.entity.NecessityCategory;
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ public class DailyNecessitiesDto {
 
     private Long id;
     private String name;
-    private NecessityCategory category;
+    private DailyNecessitiesCategory category;
     private String unit;
     private Integer stock;
     private LocalDate expirationDate;
@@ -22,7 +22,7 @@ public class DailyNecessitiesDto {
 
     public DailyNecessitiesDto() {}
 
-    public DailyNecessitiesDto(Long id, String name, NecessityCategory category,
+    public DailyNecessitiesDto(Long id, String name, DailyNecessitiesCategory category,
                                String unit, Integer stock, LocalDate expirationDate,
                                Long centerId, String centerName) {
         this.id = id;
@@ -48,4 +48,5 @@ public class DailyNecessitiesDto {
                 entity.getProvidedBy() != null ? entity.getProvidedBy().getName() : null
         );
     }
+
 }
