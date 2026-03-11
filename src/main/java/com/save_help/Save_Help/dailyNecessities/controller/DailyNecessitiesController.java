@@ -32,6 +32,7 @@ public class DailyNecessitiesController {
     private final UserRepository userRepository;
     private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
     private final DailyNecessitiesDeliveryService deliveryService;
+    private final DailyNecessitiesNotificationService necessitiesNotificationService;
 
 
 
@@ -41,7 +42,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService, DailyNecessitiesNotificationService necessitiesNotificationService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -55,6 +56,7 @@ public class DailyNecessitiesController {
         this.userRepository = userRepository;
         this.historyRepository = historyRepository;
         this.deliveryService = deliveryService;
+        this.necessitiesNotificationService = necessitiesNotificationService;
     }
 
     // ------------------------------------
@@ -557,6 +559,11 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(necessitiesService.getByCenterAndCategory(centerId, category));
     }
 
+    @Operation(summary = "사용자 생필품 알림 조회", description = "Kafka 기반 자동 신청 알림을 포함한 생필품 알림 목록을 조회합니다.")
+    @GetMapping("/notifications/user/{userId}")
+    public ResponseEntity<List<DailyNecessitiesNotificationDto>> getNotifications(@PathVariable Long userId) {
+        return ResponseEntity.ok(necessitiesNotificationService.getNotifications(userId));
+    }
 
 
 }
