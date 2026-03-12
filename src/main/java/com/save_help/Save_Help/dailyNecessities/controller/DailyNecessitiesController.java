@@ -565,5 +565,10 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(necessitiesNotificationService.getNotifications(userId));
     }
 
+    @Operation(summary = "사용 가능한 생필품 조회", description = "승인되고 활성화되어 있으며 재고가 있고 만료되지 않은 품목만 조회합니다.")
+    @GetMapping("/available")
+    public ResponseEntity<List<DailyNecessitiesDto>> getAvailableItems() {
+        return ResponseEntity.ok(necessitiesService.getAvailableItems());
+    }
 
 }

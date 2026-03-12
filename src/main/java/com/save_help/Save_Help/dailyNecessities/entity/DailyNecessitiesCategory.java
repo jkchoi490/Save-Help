@@ -8,5 +8,6 @@ public enum DailyNecessitiesCategory {
     EMERGENCY,  // 응급
     SCHOOL_SUPPLIES, // 학용품
     ELECTRONICS, // 생활 전자
+    CARE, // 돌봄 용품
     OTHER       // 기타
 }

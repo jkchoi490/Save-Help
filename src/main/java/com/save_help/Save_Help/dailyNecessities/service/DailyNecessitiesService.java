@@ -385,4 +385,16 @@ public class DailyNecessitiesService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesDto> getAvailableItems() {
+        return necessitiesRepository
+                .findByApprovalStatusAndActiveTrueAndStockGreaterThan(
+                        DailyNecessities.ApprovalStatus.APPROVED, 0
+                )
+                .stream()
+                .filter(item -> !item.isExpired())
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
+    }
+
 }

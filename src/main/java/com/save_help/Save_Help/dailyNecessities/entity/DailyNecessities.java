@@ -84,9 +84,22 @@ public class DailyNecessities {
         this.active = false;
     }
 
+    public boolean isExpired() {
+        return expirationDate != null && expirationDate.isBefore(LocalDate.now());
+    }
+
     public enum ApprovalStatus {
         PENDING, APPROVED, REJECTED
     }
+
+
+    public boolean isAvailableForUser() {
+        return active
+                && approvalStatus == ApprovalStatus.APPROVED
+                && stock != null
+                && stock > 0;
+    }
+
 
 
 
