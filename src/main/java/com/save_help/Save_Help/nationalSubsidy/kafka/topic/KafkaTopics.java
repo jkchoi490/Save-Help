@@ -54,4 +54,8 @@ public final class KafkaTopics {
 
     public static final String DAILY_NECESSITIES_NOTIFICATION_DLQ =
             "dailynecessities.notification.dlq.v1";
+    public static final String DAILY_NECESSITIES_STOCK_LOW = "dailynecessities.stock.low.v1";
+    public static final String AUTO_APPLY_COMPLETED = "dailynecessities.auto-apply.completed.v1";
+    public static final String AUTO_APPLY_FAILED = "dailynecessities.auto-apply.failed.v1";
+
 }

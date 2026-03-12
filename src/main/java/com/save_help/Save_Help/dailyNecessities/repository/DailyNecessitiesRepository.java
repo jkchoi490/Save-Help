@@ -42,4 +42,17 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     );
 
     List<DailyNecessities> findByProvidedBy_IdAndCategory(Long centerId, DailyNecessitiesCategory category);
+
+
+    @Query("""
+            SELECT COUNT(d)
+            FROM DailyNecessities d
+            WHERE d.active = true
+            """)
+    long countActiveItems();
+
+    List<DailyNecessities> findByApprovalStatusAndActiveTrueAndStockGreaterThan(
+            DailyNecessities.ApprovalStatus approvalStatus,
+            Integer stock
+    );
 }
