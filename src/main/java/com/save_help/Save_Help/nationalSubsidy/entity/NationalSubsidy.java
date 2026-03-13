@@ -89,6 +89,8 @@ public class NationalSubsidy {
     private long originalBudgetAmount; // 기정 예산액
     private long executedAmount;      // 집행 금액
 
+    private long approvedCount;   // 승인 건수
+
     @Column(name = "event_id", unique = true, nullable = false, length = 100)
     private String eventId;
 
@@ -128,4 +130,15 @@ public class NationalSubsidy {
         if (delta <= 0) return;
         this.applicationCount += delta;
     }
+
+    public void reopen() {
+        this.isOpen = true;
+        this.openedAt = LocalDateTime.now();
+    }
+
+    public void increaseApprovedCount(long delta) {
+        if (delta > 0) this.approvedCount += delta;
+    }
+
+
 }

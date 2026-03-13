@@ -614,5 +614,14 @@ public class NationalSubsidyService {
                 .map(NationalSubsidyApplicationResponseDto::fromEntity);
     }
 
+    @Transactional(readOnly = true)
+    public long countApplicationsBySubsidy(Long subsidyId) {
+        return appRepository.countBySubsidy_Id(subsidyId);
+    }
 
+    @Transactional(readOnly = true)
+    public Page<NationalSubsidyApplicationResponseDto> findApplicationsBySubsidy(Long subsidyId, Pageable pageable) {
+        return appRepository.findBySubsidy_IdOrderByCreatedAtDesc(subsidyId, pageable)
+                .map(NationalSubsidyApplicationResponseDto::fromEntity);
+    }
 }
