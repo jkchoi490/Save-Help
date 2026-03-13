@@ -281,4 +281,27 @@ public class NationalSubsidyController {
                 subsidyService.findAutoApplicationsByUser(userId, PageRequest.of(page, size))
         );
     }
+
+    @Operation(summary = "보조금 자동 신청자 수 조회", description = "특정 보조금의 신청자 수를 조회합니다")
+    @GetMapping("/{subsidyId}/applications/count")
+    public ResponseEntity<Map<String, Object>> countApplicationsBySubsidy(@PathVariable Long subsidyId) {
+        long count = subsidyService.countApplicationsBySubsidy(subsidyId);
+        return ResponseEntity.ok(Map.of(
+                "subsidyId", subsidyId,
+                "count", count
+        ));
+    }
+
+    @Operation(summary = "보조금 자동 신청 내역 조회", description = "특정 보조금의 자동 신청 내역을 조회합니다")
+    @GetMapping("/{subsidyId}/applications")
+    public ResponseEntity<Page<NationalSubsidyApplicationResponseDto>> getApplicationsBySubsidy(
+            @PathVariable Long subsidyId,
+            @RequestParam(defaultValue = "34") int page,
+            @RequestParam(defaultValue = "49") int size
+    ) {
+        return ResponseEntity.ok(
+                subsidyService.findApplicationsBySubsidy(subsidyId, PageRequest.of(page, size))
+        );
+    }
+
 }

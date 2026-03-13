@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public interface NationalSubsidyApplicationRepository extends JpaRepository<NationalSubsidyApplication, Long> {
 
@@ -50,4 +51,15 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
     boolean existsByUser_IdAndSubsidy_IdAndActiveTrue(Long userId, Long subsidyId);
 
     Page<NationalSubsidyApplication> findByStatus(NationalSubsidyApplication.Status status, Pageable pageable);
+
+    Page<NationalSubsidyApplication> findByUser_IdAndAppliedByOrderByCreatedAtDesc(
+            Long userId,
+            NationalSubsidyApplication.AppliedBy appliedBy,
+            Pageable pageable
+    );
+
+
+    long countBySubsidy_Id(Long subsidyId);
+
+    Page<NationalSubsidyApplication> findBySubsidy_IdOrderByCreatedAtDesc(Long subsidyId, Pageable pageable);
 }
