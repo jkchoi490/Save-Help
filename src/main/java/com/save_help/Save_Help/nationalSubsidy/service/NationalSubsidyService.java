@@ -624,4 +624,17 @@ public class NationalSubsidyService {
         return appRepository.findBySubsidy_IdOrderByCreatedAtDesc(subsidyId, pageable)
                 .map(NationalSubsidyApplicationResponseDto::fromEntity);
     }
+
+    @Transactional(readOnly = true)
+    public Page<NationalSubsidyApplicationResponseDto> findApplicationsByPeriod(
+            LocalDate from,
+            LocalDate to,
+            PageRequest pageRequest
+    ) {
+        return appRepository.findCreatedBetween(
+                from.atStartOfDay(),
+                to.plusDays(1).atStartOfDay().minusNanos(1),
+                pageRequest
+        ).map(NationalSubsidyApplicationResponseDto::fromEntity);
+    }
 }

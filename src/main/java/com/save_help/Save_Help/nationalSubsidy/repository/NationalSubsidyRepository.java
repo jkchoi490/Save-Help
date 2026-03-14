@@ -252,6 +252,12 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 """)
     Page<NationalSubsidy> findPopularSubsidies(@Param("minCount") long minCount, Pageable pageable);
 
-
+    // 타입별 보조금 개수 통계
+    @Query("""
+    select s.type, count(s)
+    from NationalSubsidy s
+    group by s.type
+""")
+    List<Object[]> countGroupByType();
 }
 

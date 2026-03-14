@@ -62,4 +62,8 @@ public final class KafkaTopics {
     public static final String SUBSIDY_APPLICATION_DLQ = "subsidy.application.dlq.v1";
     public static final String SUBSIDY_NOTIFICATION_DLQ = "subsidy.notification.dlq.v1";
     public static final String SUBSIDY_AUTO_APPLY_DLQ = "subsidy.auto.apply.dlq.v1";
+
+    public static final String SUBSIDY_UPDATED = "subsidy.updated.v1";
+    public static final String SUBSIDY_APPLICATION_SUBMITTED = "subsidy.application.submitted.v1";
+    public static final String SUBSIDY_APPLICATION_APPROVED = "subsidy.application.approved.v1";
 }
