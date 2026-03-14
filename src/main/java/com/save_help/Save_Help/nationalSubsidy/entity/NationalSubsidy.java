@@ -140,5 +140,9 @@ public class NationalSubsidy {
         if (delta > 0) this.approvedCount += delta;
     }
 
+    public boolean isEmergencyEligible(boolean emergency) {
+        if (Boolean.TRUE.equals(emergencyOnly) && !emergency) return false;
+        return true;
+    }
 
 }

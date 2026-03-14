@@ -16,6 +16,7 @@ public enum NationalSubsidyType {
     WELFARE,        // 복지 일반
     HEALTHCARE,     // 건강관리 지원
     MENTALCARE,  // 멘탈관리 지원
+    DIGITAL, // 디지털 지원
     OTHER       // 기타
 
 }

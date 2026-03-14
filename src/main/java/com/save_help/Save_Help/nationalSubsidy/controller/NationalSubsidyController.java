@@ -304,4 +304,18 @@ public class NationalSubsidyController {
         );
     }
 
+    // 특정 기간 신청 내역 조회
+    @Operation(summary = "기간별 신청 내역 조회", description = "특정 기간 동안 생성된 신청 내역을 조회합니다")
+    @GetMapping("/applications/range")
+    public ResponseEntity<Page<NationalSubsidyApplicationResponseDto>> getApplicationsByRange(
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(
+                subsidyService.findApplicationsByPeriod(from, to, PageRequest.of(page, size))
+        );
+    }
+
 }
