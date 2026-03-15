@@ -66,4 +66,13 @@ public final class KafkaTopics {
     public static final String SUBSIDY_UPDATED = "subsidy.updated.v1";
     public static final String SUBSIDY_APPLICATION_SUBMITTED = "subsidy.application.submitted.v1";
     public static final String SUBSIDY_APPLICATION_APPROVED = "subsidy.application.approved.v1";
+
+    public static final String DAILY_NECESSITY_NOTIFICATION_REQUESTED =
+            "dailynecessity.notification.requested.v1";
+
+    public static final String DAILY_NECESSITY_NOTIFICATION_SENT =
+            "dailynecessity.notification.sent.v1";
+
+    public static final String DAILY_NECESSITY_NOTIFICATION_FAILED =
+            "dailynecessity.notification.failed.v1";
 }

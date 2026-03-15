@@ -9,5 +9,6 @@ public enum DailyNecessitiesCategory {
     SCHOOL_SUPPLIES, // 학용품
     ELECTRONICS, // 생활 전자
     CARE, // 돌봄 용품
+    PET, // 반려동물용품
     OTHER       // 기타
 }

@@ -33,7 +33,7 @@ public class DailyNecessitiesController {
     private final DailyNecessitiesDonationPointHistoryRepository historyRepository;
     private final DailyNecessitiesDeliveryService deliveryService;
     private final DailyNecessitiesNotificationService necessitiesNotificationService;
-
+    private final DailyNecessitiesSubscriptionService subscriptionService;
 
 
     public DailyNecessitiesController(
@@ -42,7 +42,7 @@ public class DailyNecessitiesController {
             DailyNecessitiesStockService stockService,
             DailyNecessitiesStatisticsService statisticsService,
             DailyNecessitiesReportService reportService,
-            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService, DailyNecessitiesNotificationService necessitiesNotificationService) {
+            DailyNecessitiesDonationService donationService, DailyNecessitiesCenterMessageService messageService, DailyNecessitiesUserRequestMessageService userRequestMessageService, DailyNecessitiesRestockForecastService restockForecastService, DailyNecessitiesAutoReorderService dailyNecessitiesAutoReorderService, UserRepository userRepository, DailyNecessitiesDonationPointHistoryRepository historyRepository, DailyNecessitiesDeliveryService deliveryService, DailyNecessitiesNotificationService necessitiesNotificationService, DailyNecessitiesSubscriptionService subscriptionService) {
         this.necessitiesService = necessitiesService;
         this.requestService = requestService;
         this.stockService = stockService;
@@ -57,6 +57,7 @@ public class DailyNecessitiesController {
         this.historyRepository = historyRepository;
         this.deliveryService = deliveryService;
         this.necessitiesNotificationService = necessitiesNotificationService;
+        this.subscriptionService = subscriptionService;
     }
 
     // ------------------------------------
@@ -569,6 +570,31 @@ public class DailyNecessitiesController {
     @GetMapping("/available")
     public ResponseEntity<List<DailyNecessitiesDto>> getAvailableItems() {
         return ResponseEntity.ok(necessitiesService.getAvailableItems());
+    }
+
+    @Operation(summary = "특정 생필품 알림 구독")
+    @PostMapping("/necessity")
+    public ResponseEntity<DailyNecessitiesSubscription> subscribeNecessity(
+            @RequestParam Long userId,
+            @RequestParam Long necessityId
+    ) {
+        return ResponseEntity.ok(subscriptionService.subscribeNecessity(userId, necessityId));
+    }
+
+    @Operation(summary = "생필품 카테고리 알림 구독")
+    @PostMapping("/category")
+    public ResponseEntity<DailyNecessitiesSubscription> subscribeCategory(
+            @RequestParam Long userId,
+            @RequestParam DailyNecessitiesCategory category
+    ) {
+        return ResponseEntity.ok(subscriptionService.subscribeCategory(userId, category));
+    }
+
+    @Operation(summary = "생필품 알림 구독 해제")
+    @DeleteMapping("/{subscriptionId}")
+    public ResponseEntity<Void> unsubscribe(@PathVariable Long subscriptionId) {
+        subscriptionService.unsubscribe(subscriptionId);
+        return ResponseEntity.noContent().build();
     }
 
 }
