@@ -1,0 +1,8 @@
+package com.save_help.Save_Help.dailyNecessities.repository;
+
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessityApplication;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DailyNecessityApplicationRepository extends JpaRepository<DailyNecessityApplication, Long> {
+    boolean existsByUserIdAndSupportIdAndPeriodKey(Long userId, Long supportId, String periodKey);
+}

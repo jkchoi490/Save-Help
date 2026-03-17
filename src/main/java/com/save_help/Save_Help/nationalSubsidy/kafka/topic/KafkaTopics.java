@@ -46,6 +46,11 @@ public final class KafkaTopics {
     public static final String NECESSITY_AUTO_APPLY_CREATED = "necessity.auto.apply.created.v1";
     public static final String NECESSITY_AUTO_APPLY_COMPLETED = "necessity.auto.apply.completed.v1";
 
+    public static final String NECESSITY_AUTO_APPLY_REQUEST = "necessity.auto.apply.request.v1";
+    public static final String NECESSITY_AUTO_APPLY_RETRY   = "necessity.auto.apply.retry.v1";
+    public static final String NECESSITY_AUTO_APPLY_DLQ     = "necessity.auto.apply.dlq.v1";
+
+
     public static final String DAILY_NECESSITIES_AUTO_APPLY_COMPLETED =
             "dailynecessities.auto-apply.completed.v1";
 
@@ -75,4 +80,5 @@ public final class KafkaTopics {
 
     public static final String DAILY_NECESSITY_NOTIFICATION_FAILED =
             "dailynecessity.notification.failed.v1";
+
 }

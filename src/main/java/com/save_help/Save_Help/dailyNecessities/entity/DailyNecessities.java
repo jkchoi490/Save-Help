@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -55,6 +56,13 @@ public class DailyNecessities {
 
     //최대 재고
     private Integer maxStock;
+
+    // 생필품 신청 기간
+    private LocalDateTime applyStartedAt;
+    private LocalDateTime applyEndedAt;
+
+    // 지원 내용
+    private String supportContents;
 
     // 기본 생성자
     protected DailyNecessities() {}
