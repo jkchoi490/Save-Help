@@ -59,9 +59,25 @@ public class User {
 
     private int age;
 
+    @Column(nullable = false, length = 20)
+    private LifeCycle lifeCycle;
+
     private String incomeLevel;
     private boolean disabled;
     private boolean inEmergency;
+
+    // 수급 자격 종류
+    @Enumerated(EnumType.STRING)
+    private WelfareType welfareType;
+
+    // 지원 자격 상세
+    private String EligibilityRequirements;
+
+    // 가구원 수
+    private int memberCount;
+
+    @Column(name = "national_subsidy_eligibility_status", length = 500)
+    private String nationalSubsidyEligibilityStatus;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<HelperEmergencyContact> helperEmergencyContacts = new ArrayList<>();
