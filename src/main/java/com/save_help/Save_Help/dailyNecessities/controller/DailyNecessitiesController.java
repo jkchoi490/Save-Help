@@ -597,4 +597,10 @@ public class DailyNecessitiesController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "센터별 사용 가능한 생필품 조회", description = "승인/활성/재고보유/미만료 상태의 품목만 조회합니다.")
+    @GetMapping("/center/{centerId}/available/necessities")
+    public ResponseEntity<List<DailyNecessitiesDto>> getAvailableItemsByCenter(@PathVariable Long centerId) {
+        return ResponseEntity.ok(necessitiesService.getAvailableItemsByCenter(centerId));
+    }
+
 }

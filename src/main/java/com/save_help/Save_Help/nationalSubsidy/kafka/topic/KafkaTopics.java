@@ -81,4 +81,9 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITY_NOTIFICATION_FAILED =
             "dailynecessity.notification.failed.v1";
 
+
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_REQUEST = "daily-necessities.auto-apply.request";
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_RESULT = "daily-necessities.auto-apply.result";
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_DLQ = "daily-necessities.auto-apply.dlq";
+
 }
