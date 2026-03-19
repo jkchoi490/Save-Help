@@ -108,7 +108,15 @@ public class DailyNecessities {
                 && stock > 0;
     }
 
-
+    public void addStock(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("추가 수량 관련 예외처리가 필요합니다");
+        }
+        if (this.stock == null) {
+            this.stock = 0;
+        }
+        this.stock += quantity;
+    }
 
 
 }

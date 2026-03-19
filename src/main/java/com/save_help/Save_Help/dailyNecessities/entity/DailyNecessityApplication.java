@@ -27,4 +27,9 @@ public class DailyNecessityApplication {
     private String periodKey;       // 월 단위 키
     private String reason;          // 자동 신청 사유
     private LocalDateTime appliedAt;
+
+    @Column(nullable = false)
+    private Integer quantity;
+
+    private Long centerId;
 }

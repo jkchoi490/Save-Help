@@ -10,5 +10,6 @@ public enum DailyNecessitiesCategory {
     ELECTRONICS, // 생활 전자
     CARE, // 돌봄 용품
     PET, // 반려동물용품
+    SAFETY, //안전용품
     OTHER       // 기타
 }

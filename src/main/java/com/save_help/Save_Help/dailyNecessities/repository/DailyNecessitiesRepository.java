@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,5 +56,20 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     List<DailyNecessities> findByApprovalStatusAndActiveTrueAndStockGreaterThan(
             DailyNecessities.ApprovalStatus approvalStatus,
             Integer stock
+    );
+
+    @Query("""
+            SELECT d
+            FROM DailyNecessities d
+            WHERE d.providedBy.id = :centerId
+              AND d.active = true
+              AND d.approvalStatus = :approvalStatus
+              AND d.stock > 0
+              AND (d.expirationDate IS NULL OR d.expirationDate > :now)
+            """)
+    List<DailyNecessities> findAvailableItemsByCenter(
+            @Param("centerId") Long centerId,
+            @Param("approvalStatus") DailyNecessities.ApprovalStatus approvalStatus,
+            @Param("now") LocalDateTime now
     );
 }

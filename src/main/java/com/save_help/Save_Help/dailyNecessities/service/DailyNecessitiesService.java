@@ -397,4 +397,16 @@ public class DailyNecessitiesService {
                 .toList();
     }
 
+    // 센터별 사용 가능한 품목 조회
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesDto> getAvailableItemsByCenter(Long centerId) {
+        return necessitiesRepository.findAvailableItemsByCenter(
+                        centerId,
+                        DailyNecessities.ApprovalStatus.APPROVED,
+                        LocalDateTime.now()
+                )
+                .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
+    }
 }
