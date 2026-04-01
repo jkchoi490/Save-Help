@@ -118,5 +118,8 @@ public class DailyNecessities {
         this.stock += quantity;
     }
 
+    public void increaseRequestCount() {
+        this.requestCount++;
+    }
 
 }

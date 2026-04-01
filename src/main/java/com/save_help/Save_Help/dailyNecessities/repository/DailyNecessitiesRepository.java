@@ -2,6 +2,8 @@ package com.save_help.Save_Help.dailyNecessities.repository;
 
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -72,4 +74,25 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
             @Param("approvalStatus") DailyNecessities.ApprovalStatus approvalStatus,
             @Param("now") LocalDateTime now
     );
+
+    @Query("""
+        select d
+        from DailyNecessities d
+        where (:centerId is null or d.providedBy.id = :centerId)
+          and (:category is null or d.category = :category)
+          and (:approvalStatus is null or d.approvalStatus = :approvalStatus)
+          and (:active is null or d.active = :active)
+          and (
+                :keyword is null
+                or lower(d.name) like lower(concat('%', :keyword, '%'))
+                or lower(d.unit) like lower(concat('%', :keyword, '%'))
+                or lower(coalesce(d.supportContents, '')) like lower(concat('%', :keyword, '%'))
+              )
+    """)
+    Page<DailyNecessities> searchItems(@Param("centerId") Long centerId,
+                                       @Param("category") DailyNecessitiesCategory category,
+                                       @Param("approvalStatus") DailyNecessities.ApprovalStatus approvalStatus,
+                                       @Param("active") Boolean active,
+                                       @Param("keyword") String keyword,
+                                       Pageable pageable);
 }

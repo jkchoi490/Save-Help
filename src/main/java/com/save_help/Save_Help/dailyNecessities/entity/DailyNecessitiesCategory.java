@@ -11,5 +11,6 @@ public enum DailyNecessitiesCategory {
     CARE, // 돌봄 용품
     PET, // 반려동물용품
     SAFETY, //안전용품
+    DAILY_LIFE, //생활용품
     OTHER       // 기타
 }

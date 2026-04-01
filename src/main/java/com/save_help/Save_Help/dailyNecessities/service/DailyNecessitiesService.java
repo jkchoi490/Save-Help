@@ -409,4 +409,10 @@ public class DailyNecessitiesService {
                 .map(DailyNecessitiesDto::fromEntity)
                 .toList();
     }
+
+    private DailyNecessities findEntity(Long id) {
+        return necessitiesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("생필품을 찾을 수 없습니다. id=" + id));
+    }
+
 }
