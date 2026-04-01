@@ -603,4 +603,27 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(necessitiesService.getAvailableItemsByCenter(centerId));
     }
 
+    @Operation(summary = "센터/카테고리/상태 기반 생필품 검색", description = "운영자가 상세 조건으로 생필품을 조회합니다.")
+    @GetMapping("/admin/search")
+    public ResponseEntity<Page<DailyNecessitiesDto>> adminSearch(
+            @RequestParam(required = false) Long centerId,
+            @RequestParam(required = false) DailyNecessitiesCategory category,
+            @RequestParam(required = false) DailyNecessities.ApprovalStatus approvalStatus,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "7") int page,
+            @RequestParam(defaultValue = "30") int size
+    ) {
+        return ResponseEntity.ok(
+                necessitiesService.searchItems(
+                        centerId,
+                        category,
+                        approvalStatus,
+                        active,
+                        keyword,
+                        PageRequest.of(page, size)
+                )
+        );
+    }
+
 }

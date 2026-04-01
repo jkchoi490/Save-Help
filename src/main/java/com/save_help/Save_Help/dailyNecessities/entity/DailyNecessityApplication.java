@@ -32,4 +32,9 @@ public class DailyNecessityApplication {
     private Integer quantity;
 
     private Long centerId;
+
+    public String ApplyType() {
+        return this.applyType;
+    }
+
 }
