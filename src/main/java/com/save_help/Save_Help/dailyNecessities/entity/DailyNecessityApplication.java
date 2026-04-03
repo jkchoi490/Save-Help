@@ -28,6 +28,8 @@ public class DailyNecessityApplication {
     private String reason;          // 자동 신청 사유
     private LocalDateTime appliedAt;
 
+    private String description; // 생필품 신청 내용
+
     @Column(nullable = false)
     private Integer quantity;
 

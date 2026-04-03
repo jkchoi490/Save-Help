@@ -64,6 +64,9 @@ public class DailyNecessities {
     // 지원 내용
     private String supportContents;
 
+    // 생필품 상세 정보
+    private String description;
+
     // 기본 생성자
     protected DailyNecessities() {}
 

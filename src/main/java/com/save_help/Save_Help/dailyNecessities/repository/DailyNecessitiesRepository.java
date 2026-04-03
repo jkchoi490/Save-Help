@@ -2,6 +2,7 @@ package com.save_help.Save_Help.dailyNecessities.repository;
 
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
+import com.save_help.Save_Help.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -95,4 +96,8 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
                                        @Param("active") Boolean active,
                                        @Param("keyword") String keyword,
                                        Pageable pageable);
+
+    List<User> findEligibleUsers();
+
+    List<DailyNecessities> findAllActiveSupports();
 }
