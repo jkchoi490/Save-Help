@@ -9,6 +9,7 @@ import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesRequest;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
 import com.save_help.Save_Help.dailyNecessities.entity.UserNecessityRequest;
+import com.save_help.Save_Help.dailyNecessities.kafka.producer.DailyNecessitiesPublisher;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRequestRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.UserNecessitiesRepository;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,15 +39,17 @@ public class DailyNecessitiesService {
     private final DailyNecessitiesAlertService alertService;
     private final DailyNecessitiesRequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final DailyNecessitiesPublisher dailyNecessitiesPublisher;
 
     public DailyNecessitiesService(DailyNecessitiesRepository necessitiesRepository,
-                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository) {
+                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository, DailyNecessitiesPublisher dailyNecessitiesPublisher) {
         this.necessitiesRepository = necessitiesRepository;
         this.centerRepository = centerRepository;
         this.userNecessitiesRepository = userNecessitiesRepository;
         this.alertService = alertService;
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
+        this.dailyNecessitiesPublisher = dailyNecessitiesPublisher;
     }
 
     // 생성
@@ -413,6 +417,29 @@ public class DailyNecessitiesService {
     private DailyNecessities findEntity(Long id) {
         return necessitiesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("생필품을 찾을 수 없습니다. id=" + id));
+    }
+
+    public DailyNecessities create(DailyNecessities dailyNecessity) {
+        DailyNecessities saved = necessitiesRepository.save(dailyNecessity);
+        dailyNecessitiesPublisher.publishCreated(saved);
+        return saved;
+    }
+
+    public List<DailyNecessities> getRecommendedDailyNecessities(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("IllegalArgumentException"));
+
+    
+        List<DailyNecessities> supports = necessitiesRepository.findAllActiveSupports();
+
+        List<DailyNecessities> result = new ArrayList<>();
+
+        for (DailyNecessities support : supports) {
+
+            result.add(support);
+        }
+
+        return result;
     }
 
 }

@@ -626,4 +626,14 @@ public class DailyNecessitiesController {
         );
     }
 
+    @GetMapping("/recommend/{userId}")
+    @Operation(summary = "사용자 맞춤 생필품 조회", description = "특정 사용자에게 조건상 적합한 생필품 지원 목록을 조회합니다.")
+    public ResponseEntity<List<DailyNecessities>> getRecommendedDailyNecessities(
+            @PathVariable Long userId
+    ) {
+        List<DailyNecessities> response =
+                necessitiesService.getRecommendedDailyNecessities(userId);
+        return ResponseEntity.ok(response);
+    }
+
 }
