@@ -2,11 +2,13 @@ package com.save_help.Save_Help.dailyNecessities.service;
 
 import com.save_help.Save_Help.communityCenter.entity.CommunityCenter;
 import com.save_help.Save_Help.communityCenter.repository.CommunityCenterRepository;
+import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesContactRequestCreateDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestCreateDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestResponseDto;
 import com.save_help.Save_Help.dailyNecessities.entity.*;
 import com.save_help.Save_Help.dailyNecessities.kafka.producer.DailyNecessitiesPublisher;
+import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesContactRequestRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRequestRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.UserNecessitiesRepository;
@@ -37,9 +39,10 @@ public class DailyNecessitiesService {
     private final DailyNecessitiesRequestRepository requestRepository;
     private final UserRepository userRepository;
     private final DailyNecessitiesPublisher dailyNecessitiesPublisher;
+    private final DailyNecessitiesContactRequestRepository contactRequestRepository;
 
     public DailyNecessitiesService(DailyNecessitiesRepository necessitiesRepository,
-                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository, DailyNecessitiesPublisher dailyNecessitiesPublisher) {
+                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository, DailyNecessitiesPublisher dailyNecessitiesPublisher, DailyNecessitiesContactRequestRepository contactRequestRepository) {
         this.necessitiesRepository = necessitiesRepository;
         this.centerRepository = centerRepository;
         this.userNecessitiesRepository = userNecessitiesRepository;
@@ -47,6 +50,7 @@ public class DailyNecessitiesService {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
         this.dailyNecessitiesPublisher = dailyNecessitiesPublisher;
+        this.contactRequestRepository = contactRequestRepository;
     }
 
     // 생성
@@ -440,5 +444,31 @@ public class DailyNecessitiesService {
     }
     public List<DailyNecessityApplication> getUserApplications(Long userId) {
         return necessitiesRepository.findByUser_Id(userId);
+    }
+
+    public DailyNecessities getDailyNecessity(Long necessityId) {
+        return necessitiesRepository.findById(necessityId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 생필품이 존재하지 않습니다."));
+    }
+
+    @Transactional
+    public DailyNecessitiesContactRequest createContactRequest(
+            Long necessityId,
+            DailyNecessitiesContactRequestCreateDto dto
+    ) {
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+
+        DailyNecessities dailyNecessities = necessitiesRepository.findById(necessityId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 생필품이 존재하지 않습니다."));
+
+        DailyNecessitiesContactRequest request = new DailyNecessitiesContactRequest(
+                user,
+                dailyNecessities,
+                dto.getContactPhone(),
+                dto.getMessage()
+        );
+
+        return contactRequestRepository.save(request);
     }
 }

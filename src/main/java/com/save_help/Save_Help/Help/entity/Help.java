@@ -66,6 +66,9 @@ public class Help {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(length = 730)
+    private String feedback;
+
     @PrePersist
     private void onCreate() {
         LocalDateTime now = LocalDateTime.now();

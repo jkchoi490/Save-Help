@@ -642,5 +642,15 @@ public class DailyNecessitiesController {
         return necessitiesService.getUserApplications(userId);
     }
 
+    // 사용자가 특정 생필품에 대해 연락 요청 등록
+    @PostMapping("/{necessityId}/contact-request")
+    public DailyNecessitiesContactRequest createContactRequest(
+            @PathVariable Long necessityId,
+            @RequestBody DailyNecessitiesContactRequestCreateDto dto
+    ) {
+        return necessitiesService.createContactRequest(necessityId, dto);
+    }
+
+
 
 }
