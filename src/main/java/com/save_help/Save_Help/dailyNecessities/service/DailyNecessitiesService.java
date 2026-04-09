@@ -5,10 +5,7 @@ import com.save_help.Save_Help.communityCenter.repository.CommunityCenterReposit
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestCreateDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestResponseDto;
-import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
-import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesRequest;
-import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
-import com.save_help.Save_Help.dailyNecessities.entity.UserNecessityRequest;
+import com.save_help.Save_Help.dailyNecessities.entity.*;
 import com.save_help.Save_Help.dailyNecessities.kafka.producer.DailyNecessitiesPublisher;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRequestRepository;
@@ -441,5 +438,7 @@ public class DailyNecessitiesService {
 
         return result;
     }
-
+    public List<DailyNecessityApplication> getUserApplications(Long userId) {
+        return necessitiesRepository.findByUser_Id(userId);
+    }
 }

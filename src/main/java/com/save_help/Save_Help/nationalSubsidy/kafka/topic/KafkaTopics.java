@@ -85,5 +85,7 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITIES_AUTO_APPLY_REQUEST = "daily-necessities.auto-apply.request";
     public static final String DAILY_NECESSITIES_AUTO_APPLY_RESULT = "daily-necessities.auto-apply.result";
     public static final String DAILY_NECESSITIES_AUTO_APPLY_DLQ = "daily-necessities.auto-apply.dlq";
-
+    public static final String DAILY_NECESSITY_CREATED = "dailynecessity.created.v1";
+    public static final String DAILY_NECESSITY_APPROVAL_REQUESTED = "dailynecessity.approval.requested.v1";
+    public static final String DAILY_NECESSITY_APPROVED = "dailynecessity.approved.v1";
 }
