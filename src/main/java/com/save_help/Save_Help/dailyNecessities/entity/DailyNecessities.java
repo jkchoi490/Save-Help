@@ -133,6 +133,15 @@ public class DailyNecessities {
         this.applyEndedAt = applyEndedAt;
     }
 
+    public boolean isWithinApplyPeriod() {
+        LocalDateTime now = LocalDateTime.now();
+
+        boolean started = (applyStartedAt == null) || !now.isBefore(applyStartedAt);
+        boolean notEnded = (applyEndedAt == null) || !now.isAfter(applyEndedAt);
+
+        return started && notEnded;
+    }
+
 
 
 }
