@@ -39,4 +39,11 @@ public class DailyNecessityApplication {
         return this.applyType;
     }
 
+    public enum ApplicationStatus {
+        REQUESTED,
+        APPROVED,
+        REJECTED
+    }
+
+
 }

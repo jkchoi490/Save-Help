@@ -636,4 +636,11 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(response);
     }
 
+    // 사용자 신청 내역 조회
+    @GetMapping("/applications/user/{userId}")
+    public List<DailyNecessityApplication> getUserApplications(@PathVariable Long userId) {
+        return necessitiesService.getUserApplications(userId);
+    }
+
+
 }

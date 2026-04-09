@@ -2,6 +2,7 @@ package com.save_help.Save_Help.dailyNecessities.repository;
 
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessityApplication;
 import com.save_help.Save_Help.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -100,4 +101,13 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     List<User> findEligibleUsers();
 
     List<DailyNecessities> findAllActiveSupports();
+
+    @Query("""
+        select d
+        from DailyNecessities d
+        where d.providedBy.id = :centerId
+    """)
+    List<DailyNecessities> findByCenterId(@Param("centerId") Long centerId);
+
+    List<DailyNecessityApplication> findByUser_Id(Long userId);
 }

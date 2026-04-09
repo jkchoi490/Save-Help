@@ -125,4 +125,14 @@ public class DailyNecessities {
         this.requestCount++;
     }
 
+    public void updateApplyPeriod(LocalDateTime applyStartedAt, LocalDateTime applyEndedAt) {
+        if (applyStartedAt != null && applyEndedAt != null && applyStartedAt.isAfter(applyEndedAt)) {
+            throw new IllegalArgumentException("IllegalArgumentException");
+        }
+        this.applyStartedAt = applyStartedAt;
+        this.applyEndedAt = applyEndedAt;
+    }
+
+
+
 }
