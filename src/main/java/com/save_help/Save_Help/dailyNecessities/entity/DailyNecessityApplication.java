@@ -1,6 +1,7 @@
 package com.save_help.Save_Help.dailyNecessities.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +14,11 @@ import java.time.LocalDateTime;
                 )
         }
 )
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class DailyNecessityApplication {
 
     @Id
@@ -34,6 +40,7 @@ public class DailyNecessityApplication {
     private Integer quantity;
 
     private Long centerId;
+
 
     public String ApplyType() {
         return this.applyType;

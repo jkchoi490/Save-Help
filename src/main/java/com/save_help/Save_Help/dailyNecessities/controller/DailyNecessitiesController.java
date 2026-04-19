@@ -636,21 +636,21 @@ public class DailyNecessitiesController {
         return ResponseEntity.ok(response);
     }
 
+    // 임시 주석 처리 -> 코드 리펙토링 필요
     // 사용자 신청 내역 조회
-    @GetMapping("/applications/user/{userId}")
-    public List<DailyNecessityApplication> getUserApplications(@PathVariable Long userId) {
-        return necessitiesService.getUserApplications(userId);
-    }
+    //@GetMapping("/applications/user/{userId}")
+    //public List<DailyNecessityApplication> getUserApplications(@PathVariable Long userId) {
+    //    return necessitiesService.getUserApplications(userId);
+    //}
 
     // 사용자가 특정 생필품에 대해 연락 요청 등록
-    @PostMapping("/{necessityId}/contact-request")
-    public DailyNecessitiesContactRequest createContactRequest(
-            @PathVariable Long necessityId,
-            @RequestBody DailyNecessitiesContactRequestCreateDto dto
-    ) {
-        return necessitiesService.createContactRequest(necessityId, dto);
-    }
-
+    //@PostMapping("/{necessityId}/contact-request")
+    //public DailyNecessitiesContactRequest createContactRequest(
+    //        @PathVariable Long necessityId,
+    //        @RequestBody DailyNecessitiesContactRequestCreateDto dto
+    //) {
+    //    return necessitiesService.createContactRequest(necessityId, dto);
+    //}
 
 
 }
