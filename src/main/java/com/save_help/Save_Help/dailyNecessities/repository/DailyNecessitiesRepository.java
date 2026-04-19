@@ -2,6 +2,7 @@ package com.save_help.Save_Help.dailyNecessities.repository;
 
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesCategory;
+import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessitiesContactRequest;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessityApplication;
 import com.save_help.Save_Help.user.entity.User;
 import org.springframework.data.domain.Page;
@@ -97,9 +98,14 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
                                        @Param("active") Boolean active,
                                        @Param("keyword") String keyword,
                                        Pageable pageable);
+    //임시 주석 처리
+    //List<User> findEligibleUsers();
 
-    List<User> findEligibleUsers();
-
+    @Query("""
+    select d
+    from DailyNecessities d
+    where d.active = true
+    """)
     List<DailyNecessities> findAllActiveSupports();
 
     @Query("""
@@ -109,5 +115,9 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     """)
     List<DailyNecessities> findByCenterId(@Param("centerId") Long centerId);
 
-    List<DailyNecessityApplication> findByUser_Id(Long userId);
+    //Repository는 해당 엔티티 기준으로 동작하므로 Repository기능에 맞게 임시 수정
+    //List<DailyNecessityApplication> findByUser_Id(Long userId);
+
+    //List<DailyNecessitiesContactRequest> findByDailyNecessities_Id(Long dailyNecessitiesId);
+
 }

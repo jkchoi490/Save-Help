@@ -431,7 +431,7 @@ public class DailyNecessitiesService {
                 .orElseThrow(() -> new IllegalArgumentException("IllegalArgumentException"));
 
     
-        List<DailyNecessities> supports = necessitiesRepository.findAllActiveSupports();
+        List<DailyNecessities> supports = necessitiesRepository.findByActiveTrue();
 
         List<DailyNecessities> result = new ArrayList<>();
 
@@ -442,9 +442,9 @@ public class DailyNecessitiesService {
 
         return result;
     }
-    public List<DailyNecessityApplication> getUserApplications(Long userId) {
-        return necessitiesRepository.findByUser_Id(userId);
-    }
+    //public List<DailyNecessityApplication> getUserApplications(Long userId) {
+    //    return necessitiesRepository.findByUser_Id(userId);
+   // }
 
     public DailyNecessities getDailyNecessity(Long necessityId) {
         return necessitiesRepository.findById(necessityId)
