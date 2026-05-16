@@ -88,4 +88,6 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITY_CREATED = "dailynecessity.created.v1";
     public static final String DAILY_NECESSITY_APPROVAL_REQUESTED = "dailynecessity.approval.requested.v1";
     public static final String DAILY_NECESSITY_APPROVED = "dailynecessity.approved.v1";
+    public static final String DAILY_NECESSITY_CREATE = "daily-necessities.created";
+
 }

@@ -11,5 +11,5 @@ public class DailyNecessitiesCreated {
     private Long necessityId;
     private String title;
     private String category;
-
+    private Integer stock;
 }

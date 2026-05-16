@@ -7,6 +7,7 @@ import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestCreateDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestResponseDto;
 import com.save_help.Save_Help.dailyNecessities.entity.*;
+import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessityEligibilityEvent;
 import com.save_help.Save_Help.dailyNecessities.kafka.producer.DailyNecessitiesPublisher;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesContactRequestRepository;
 import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
@@ -41,8 +42,10 @@ public class DailyNecessitiesService {
     private final DailyNecessitiesPublisher dailyNecessitiesPublisher;
     private final DailyNecessitiesContactRequestRepository contactRequestRepository;
 
+    private final DailyNecessitiesPublisher dailyNecessityEligibilityProducer;
+
     public DailyNecessitiesService(DailyNecessitiesRepository necessitiesRepository,
-                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository, DailyNecessitiesPublisher dailyNecessitiesPublisher, DailyNecessitiesContactRequestRepository contactRequestRepository) {
+                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository, DailyNecessitiesPublisher dailyNecessitiesPublisher, DailyNecessitiesContactRequestRepository contactRequestRepository, DailyNecessitiesPublisher dailyNecessityEligibilityProducer) {
         this.necessitiesRepository = necessitiesRepository;
         this.centerRepository = centerRepository;
         this.userNecessitiesRepository = userNecessitiesRepository;
@@ -51,6 +54,7 @@ public class DailyNecessitiesService {
         this.userRepository = userRepository;
         this.dailyNecessitiesPublisher = dailyNecessitiesPublisher;
         this.contactRequestRepository = contactRequestRepository;
+        this.dailyNecessityEligibilityProducer = dailyNecessityEligibilityProducer;
     }
 
     // 생성
@@ -470,5 +474,31 @@ public class DailyNecessitiesService {
         );
 
         return contactRequestRepository.save(request);
+    }
+
+    @Transactional
+    public void updateEligibilityCondition(
+            Long necessityId,
+            Long centerId,
+            Integer incomeLevel,
+            Boolean requireCheck
+    ) {
+        DailyNecessities necessity = necessitiesRepository.findById(necessityId)
+                .orElseThrow(() -> new IllegalArgumentException("생필품을 찾을 수 없습니다."));
+
+        necessity.updateEligibilityCondition(
+                incomeLevel,
+                requireCheck
+        );
+
+        DailyNecessityEligibilityEvent event =
+                DailyNecessityEligibilityEvent.builder()
+                        .necessityId(necessity.getId())
+                        .centerId(necessity.getProvidedBy().getId())
+                        .incomeLevel(incomeLevel)
+                        .requireCheck(requireCheck)
+                        .build();
+
+        dailyNecessityEligibilityProducer.publishEligibilityChanged(event);
     }
 }
