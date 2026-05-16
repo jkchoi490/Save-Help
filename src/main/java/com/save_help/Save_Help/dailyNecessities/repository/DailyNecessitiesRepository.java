@@ -120,4 +120,5 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
 
     //List<DailyNecessitiesContactRequest> findByDailyNecessities_Id(Long dailyNecessitiesId);
 
+    List<DailyNecessities> findByNameContaining(String keyword);
 }

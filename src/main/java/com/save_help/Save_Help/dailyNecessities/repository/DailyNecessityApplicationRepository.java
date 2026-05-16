@@ -6,7 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DailyNecessityApplicationRepository extends JpaRepository<DailyNecessityApplication, Long> {
+
     boolean existsByUserIdAndSupportIdAndPeriodKey(Long userId, Long supportId, String periodKey);
 
     List<DailyNecessityApplication> findByUserIdOrderByAppliedAtDesc(Long userId);
+
+    List<DailyNecessityApplication> findBySupportId(Long supportId);
 }

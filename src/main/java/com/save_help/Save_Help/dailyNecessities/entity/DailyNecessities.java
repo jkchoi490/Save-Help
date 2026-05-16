@@ -67,6 +67,12 @@ public class DailyNecessities {
     // 생필품 상세 정보
     private String description;
 
+    private Integer incomeLevel;
+
+    // 신청 조건 충족 여부
+    private Boolean requireCheck;
+
+
     // 기본 생성자
     protected DailyNecessities() {}
 
@@ -97,6 +103,9 @@ public class DailyNecessities {
 
     public boolean isExpired() {
         return expirationDate != null && expirationDate.isBefore(LocalDate.now());
+    }
+
+    public void updateEligibilityCondition(Integer incomeLevel, Boolean requireCheck) {
     }
 
     public enum ApprovalStatus {
