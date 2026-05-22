@@ -106,6 +106,8 @@ public class DailyNecessities {
     }
 
     public void updateEligibilityCondition(Integer incomeLevel, Boolean requireCheck) {
+        this.incomeLevel = incomeLevel;
+        this.requireCheck = requireCheck;
     }
 
     public enum ApprovalStatus {
@@ -150,7 +152,6 @@ public class DailyNecessities {
 
         return started && notEnded;
     }
-
 
 
 }

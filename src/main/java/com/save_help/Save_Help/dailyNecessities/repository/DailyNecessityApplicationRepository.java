@@ -12,4 +12,11 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
     List<DailyNecessityApplication> findByUserIdOrderByAppliedAtDesc(Long userId);
 
     List<DailyNecessityApplication> findBySupportId(Long supportId);
+
+    long countBySupportIdAndStatus(
+            Long supportId,
+            String status
+    );
+
+    List<DailyNecessityApplication> findBySupportIdAndApplyTypeOrderByAppliedAtDesc(Long id, String auto);
 }
