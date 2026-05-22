@@ -121,4 +121,15 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
     //List<DailyNecessitiesContactRequest> findByDailyNecessities_Id(Long dailyNecessitiesId);
 
     List<DailyNecessities> findByNameContaining(String keyword);
+
+    // 소득 기준으로 자동 신청 가능한 생필품 조회
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.active = true
+      AND d.approvalStatus = com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities.ApprovalStatus.APPROVED
+      AND d.stock > 0
+      AND (:incomeLevel IS NULL OR d.incomeLevel IS NULL OR :incomeLevel <= d.incomeLevel)
+""")
+    List<DailyNecessities> findEligibleItemsByIncomeLevel(@Param("incomeLevel") Integer incomeLevel);
 }

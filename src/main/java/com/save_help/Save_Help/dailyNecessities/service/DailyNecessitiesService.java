@@ -7,12 +7,10 @@ import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestCreateDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestResponseDto;
 import com.save_help.Save_Help.dailyNecessities.entity.*;
+import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessitiesCreated;
 import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessityEligibilityEvent;
 import com.save_help.Save_Help.dailyNecessities.kafka.producer.DailyNecessitiesPublisher;
-import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesContactRequestRepository;
-import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRepository;
-import com.save_help.Save_Help.dailyNecessities.repository.DailyNecessitiesRequestRepository;
-import com.save_help.Save_Help.dailyNecessities.repository.UserNecessitiesRepository;
+import com.save_help.Save_Help.dailyNecessities.repository.*;
 import com.save_help.Save_Help.dailyNecessities.spec.DailyNecessitiesSpecs;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
@@ -27,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,11 +40,12 @@ public class DailyNecessitiesService {
     private final UserRepository userRepository;
     private final DailyNecessitiesPublisher dailyNecessitiesPublisher;
     private final DailyNecessitiesContactRequestRepository contactRequestRepository;
-
+    private final DailyNecessityApplicationRepository applicationRepository;
     private final DailyNecessitiesPublisher dailyNecessityEligibilityProducer;
 
+
     public DailyNecessitiesService(DailyNecessitiesRepository necessitiesRepository,
-                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository, DailyNecessitiesPublisher dailyNecessitiesPublisher, DailyNecessitiesContactRequestRepository contactRequestRepository, DailyNecessitiesPublisher dailyNecessityEligibilityProducer) {
+                                   CommunityCenterRepository centerRepository, UserNecessitiesRepository userNecessitiesRepository, DailyNecessitiesAlertService alertService, DailyNecessitiesRequestRepository requestRepository, UserRepository userRepository, DailyNecessitiesPublisher dailyNecessitiesPublisher, DailyNecessitiesContactRequestRepository contactRequestRepository, DailyNecessityApplicationRepository applicationRepository, DailyNecessitiesPublisher dailyNecessityEligibilityProducer) {
         this.necessitiesRepository = necessitiesRepository;
         this.centerRepository = centerRepository;
         this.userNecessitiesRepository = userNecessitiesRepository;
@@ -54,6 +54,7 @@ public class DailyNecessitiesService {
         this.userRepository = userRepository;
         this.dailyNecessitiesPublisher = dailyNecessitiesPublisher;
         this.contactRequestRepository = contactRequestRepository;
+        this.applicationRepository = applicationRepository;
         this.dailyNecessityEligibilityProducer = dailyNecessityEligibilityProducer;
     }
 
@@ -500,5 +501,36 @@ public class DailyNecessitiesService {
                         .build();
 
         dailyNecessityEligibilityProducer.publishEligibilityChanged(event);
+    }
+
+    public DailyNecessities createDailyNecessity(DailyNecessities dailyNecessities) {
+
+        DailyNecessities savedDailyNecessities =
+                necessitiesRepository.save(dailyNecessities);
+
+        DailyNecessitiesCreated event = DailyNecessitiesCreated.builder()
+                .necessityId(savedDailyNecessities.getId())
+                .title(savedDailyNecessities.getName())
+                .category(savedDailyNecessities.getCategory().name())
+                .stock(savedDailyNecessities.getStock())
+                .build();
+
+        dailyNecessityEligibilityProducer.publishDailyNecessitiesCreated(event);
+
+        return savedDailyNecessities;
+    }
+
+    public List<DailyNecessityApplication> getAutoApplications(Long necessityId) {
+        DailyNecessities necessity =
+                necessitiesRepository.findById(necessityId)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException("생필품을 찾을 수 없습니다."));
+
+        return applicationRepository
+                .findBySupportIdAndApplyTypeOrderByAppliedAtDesc(
+                        necessity.getId(),
+                        "AUTO"
+                );
+
     }
 }
