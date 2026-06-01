@@ -132,4 +132,10 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
       AND (:incomeLevel IS NULL OR d.incomeLevel IS NULL OR :incomeLevel <= d.incomeLevel)
 """)
     List<DailyNecessities> findEligibleItemsByIncomeLevel(@Param("incomeLevel") Integer incomeLevel);
+
+    List<DailyNecessities> findByProvidedBy_IdAndApprovalStatusAndActiveTrueAndStockGreaterThan(
+            Long centerId,
+            DailyNecessities.ApprovalStatus approvalStatus,
+            Integer stock
+    );
 }

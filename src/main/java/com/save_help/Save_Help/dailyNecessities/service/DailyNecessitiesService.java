@@ -15,6 +15,7 @@ import com.save_help.Save_Help.dailyNecessities.spec.DailyNecessitiesSpecs;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@Slf4j
 public class DailyNecessitiesService {
 
     private final DailyNecessitiesRepository necessitiesRepository;
@@ -533,4 +535,35 @@ public class DailyNecessitiesService {
                 );
 
     }
+
+    @Transactional
+    public void autoApplyForUser(Long userId, String triggerType) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        List<DailyNecessities> eligibleNecessities = getRecommendedDailyNecessities(userId);
+
+        log.info("자동신청 대상자 수={}", eligibleNecessities.size());
+
+        for (DailyNecessities necessity : eligibleNecessities) {
+
+            DailyNecessityApplication application = DailyNecessityApplication.builder()
+                    .userId(user.getId())
+                    .supportId(necessity.getId())
+                    .status("PENDING")
+                    .applyType("AUTO")
+                    .centerId(necessity.getProvidedBy().getId())
+                    .quantity(1)
+                    .appliedAt(LocalDateTime.now())
+                    .build();
+
+            applicationRepository.save(application);
+
+            log.info("자동신청 저장 완료 userId={}, supportId={}",
+                    user.getId(),
+                    necessity.getId());
+        }
+    }
+
 }

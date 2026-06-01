@@ -92,6 +92,8 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITY_ELIGIBILITY_CHANGED =
             "daily-necessity-eligibility-changed";
 
+    public static final String DAILY_NECESSITIES_CREATED =
+            "daily.necessities.created.v1";
 
 
 }
