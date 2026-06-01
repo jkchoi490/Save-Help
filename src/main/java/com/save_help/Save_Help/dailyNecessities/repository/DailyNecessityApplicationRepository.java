@@ -9,6 +9,7 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
 
     boolean existsByUserIdAndSupportIdAndPeriodKey(Long userId, Long supportId, String periodKey);
 
+
     List<DailyNecessityApplication> findByUserIdOrderByAppliedAtDesc(Long userId);
 
     List<DailyNecessityApplication> findBySupportId(Long supportId);
@@ -19,4 +20,9 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
     );
 
     List<DailyNecessityApplication> findBySupportIdAndApplyTypeOrderByAppliedAtDesc(Long id, String auto);
+
+    List<DailyNecessityApplication> findByUserIdAndApplyTypeOrderByAppliedAtDesc(
+            Long userId,
+            String applyType
+    );
 }

@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.nationalSubsidy.kafka.consumer;
 
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyApplicationStatus;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidy;
 import com.save_help.Save_Help.nationalSubsidy.entity.SubsidyApplication;
 import com.save_help.Save_Help.nationalSubsidy.kafka.*;
@@ -80,7 +81,7 @@ public class AutoApplyConsumers {
                         SubsidyApplication.builder()
                                 .user(user)
                                 .subsidy(s)
-                                .status(ApplicationStatus.APPLIED)
+                                .status(NationalSubsidyApplicationStatus.APPLIED)
                                 .build()
                 );
 

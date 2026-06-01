@@ -652,5 +652,13 @@ public class DailyNecessitiesController {
     //    return necessitiesService.createContactRequest(necessityId, dto);
     //}
 
-
+    @Operation(summary = "생필품 자동 신청 결과 조회", description = "특정 생필품의 자동 신청 결과를 조회합니다.")
+    @GetMapping("/{necessityId}/auto-applications")
+    public ResponseEntity<List<DailyNecessityApplication>> getAutoApplications(
+            @PathVariable Long necessityId
+    ) {
+        return ResponseEntity.ok(
+                necessitiesService.getAutoApplications(necessityId)
+        );
+    }
 }
