@@ -153,5 +153,13 @@ public class DailyNecessities {
         return started && notEnded;
     }
 
+    public boolean canAutoApply() {
+        return active
+                && approvalStatus == ApprovalStatus.APPROVED
+                && stock != null
+                && stock > 0
+                && !isExpired()
+                && isWithinApplyPeriod();
+    }
 
 }

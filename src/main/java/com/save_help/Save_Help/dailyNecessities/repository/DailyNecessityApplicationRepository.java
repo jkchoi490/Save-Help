@@ -25,4 +25,11 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
             Long userId,
             String applyType
     );
+
+    List<DailyNecessityApplication> findByCenterIdAndApplyTypeOrderByAppliedAtDesc(
+            Long centerId,
+            String applyType
+    );
+
+
 }

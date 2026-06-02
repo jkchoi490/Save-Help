@@ -138,4 +138,19 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
             DailyNecessities.ApprovalStatus approvalStatus,
             Integer stock
     );
+
+    // 자동신청 가능한 생필품 조회
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.active = true
+      AND d.approvalStatus = com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities.ApprovalStatus.APPROVED
+      AND d.stock > 0
+      AND (:centerId IS NULL OR d.providedBy.id = :centerId)
+      AND (:incomeLevel IS NULL OR d.incomeLevel IS NULL OR :incomeLevel <= d.incomeLevel)
+""")
+    List<DailyNecessities> findAutoApplicableNecessities(
+            @Param("centerId") Long centerId,
+            @Param("incomeLevel") Integer incomeLevel
+    );
 }
