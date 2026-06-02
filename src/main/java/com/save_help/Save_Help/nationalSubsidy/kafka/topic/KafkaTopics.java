@@ -95,5 +95,9 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITIES_CREATED =
             "daily.necessities.created.v1";
 
+    // 생필품 승인됨
+    public static final String DAILY_NECESSITIES_APPROVED =
+            "daily.necessity.approved";
+
 
 }

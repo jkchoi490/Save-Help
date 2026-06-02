@@ -566,4 +566,11 @@ public class DailyNecessitiesService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<DailyNecessityApplication> getAutoApplicationsByUser(Long userId) {
+        return applicationRepository.findByUserIdAndApplyTypeOrderByAppliedAtDesc(
+                userId,
+                "AUTO"
+        );
+    }
 }

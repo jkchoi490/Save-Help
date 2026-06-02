@@ -52,5 +52,11 @@ public class DailyNecessityApplication {
         REJECTED
     }
 
+    public boolean isAutoApplication() {
+        return "AUTO".equals(this.applyType);
+    }
 
+    public boolean isPending() {
+        return "PENDING".equals(this.status);
+    }
 }
