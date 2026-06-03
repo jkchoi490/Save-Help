@@ -59,4 +59,8 @@ public class DailyNecessityApplication {
     public boolean isPending() {
         return "PENDING".equals(this.status);
     }
+
+    public void approve() {
+        this.status = "APPROVED";
+    }
 }

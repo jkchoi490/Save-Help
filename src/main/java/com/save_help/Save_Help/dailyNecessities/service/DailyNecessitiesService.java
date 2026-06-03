@@ -573,4 +573,12 @@ public class DailyNecessitiesService {
                 "AUTO"
         );
     }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessityApplication> getPendingAutoApplications() {
+        return applicationRepository.findByApplyTypeAndStatusOrderByAppliedAtDesc(
+                "AUTO",
+                "PENDING"
+        );
+    }
 }
