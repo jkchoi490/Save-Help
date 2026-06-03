@@ -99,5 +99,7 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITIES_APPROVED =
             "daily.necessity.approved";
 
-
+    // 자동신청 성공
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_SUCCESS =
+            "necessity.auto.apply.success";
 }

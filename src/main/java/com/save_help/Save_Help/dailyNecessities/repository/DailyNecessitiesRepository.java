@@ -153,4 +153,17 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
             @Param("centerId") Long centerId,
             @Param("incomeLevel") Integer incomeLevel
     );
+
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.id = :necessityId
+      AND d.active = true
+      AND d.approvalStatus = com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities.ApprovalStatus.APPROVED
+      AND d.stock > 0
+""")
+    Optional<DailyNecessities> findAutoApplicableNecessity(
+            @Param("necessityId") Long necessityId
+    );
+
 }
