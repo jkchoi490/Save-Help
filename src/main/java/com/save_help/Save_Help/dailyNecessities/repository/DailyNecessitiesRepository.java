@@ -166,4 +166,18 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
             @Param("necessityId") Long necessityId
     );
 
+    // 특정 생필품이 현재 자동신청 가능한지 확인
+    @Query("""
+    SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+    FROM DailyNecessities d
+    WHERE d.id = :necessityId
+      AND d.active = true
+      AND d.approvalStatus = com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities.ApprovalStatus.APPROVED
+      AND d.stock > 0
+      AND (d.expirationDate IS NULL OR d.expirationDate >= CURRENT_DATE)
+""")
+    boolean existsAutoApplicableNecessity(
+            @Param("necessityId") Long necessityId
+    );
+
 }

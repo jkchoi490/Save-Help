@@ -63,4 +63,7 @@ public class DailyNecessityApplication {
     public void approve() {
         this.status = "APPROVED";
     }
+    public boolean isApproved() {
+        return "APPROVED".equals(this.status);
+    }
 }
