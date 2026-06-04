@@ -581,4 +581,13 @@ public class DailyNecessitiesService {
                 "PENDING"
         );
     }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessityApplication> getAutoApplicationsByCenter(Long centerId) {
+        return applicationRepository.findByCenterIdAndApplyTypeOrderByAppliedAtDesc(
+                centerId,
+                "AUTO"
+        );
+    }
+
 }

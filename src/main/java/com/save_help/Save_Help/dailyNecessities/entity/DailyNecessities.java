@@ -165,4 +165,8 @@ public class DailyNecessities {
     public String getAutoApplyReason() {
         return "생필품 자동 신청 조건 충족: " + this.name;
     }
+
+    public boolean canAutoApplyWithQuantity(Integer quantity) {
+        return canAutoApply();
+    }
 }

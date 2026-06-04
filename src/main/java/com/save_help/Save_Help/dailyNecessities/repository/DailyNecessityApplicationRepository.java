@@ -3,6 +3,7 @@ package com.save_help.Save_Help.dailyNecessities.repository;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessityApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DailyNecessityApplicationRepository extends JpaRepository<DailyNecessityApplication, Long> {
@@ -35,6 +36,12 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
     List<DailyNecessityApplication> findByApplyTypeAndStatusOrderByAppliedAtDesc(
             String applyType,
             String status
+    );
+
+    List<DailyNecessityApplication> findByApplyTypeAndAppliedAtBetweenOrderByAppliedAtDesc(
+            String applyType,
+            LocalDateTime start,
+            LocalDateTime end
     );
 
 }
