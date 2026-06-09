@@ -590,4 +590,10 @@ public class DailyNecessitiesService {
         );
     }
 
+    private String makePeriodKey() {
+        LocalDateTime now = LocalDateTime.now();
+
+        return now.getYear() + "-" +
+                String.format(String.valueOf(now.getMonthValue()));
+    }
 }

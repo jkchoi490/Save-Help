@@ -169,4 +169,12 @@ public class DailyNecessities {
     public boolean canAutoApplyWithQuantity(Integer quantity) {
         return canAutoApply();
     }
+
+    public boolean hasEnoughStock(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            return false;
+        }
+
+        return stock != null && stock >= quantity;
+    }
 }
