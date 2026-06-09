@@ -180,4 +180,22 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
             @Param("necessityId") Long necessityId
     );
 
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.id = :necessityId
+      AND d.active = true
+      AND d.approvalStatus = com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities.ApprovalStatus.APPROVED
+      AND d.stock >= :quantity
+      AND (d.expirationDate IS NULL OR d.expirationDate >= CURRENT_DATE)
+      AND (d.applyStartedAt IS NULL OR d.applyStartedAt <= :now)
+      AND (d.applyEndedAt IS NULL OR d.applyEndedAt >= :now)
+""")
+    Optional<DailyNecessities> findAutoApplicableNecessityWithQuantity(
+            @Param("necessityId") Long necessityId,
+            @Param("quantity") Integer quantity,
+            @Param("now") LocalDateTime now
+    );
+
+
 }

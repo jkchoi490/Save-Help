@@ -106,4 +106,8 @@ public final class KafkaTopics {
     // 자동신청 알림 요청
     public static final String DAILY_NECESSITIES_AUTO_APPLY_NOTIFICATION_REQUEST =
             "necessity.auto.apply.notification.request";
+
+    // 자동신청 저장 성공
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_SAVED =
+            "necessity.auto.apply.saved";
 }

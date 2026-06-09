@@ -44,4 +44,8 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
             LocalDateTime end
     );
 
+    List<DailyNecessityApplication> findByCenterIdAndStatusOrderByAppliedAtDesc(
+            Long centerId,
+            String status
+    );
 }

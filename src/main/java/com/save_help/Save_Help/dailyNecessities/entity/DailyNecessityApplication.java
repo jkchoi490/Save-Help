@@ -66,4 +66,8 @@ public class DailyNecessityApplication {
     public boolean isApproved() {
         return "APPROVED".equals(this.status);
     }
+
+    public boolean isAllocated() {
+        return "ALLOCATED".equals(this.status);
+    }
 }
