@@ -197,5 +197,17 @@ public interface DailyNecessitiesRepository extends JpaRepository<DailyNecessiti
             @Param("now") LocalDateTime now
     );
 
-
+    @Query("""
+    SELECT COUNT(d)
+    FROM DailyNecessities d
+    WHERE d.active = true
+      AND d.approvalStatus = com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities.ApprovalStatus.APPROVED
+      AND d.stock > 0
+      AND (d.expirationDate IS NULL OR d.expirationDate >= CURRENT_DATE)
+      AND (d.applyStartedAt IS NULL OR d.applyStartedAt <= :now)
+      AND (d.applyEndedAt IS NULL OR d.applyEndedAt >= :now)
+""")
+    long countCurrentlyAutoApplicableNecessities(
+            @Param("now") LocalDateTime now
+    );
 }

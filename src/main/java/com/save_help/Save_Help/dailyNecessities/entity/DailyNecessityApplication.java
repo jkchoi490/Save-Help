@@ -70,4 +70,8 @@ public class DailyNecessityApplication {
     public boolean isAllocated() {
         return "ALLOCATED".equals(this.status);
     }
+
+    public void allocate() {
+        this.status = "ALLOCATED";
+    }
 }
