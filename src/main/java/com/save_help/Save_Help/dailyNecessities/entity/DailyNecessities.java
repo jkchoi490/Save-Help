@@ -177,4 +177,8 @@ public class DailyNecessities {
 
         return stock != null && stock >= quantity;
     }
+
+    public void increaseStock(Integer quantity) {
+        this.stock += quantity;
+    }
 }

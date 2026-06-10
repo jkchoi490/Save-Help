@@ -596,4 +596,19 @@ public class DailyNecessitiesService {
         return now.getYear() + "-" +
                 String.format(String.valueOf(now.getMonthValue()));
     }
+
+    @Transactional
+    public void approveAutoApplication(Long applicationId) {
+
+        DailyNecessityApplication application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("자동신청 내역을 찾는 것이 필요합니다."));
+
+        if (!application.isPending()) {
+            throw new IllegalStateException("대기 상태의 신청만 승인할 수 있습니다.");
+        }
+
+        application.approve();
+
+        log.info("자동신청 승인 완료 applicationId={}", applicationId);
+    }
 }
