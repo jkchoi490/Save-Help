@@ -60,4 +60,12 @@ public class Hospital {
     public void increaseBedCount() {
         bedCount++;
     }
+
+    public void updateBedCount(int bedCount) {
+        if (bedCount < 0) {
+            throw new IllegalArgumentException("병상 수는 0 이상이어야 합니다.");
+        }
+
+        this.bedCount = bedCount;
+    }
 }

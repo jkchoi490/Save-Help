@@ -74,4 +74,8 @@ public class DailyNecessityApplication {
     public void allocate() {
         this.status = "ALLOCATED";
     }
+
+    public void updateReason(String reason) {
+        this.reason = reason;
+    }
 }

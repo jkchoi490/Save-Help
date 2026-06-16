@@ -114,4 +114,11 @@ public final class KafkaTopics {
     // 자동신청 배정 완료
     public static final String DAILY_NECESSITIES_AUTO_APPLY_ALLOCATED =
             "necessity.auto.apply.allocated";
+
+    // 신청 승인 완료
+    public static final String DAILY_NECESSITIES_APPLICATION_APPROVED =
+            "dailynecessities.application.approved";
+
+    public static final String HOSPITAL_BEDCOUNT_UPDATED =
+            "hospital.bed.updated";
 }
