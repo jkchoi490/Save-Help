@@ -198,6 +198,21 @@ public class HospitalService {
     }
 
 
+    @Transactional
+    public HospitalResponseDto updateBedCount(Long hospitalId, int bedCount) {
+        if (bedCount < 0) {
+            throw new IllegalArgumentException("병상 수는 0 이상이어야 합니다.");
+        }
 
+        Hospital hospital = hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new IllegalArgumentException("Hospital not found"));
+
+        hospital.updateBedCount(bedCount);
+
+        redisTemplate.opsForValue().set(buildKey(hospitalId), String.valueOf(bedCount));
+        publishBedUpdate(hospitalId, bedCount);
+
+        return toDto(hospital);
+    }
 
 }

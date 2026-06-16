@@ -611,4 +611,18 @@ public class DailyNecessitiesService {
 
         log.info("자동신청 승인 완료 applicationId={}", applicationId);
     }
+
+    @Transactional
+    public DailyNecessitiesDto updateSupportInfo(
+            Long id,
+            String supportContents,
+            String description
+    ) {
+        DailyNecessities item = necessitiesRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("생필품을 찾을 수 없습니다."));
+
+        item.updateSupportInfo(supportContents, description);
+
+        return DailyNecessitiesDto.fromEntity(item);
+    }
 }

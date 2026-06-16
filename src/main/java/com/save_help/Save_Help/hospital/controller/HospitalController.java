@@ -1,5 +1,6 @@
 package com.save_help.Save_Help.hospital.controller;
 
+import com.save_help.Save_Help.hospital.dto.HospitalBedCountRequestDto;
 import com.save_help.Save_Help.hospital.dto.HospitalRequestDto;
 import com.save_help.Save_Help.hospital.dto.HospitalResponseDto;
 import com.save_help.Save_Help.hospital.entity.Hospital;
@@ -112,4 +113,14 @@ public class HospitalController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "병상 수 증가", description = "병상 수를 지정한 수량만큼 증가합니다")
+    @PostMapping("/{id}/beds/increase-count")
+    public ResponseEntity<HospitalResponseDto> increaseBedCountByCount(
+            @PathVariable Long id,
+            @RequestBody HospitalBedCountRequestDto dto
+    ) {
+        return ResponseEntity.ok(
+                hospitalService.increaseBedCount(id, dto.getCount())
+        );
+    }
 }

@@ -15,4 +15,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     // 필요 시 남은 병상 > 0 조건도 추가 가능
     List<Hospital> findByTypeAndActiveTrueAndBedCountGreaterThan(HospitalType type, int bedCount);
+
+    List<Hospital> findByActiveTrueAndBedCountGreaterThan(int bedCount);
 }

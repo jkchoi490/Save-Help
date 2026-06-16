@@ -144,4 +144,25 @@ public class KafkaPublishers {
             return null;
         }
     }
+
+    public void publishSubsidyApplicationCreated(
+            Long applicationId,
+            Long userId,
+            Long subsidyId
+    ) {
+        SubsidyApplicationCreatedEvent event =
+                SubsidyApplicationCreatedEvent.builder()
+                        .applicationId(applicationId)
+                        .userId(userId)
+                        .subsidyId(subsidyId)
+                        .eventId(UUID.randomUUID().toString())
+                        .occurredAt(System.currentTimeMillis())
+                        .build();
+
+        send(
+                KafkaTopics.SUBSIDY_APPLICATION_CREATED,
+                String.valueOf(applicationId),
+                event
+        );
+    }
 }

@@ -110,6 +110,9 @@ public class DailyNecessities {
         this.requireCheck = requireCheck;
     }
 
+    public void updateSupportInfo(String supportContents, String description) {
+    }
+
     public enum ApprovalStatus {
         PENDING, APPROVED, REJECTED
     }
@@ -181,4 +184,17 @@ public class DailyNecessities {
     public void increaseStock(Integer quantity) {
         this.stock += quantity;
     }
+
+    public boolean isAutoApplicableNow(Integer quantity) {
+        return active
+                && approvalStatus == ApprovalStatus.APPROVED
+                && stock != null
+                && quantity != null
+                && quantity > 0
+                && stock >= quantity
+                && !isExpired()
+                && isWithinApplyPeriod();
+    }
+
+
 }
