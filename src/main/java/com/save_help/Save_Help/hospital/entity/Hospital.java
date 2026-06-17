@@ -68,4 +68,8 @@ public class Hospital {
 
         this.bedCount = bedCount;
     }
+
+    public int getRemainingBeds() {
+        return getRemainingBeds();
+    }
 }

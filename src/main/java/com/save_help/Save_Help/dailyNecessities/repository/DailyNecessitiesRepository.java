@@ -224,4 +224,13 @@ WHERE d.active = true
     List<DailyNecessities> findCurrentlyAutoApplicableNecessities(
             @Param("now") LocalDateTime now
     );
+
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.safetyStock IS NOT NULL
+      AND d.stock <= d.safetyStock
+      AND d.active = true
+""")
+    List<DailyNecessities> findLowStockItemsBySafetyStock();
 }

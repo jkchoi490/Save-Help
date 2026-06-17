@@ -183,11 +183,26 @@ public class HospitalService {
         }
     }
 
-    public void increaseBedCount(Long hospitalId) {
-        Long updated = redisTemplate.opsForValue().increment(buildKey(hospitalId));
-        publishBedUpdate(hospitalId, updated.intValue());
-    }
+    public HospitalResponseDto increaseBedCount(
+            Long hospitalId,
+            Integer count
+    ) {
 
+        if (count == null || count <= 0) {
+            throw new IllegalArgumentException("증가 수량은 1 이상이어야 합니다.");
+        }
+
+        Long updated =
+                redisTemplate.opsForValue()
+                        .increment(buildKey(hospitalId), count);
+
+        publishBedUpdate(hospitalId, updated.intValue());
+
+        Hospital hospital = hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new IllegalArgumentException("병원을 찾을 수 없습니다."));
+
+        return HospitalResponseDto.fromEntity(hospital);
+    }
     private void publishBedUpdate(Long hospitalId, int bedCount) {
         String message = String.format("{\"hospitalId\":%d,\"bedCount\":%d}", hospitalId, bedCount);
         redisTemplate.convertAndSend(hospitalTopic.getTopic(), message);
@@ -213,6 +228,16 @@ public class HospitalService {
         publishBedUpdate(hospitalId, bedCount);
 
         return toDto(hospital);
+    }
+
+    @Transactional(readOnly = true)
+    public List<HospitalResponseDto> getFullHospitals() {
+
+        return hospitalRepository.findAll()
+                .stream()
+                .filter(hospital -> hospital.getRemainingBeds() <= 0)
+                .map(HospitalResponseDto::fromEntity)
+                .toList();
     }
 
 }

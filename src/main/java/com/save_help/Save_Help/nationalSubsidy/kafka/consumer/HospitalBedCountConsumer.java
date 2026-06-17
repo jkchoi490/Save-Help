@@ -30,4 +30,11 @@ public class HospitalBedCountConsumer {
             );
         }
     }
+
+    private boolean isInvalidEvent(HospitalBedCountEvent event) {
+        return event == null
+                || event.getHospitalId() == null
+                || event.getRemainingBeds() == null
+                || event.getRemainingBeds() < 0;
+    }
 }

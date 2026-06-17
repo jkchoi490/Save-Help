@@ -121,4 +121,8 @@ public final class KafkaTopics {
 
     public static final String HOSPITAL_BEDCOUNT_UPDATED =
             "hospital.bed.updated";
+
+    // 자동신청 기준 검증 성공
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_VALIDATE_SUCCESS =
+            "dailynecessities.auto-apply.validate.success";
 }

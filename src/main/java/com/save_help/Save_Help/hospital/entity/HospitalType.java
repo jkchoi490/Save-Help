@@ -5,5 +5,6 @@ public enum HospitalType {
     CLINIC,     // 의원
     DENTAL,     // 치과
     ORIENTAL,   // 한의원
+    EMERGENCY, // 응급 의료 기관
     OTHER
 }

@@ -1,10 +1,7 @@
 package com.save_help.Save_Help.nationalSubsidy.kafka.publisher;
 
 import com.save_help.Save_Help.nationalSubsidy.kafka.*;
-import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedEvent;
-import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedInternalEvent;
-import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserCreatedEvent;
-import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserEligibilityUpdatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.*;
 import com.save_help.Save_Help.nationalSubsidy.kafka.topic.KafkaTopics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -150,19 +147,24 @@ public class KafkaPublishers {
             Long userId,
             Long subsidyId
     ) {
+
+        String eventId = UUID.randomUUID().toString();
+
         SubsidyApplicationCreatedEvent event =
                 SubsidyApplicationCreatedEvent.builder()
                         .applicationId(applicationId)
                         .userId(userId)
                         .subsidyId(subsidyId)
-                        .eventId(UUID.randomUUID().toString())
+                        .eventId(eventId)
                         .occurredAt(System.currentTimeMillis())
                         .build();
 
         send(
                 KafkaTopics.SUBSIDY_APPLICATION_CREATED,
                 String.valueOf(applicationId),
-                event
+                event,
+                eventId
         );
+
     }
 }

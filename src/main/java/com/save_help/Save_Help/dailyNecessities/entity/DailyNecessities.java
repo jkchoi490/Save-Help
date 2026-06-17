@@ -196,5 +196,10 @@ public class DailyNecessities {
                 && isWithinApplyPeriod();
     }
 
+    public boolean isStock() {
+        return safetyStock != null
+                && stock != null
+                && stock <= safetyStock;
+    }
 
 }
