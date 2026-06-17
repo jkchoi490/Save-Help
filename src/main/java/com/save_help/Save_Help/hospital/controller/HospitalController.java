@@ -105,14 +105,15 @@ public class HospitalController {
         return ResponseEntity.ok().build();
     }
 
-    // 병상 증가
+    // 병상 증가 - increaseBedCountByCount 메서드 활용을 위해 잠시 주석처리
+    /*
     @Operation(summary = "병상 증가", description = "병상 수를 증가시킵니다")
     @PostMapping("/{id}/beds/increase")
     public ResponseEntity<Void> increaseBedCount(@PathVariable Long id) {
         hospitalService.increaseBedCount(id);
         return ResponseEntity.ok().build();
     }
-
+    */
     @Operation(summary = "병상 수 증가", description = "병상 수를 지정한 수량만큼 증가합니다")
     @PostMapping("/{id}/beds/increase-count")
     public ResponseEntity<HospitalResponseDto> increaseBedCountByCount(
@@ -121,6 +122,17 @@ public class HospitalController {
     ) {
         return ResponseEntity.ok(
                 hospitalService.increaseBedCount(id, dto.getCount())
+        );
+    }
+
+    @Operation(
+            summary = "병상 없음 병원 조회",
+            description = "남은 병상이 없는 병원을 조회합니다."
+    )
+    @GetMapping("/full")
+    public ResponseEntity<List<HospitalResponseDto>> getFullHospitals() {
+        return ResponseEntity.ok(
+                hospitalService.getFullHospitals()
         );
     }
 }

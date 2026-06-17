@@ -78,4 +78,8 @@ public class DailyNecessityApplication {
     public void updateReason(String reason) {
         this.reason = reason;
     }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 }

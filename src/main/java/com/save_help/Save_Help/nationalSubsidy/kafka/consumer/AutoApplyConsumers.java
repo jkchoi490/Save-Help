@@ -16,6 +16,7 @@ import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -27,6 +28,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AutoApplyConsumers {
 
     private final NationalSubsidyService autoApplyService;
@@ -111,5 +113,12 @@ public class AutoApplyConsumers {
         autoApplyService.autoApplyForSubsidy(e.subsidyId());
     }
 
+    private void processUserAutoApply(Long userId, String reason) {
+        log.info("[User AutoApply START] userId={}, reason={}", userId, reason);
+
+        autoApplyService.autoApplyForUser(userId);
+
+        log.info("[User AutoApply END] userId={}, reason={}", userId, reason);
+    }
 
 }

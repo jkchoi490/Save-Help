@@ -625,4 +625,12 @@ public class DailyNecessitiesService {
 
         return DailyNecessitiesDto.fromEntity(item);
     }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesDto> getLowStockItemsBySafetyStock() {
+        return necessitiesRepository.findLowStockItemsBySafetyStock()
+                .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
+    }
 }
