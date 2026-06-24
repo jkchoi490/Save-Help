@@ -661,4 +661,12 @@ public class DailyNecessitiesController {
                 necessitiesService.getAutoApplications(necessityId)
         );
     }
+
+    @Operation(summary = "사용자별 자동 신청 내역 조회", description = "특정 사용자의 자동 신청 내역을 조회합니다.")
+    @GetMapping("/auto-applications/user/{userId}")
+    public ResponseEntity<List<DailyNecessityApplication>> getAutoApplicationsByUser(
+            @PathVariable Long userId
+    ) {
+        return ResponseEntity.ok(necessitiesService.getAutoApplicationsByUser(userId));
+    }
 }

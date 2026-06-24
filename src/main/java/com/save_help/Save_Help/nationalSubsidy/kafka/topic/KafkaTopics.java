@@ -125,4 +125,7 @@ public final class KafkaTopics {
     // 자동신청 기준 검증 성공
     public static final String DAILY_NECESSITIES_AUTO_APPLY_VALIDATE_SUCCESS =
             "dailynecessities.auto-apply.validate.success";
+
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_APPROVED =
+            "dailynecessities.auto-apply.approved";
 }

@@ -111,6 +111,8 @@ public class DailyNecessities {
     }
 
     public void updateSupportInfo(String supportContents, String description) {
+        this.supportContents = supportContents;
+        this.description = description;
     }
 
     public enum ApprovalStatus {

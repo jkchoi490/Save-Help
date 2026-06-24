@@ -60,4 +60,10 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
     );
 
     long countByUserIdAndApplyType(Long userId, String applyType);
+
+    boolean existsByUserIdAndSupportIdAndApplyType(
+            Long userId,
+            Long supportId,
+            String applyType
+    );
 }
