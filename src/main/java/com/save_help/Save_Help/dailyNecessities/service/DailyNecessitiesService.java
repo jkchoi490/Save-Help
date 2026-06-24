@@ -544,6 +544,7 @@ public class DailyNecessitiesService {
 
         List<DailyNecessities> eligibleNecessities = getRecommendedDailyNecessities(userId);
 
+
         log.info("자동신청 대상자 수={}", eligibleNecessities.size());
 
         for (DailyNecessities necessity : eligibleNecessities) {
@@ -630,6 +631,20 @@ public class DailyNecessitiesService {
     public List<DailyNecessitiesDto> getLowStockItemsBySafetyStock() {
         return necessitiesRepository.findLowStockItemsBySafetyStock()
                 .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesDto> getExpiringSoonItems(int days) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime targetDate = now.plusDays(days);
+
+        return necessitiesRepository.findAll()
+                .stream()
+                .filter(item -> item.getExpirationDate() != null)
+                .filter(item -> !item.isExpired())
+                .filter(item -> !item.getExpirationDate().isAfter(targetDate.toLocalDate()))
                 .map(DailyNecessitiesDto::fromEntity)
                 .toList();
     }
