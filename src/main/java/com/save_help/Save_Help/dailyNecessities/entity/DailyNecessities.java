@@ -204,4 +204,16 @@ public class DailyNecessities {
                 && stock <= safetyStock;
     }
 
+    public boolean canIncreaseStock(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            return false;
+        }
+
+        if (maxStock == null) {
+            return true;
+        }
+
+        return stock + quantity <= maxStock;
+    }
+
 }

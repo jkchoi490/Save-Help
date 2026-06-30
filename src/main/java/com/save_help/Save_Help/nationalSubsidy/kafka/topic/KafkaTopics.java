@@ -128,4 +128,9 @@ public final class KafkaTopics {
 
     public static final String DAILY_NECESSITIES_AUTO_APPLY_APPROVED =
             "dailynecessities.auto-apply.approved";
+
+    // 생필품 신청 생성
+    public static final String DAILY_NECESSITIES_APPLICATION_CREATED =
+            "dailynecessities.application.created";
+
 }

@@ -648,4 +648,17 @@ public class DailyNecessitiesService {
                 .map(DailyNecessitiesDto::fromEntity)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessities> getAutoApplicableNecessitiesForUser(Long userId, int quantity) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("IllegalArgumentException"));
+
+        return necessitiesRepository.findAutoApplicableItemsForUser(
+                user.getId(),
+                Integer.valueOf(user.getIncomeLevel()),
+                quantity,
+                LocalDateTime.now()
+        );
+    }
 }

@@ -82,4 +82,8 @@ public class DailyNecessityApplication {
     public void updateDescription(String description) {
         this.description = description;
     }
+
+    public boolean isManualApplication() {
+        return "MANUAL".equals(this.applyType);
+    }
 }
