@@ -236,4 +236,28 @@ WHERE d.active = true
     List<DailyNecessities> findLowStockItemsBySafetyStock();
 
     List<DailyNecessities> findByExpirationDateBeforeAndActiveTrue(LocalDate expirationDate);
+
+    List<DailyNecessities> findByActiveTrueAndApprovalStatus(
+            DailyNecessities.ApprovalStatus approvalStatus
+    );
+
+    @Query("""
+SELECT d
+FROM DailyNecessities d
+WHERE d.active = true
+  AND d.approvalStatus = com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities.ApprovalStatus.APPROVED
+  AND d.stock >= :quantity
+  AND (d.expirationDate IS NULL OR d.expirationDate >= CURRENT_DATE)
+  AND (d.applyStartedAt IS NULL OR d.applyStartedAt <= :now)
+  AND (d.applyEndedAt IS NULL OR d.applyEndedAt >= :now)
+  AND (:centerId IS NULL OR d.providedBy.id = :centerId)
+  AND (:incomeLevel IS NULL OR d.incomeLevel IS NULL OR :incomeLevel <= d.incomeLevel)
+""")
+    List<DailyNecessities> findAutoApplicableItemsForUser(
+            @Param("centerId") Long centerId,
+            @Param("incomeLevel") Integer incomeLevel,
+            @Param("quantity") Integer quantity,
+            @Param("now") LocalDateTime now
+    );
+
 }

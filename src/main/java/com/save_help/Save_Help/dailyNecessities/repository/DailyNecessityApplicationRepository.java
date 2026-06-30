@@ -66,4 +66,10 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
             Long supportId,
             String applyType
     );
+
+    long countByCenterIdAndApplyTypeAndStatus(
+            Long centerId,
+            String applyType,
+            String status
+    );
 }
