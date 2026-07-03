@@ -259,5 +259,5 @@ WHERE d.active = true
             @Param("quantity") Integer quantity,
             @Param("now") LocalDateTime now
     );
-
+    boolean existsByIdAndActiveTrue(Long id);
 }

@@ -41,6 +41,27 @@ public class DailyNecessityApplication {
 
     private Long centerId;
 
+    public static DailyNecessityApplication createAutoApplication(
+            Long userId,
+            Long supportId,
+            Long centerId,
+            int quantity,
+            String autoApplyReason,
+            String periodKey
+    ) {
+        return DailyNecessityApplication.builder()
+                .userId(userId)
+                .supportId(supportId)
+                .centerId(centerId)
+                .quantity(quantity)
+                .reason(autoApplyReason)
+                .periodKey(periodKey)
+                .status("PENDING")
+                .applyType("AUTO")
+                .appliedAt(LocalDateTime.now())
+                .build();
+    }
+
 
     public String ApplyType() {
         return this.applyType;
@@ -86,4 +107,9 @@ public class DailyNecessityApplication {
     public boolean isManualApplication() {
         return "MANUAL".equals(this.applyType);
     }
+
+    public enum ApplyType {
+        AUTO
+    }
+
 }

@@ -669,4 +669,11 @@ public class DailyNecessitiesController {
     ) {
         return ResponseEntity.ok(necessitiesService.getAutoApplicationsByUser(userId));
     }
+
+    @Operation(summary = "자동신청 승인", description = "대기 중인 자동신청을 승인하고 재고를 차감합니다.")
+    @PatchMapping("/auto-applications/{applicationId}/approve")
+    public ResponseEntity<String> approveAutoApplication(@PathVariable Long applicationId) {
+        necessitiesService.approveAutoApplication(applicationId);
+        return ResponseEntity.ok("자동신청 승인 완료");
+    }
 }
