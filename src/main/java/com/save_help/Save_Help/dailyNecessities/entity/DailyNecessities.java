@@ -215,5 +215,15 @@ public class DailyNecessities {
 
         return stock + quantity <= maxStock;
     }
+    public void decreaseStock(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("IllegalArgumentException");
+        }
 
+        if (stock == null || stock < quantity) {
+            throw new IllegalStateException("IllegalArgumentException");
+        }
+
+        this.stock -= quantity;
+    }
 }

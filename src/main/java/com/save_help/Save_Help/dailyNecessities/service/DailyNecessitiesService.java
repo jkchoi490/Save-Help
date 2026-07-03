@@ -661,4 +661,40 @@ public class DailyNecessitiesService {
                 LocalDateTime.now()
         );
     }
+
+    @Transactional
+    public void autoApplyForUser(Long userId, String triggerType) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        String periodKey = makePeriodKey();
+
+        List<DailyNecessities> necessities =
+                getAutoApplicableNecessitiesForUser(userId, 1);
+
+        for (DailyNecessities necessity : necessities) {
+            boolean alreadyApplied =
+                    applicationRepository.existsByUserIdAndSupportIdAndPeriodKey(
+                            user.getId(),
+                            necessity.getId(),
+                            periodKey
+                    );
+
+            if (alreadyApplied) {
+                continue;
+            }
+
+            DailyNecessityApplication application =
+                    DailyNecessityApplication.createAutoApplication(
+                            user.getId(),
+                            necessity.getId(),
+                            necessity.getProvidedBy().getId(),
+                            1,
+                            necessity.getAutoApplyReason(),
+                            periodKey
+                    );
+
+            applicationRepository.save(application);
+        }
+    }
 }
