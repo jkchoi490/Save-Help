@@ -260,4 +260,13 @@ WHERE d.active = true
             @Param("now") LocalDateTime now
     );
     boolean existsByIdAndActiveTrue(Long id);
+
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.maxStock IS NOT NULL
+      AND d.stock >= d.maxStock
+      AND d.active = true
+""")
+    List<DailyNecessities> findFullStockItems();
 }

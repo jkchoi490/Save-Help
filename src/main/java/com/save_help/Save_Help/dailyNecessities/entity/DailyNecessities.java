@@ -226,4 +226,12 @@ public class DailyNecessities {
 
         this.stock -= quantity;
     }
+
+    public boolean isFullStock() {
+        return maxStock != null
+                && stock != null
+                && stock >= maxStock;
+    }
+
+
 }

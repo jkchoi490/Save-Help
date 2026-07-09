@@ -112,4 +112,9 @@ public class DailyNecessityApplication {
         AUTO
     }
 
+    public boolean canApprove() {
+        return isPending();
+    }
+
+
 }

@@ -676,4 +676,10 @@ public class DailyNecessitiesController {
         necessitiesService.approveAutoApplication(applicationId);
         return ResponseEntity.ok("자동신청 승인 완료");
     }
+
+    @Operation(summary = "최대 재고 초과 품목 조회", description = "최대 재고에 도달한 생필품을 조회합니다.")
+    @GetMapping("/full-stock")
+    public ResponseEntity<List<DailyNecessitiesDto>> getFullStockItems() {
+        return ResponseEntity.ok(necessitiesService.getFullStockItems());
+    }
 }
