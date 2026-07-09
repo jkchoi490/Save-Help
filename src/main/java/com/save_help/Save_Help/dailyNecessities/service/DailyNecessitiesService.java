@@ -697,4 +697,12 @@ public class DailyNecessitiesService {
             applicationRepository.save(application);
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<DailyNecessitiesDto> getFullStockItems() {
+        return necessitiesRepository.findFullStockItems()
+                .stream()
+                .map(DailyNecessitiesDto::fromEntity)
+                .toList();
+    }
 }

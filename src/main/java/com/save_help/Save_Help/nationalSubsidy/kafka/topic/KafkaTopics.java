@@ -135,4 +135,7 @@ public final class KafkaTopics {
 
     public static final String DAILY_NECESSITIES_CREATED_DLQ =
             "dailynecessities.created.dlq";
+
+    public static final String DAILY_NECESSITIES_STOCK_INCREASED =
+            "dailynecessities.stock.increased";
 }
