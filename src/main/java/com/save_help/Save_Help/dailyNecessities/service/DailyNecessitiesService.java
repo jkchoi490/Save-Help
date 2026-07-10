@@ -662,6 +662,7 @@ public class DailyNecessitiesService {
         );
     }
 
+    /*
     @Transactional
     public void autoApplyForUser(Long userId, String triggerType) {
         User user = userRepository.findById(userId)
@@ -697,7 +698,7 @@ public class DailyNecessitiesService {
             applicationRepository.save(application);
         }
     }
-
+*/
     @Transactional(readOnly = true)
     public List<DailyNecessitiesDto> getFullStockItems() {
         return necessitiesRepository.findFullStockItems()
