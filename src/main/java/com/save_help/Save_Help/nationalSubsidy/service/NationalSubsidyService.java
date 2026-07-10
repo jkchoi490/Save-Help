@@ -637,4 +637,40 @@ public class NationalSubsidyService {
                 pageRequest
         ).map(NationalSubsidyApplicationResponseDto::fromEntity);
     }
+
+    private NationalSubsidy getSubsidy(Long subsidyId) {
+        return subsidyRepository.findById(subsidyId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "보조금을 찾을 수 없습니다. subsidyId=" + subsidyId
+                        )
+                );
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> getBudgetStatus(Long subsidyId) {
+        NationalSubsidy subsidy = subsidyRepository.findById(subsidyId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "보조금을 찾을 수 없습니다. id=" + subsidyId
+                        )
+                );
+
+        long budget = subsidy.getCurrentBudgetAmount();
+        long executed = subsidy.getExecutedAmount();
+        long remaining = Math.max(budget - executed, 0L);
+
+        double executionRate = budget == 0
+                ? 0.0
+                : (double) executed / budget * 100.0;
+
+        Map<String, Object> result = new java.util.LinkedHashMap<>();
+        result.put("subsidyId", subsidyId);
+        result.put("currentBudgetAmount", budget);
+        result.put("executedAmount", executed);
+        result.put("remainingBudgetAmount", remaining);
+        result.put("executionRate", executionRate);
+
+        return result;
+    }
 }

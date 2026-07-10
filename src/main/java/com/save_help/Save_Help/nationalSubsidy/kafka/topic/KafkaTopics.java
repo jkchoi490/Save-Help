@@ -138,4 +138,9 @@ public final class KafkaTopics {
 
     public static final String DAILY_NECESSITIES_STOCK_INCREASED =
             "dailynecessities.stock.increased";
+
+    // 국가 보조금 신청 시작
+    public static final String NATIONAL_SUBSIDY_OPENED =
+            "subsidy.opened.v1";
+
 }

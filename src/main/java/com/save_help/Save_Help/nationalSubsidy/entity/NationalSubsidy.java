@@ -145,4 +145,11 @@ public class NationalSubsidy {
         return true;
     }
 
+    public double getExecutionRate() {
+        if (currentBudgetAmount <= 0) {
+            return 0.0;
+        }
+
+        return (double) executedAmount / currentBudgetAmount * 100.0;
+    }
 }

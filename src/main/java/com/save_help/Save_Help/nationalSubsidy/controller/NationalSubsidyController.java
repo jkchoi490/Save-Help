@@ -318,4 +318,17 @@ public class NationalSubsidyController {
         );
     }
 
+    @Operation(
+            summary = "보조금 예산 현황 조회",
+            description = "보조금의 현재 예산, 집행 금액 및 집행률을 조회합니다"
+    )
+    @GetMapping("/{id}/budget")
+    public ResponseEntity<Map<String, Object>> getBudgetStatus(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(
+                subsidyService.getBudgetStatus(id)
+        );
+    }
+
 }

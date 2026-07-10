@@ -259,5 +259,10 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     group by s.type
 """)
     List<Object[]> countGroupByType();
+
+    Page<NationalSubsidy> findByCenterContainingIgnoreCase(
+            String center,
+            Pageable pageable
+    );
 }
 
