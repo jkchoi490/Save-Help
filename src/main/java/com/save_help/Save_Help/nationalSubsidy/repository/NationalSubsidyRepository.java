@@ -264,5 +264,12 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
             String center,
             Pageable pageable
     );
+
+    Page<NationalSubsidyApplication>
+    findByUser_IdAndAppliedByOrderByCreatedAtDesc(
+            Long userId,
+            NationalSubsidyApplication.AppliedBy appliedBy,
+            Pageable pageable
+    );
 }
 

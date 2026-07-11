@@ -152,4 +152,35 @@ public class NationalSubsidy {
 
         return (double) executedAmount / currentBudgetAmount * 100.0;
     }
+
+    public boolean isEligible(
+            int age,
+            String userIncomeLevel,
+            boolean disabled,
+            boolean emergency
+    ) {
+        if (minAge != null && age < minAge) {
+            return false;
+        }
+
+        if (maxAge != null && age > maxAge) {
+            return false;
+        }
+
+        if (incomeLevel != null
+                && !incomeLevel.isBlank()
+                && !incomeLevel.equalsIgnoreCase(userIncomeLevel)) {
+            return false;
+        }
+
+        if (Boolean.TRUE.equals(disabilityRequired) && !disabled) {
+            return false;
+        }
+
+        if (Boolean.TRUE.equals(emergencyOnly) && !emergency) {
+            return false;
+        }
+
+        return true;
+    }
 }

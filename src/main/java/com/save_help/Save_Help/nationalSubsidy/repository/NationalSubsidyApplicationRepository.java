@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface NationalSubsidyApplicationRepository extends JpaRepository<NationalSubsidyApplication, Long> {
@@ -62,4 +63,16 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
     long countBySubsidy_Id(Long subsidyId);
 
     Page<NationalSubsidyApplication> findBySubsidy_IdOrderByCreatedAtDesc(Long subsidyId, Pageable pageable);
+
+    @Query("""
+    select a
+    from NationalSubsidyApplication a
+    where a.createdAt between :from and :to
+""")
+    Page<NationalSubsidyApplication> findCreatedBetween(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            Pageable pageable
+    );
+
 }

@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 )
 public class NationalSubsidyApplication {
 
-    public enum Status { PENDING, APPLIED, APPROVED }
+    public enum Status { PENDING, APPLIED, APPROVED, PAID }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

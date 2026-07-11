@@ -673,4 +673,20 @@ public class NationalSubsidyService {
 
         return result;
     }
+
+    private void createApplicationNotification(
+            User user,
+            NationalSubsidy subsidy
+    ) {
+        NationalSubsidyNotification notification =
+                new NationalSubsidyNotification();
+
+        notification.setUser(user);
+        notification.setTitle("보조금 신청 완료");
+        notification.setMessage(
+                "'" + subsidy.getName() + "' 신청이 완료되었습니다."
+        );
+
+        notificationRepository.save(notification);
+    }
 }
