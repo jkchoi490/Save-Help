@@ -689,4 +689,16 @@ public class NationalSubsidyService {
 
         notificationRepository.save(notification);
     }
+
+    @Transactional(readOnly = true)
+    public Page<NationalSubsidyResponseDto> findAvailableSubsidies(
+            Pageable pageable
+    ) {
+        return subsidyRepository
+                .findApplicableSubsidiesWithBudget(
+                        LocalDate.now(),
+                        pageable
+                )
+                .map(this::toResponseDto);
+    }
 }

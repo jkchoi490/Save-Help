@@ -187,6 +187,8 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
 """)
     Page<NationalSubsidy> findRunnableSubsidies(@Param("today") LocalDate today, Pageable pageable);
 
+    <T> Optional<T> findApplicableSubsidiesWithBudget(LocalDate now, Pageable pageable);
+
     public interface NationalSubsidyApplicationRepository extends JpaRepository<NationalSubsidyApplication, Long> {
 
         boolean existsByUser_IdAndSubsidy_Id(Long userId, Long subsidyId);
@@ -269,6 +271,11 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     findByUser_IdAndAppliedByOrderByCreatedAtDesc(
             Long userId,
             NationalSubsidyApplication.AppliedBy appliedBy,
+            Pageable pageable
+    );
+
+    Page<NationalSubsidy> findByCategoryCode(
+            String categoryCode,
             Pageable pageable
     );
 }

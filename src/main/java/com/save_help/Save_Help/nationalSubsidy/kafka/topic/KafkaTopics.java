@@ -146,4 +146,9 @@ public final class KafkaTopics {
     // 국가보조금 신청 상태 이벤트
     public static final String NATIONAL_SUBSIDY_APPLICATION_PENDING =
             "subsidy.application.pending";
+
+    // 국가보조금 생성
+    public static final String NATIONAL_SUBSIDY_CREATED =
+            "subsidy.created";
+
 }

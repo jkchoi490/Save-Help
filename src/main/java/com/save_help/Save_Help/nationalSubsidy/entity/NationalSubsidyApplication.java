@@ -119,4 +119,8 @@ public class NationalSubsidyApplication {
     public boolean isAutoApplied() {
         return this.appliedBy == AppliedBy.AUTO;
     }
+
+    public boolean isManualApplied() {
+        return this.appliedBy == AppliedBy.MANUAL;
+    }
 }
