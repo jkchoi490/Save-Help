@@ -331,4 +331,20 @@ public class NationalSubsidyController {
         );
     }
 
+    @Operation(
+            summary = "신청 가능 보조금 페이징 조회",
+            description = "기간, 활성 상태, 오픈 상태, 예산을 확인해 조회합니다."
+    )
+    @GetMapping("/available/page")
+    public ResponseEntity<Page<NationalSubsidyResponseDto>>
+    getAvailableSubsidiesPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(
+                subsidyService.findAvailableSubsidies(
+                        PageRequest.of(page, size)
+                )
+        );
+    }
 }

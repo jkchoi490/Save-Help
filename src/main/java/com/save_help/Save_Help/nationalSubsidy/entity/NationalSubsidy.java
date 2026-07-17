@@ -183,4 +183,12 @@ public class NationalSubsidy {
 
         return true;
     }
+
+    public double getApprovalRate() {
+        if (applicationCount <= 0) {
+            return 0.0;
+        }
+
+        return (double) approvedCount / applicationCount * 100.0;
+    }
 }
