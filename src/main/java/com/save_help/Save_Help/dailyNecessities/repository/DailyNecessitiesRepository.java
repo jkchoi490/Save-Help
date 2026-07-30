@@ -269,4 +269,7 @@ WHERE d.active = true
       AND d.active = true
 """)
     List<DailyNecessities> findFullStockItems();
+
+    List<DailyNecessities>
+    findByStockLessThanEqualAndActiveTrue(Integer stock);
 }

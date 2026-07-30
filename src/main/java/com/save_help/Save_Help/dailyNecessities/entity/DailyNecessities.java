@@ -233,5 +233,14 @@ public class DailyNecessities {
                 && stock >= maxStock;
     }
 
+    private void validatePositiveQuantity(
+            Integer quantity
+    ) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException(
+                    "IllegalArgumentException"
+            );
+        }
+    }
 
 }

@@ -682,4 +682,17 @@ public class DailyNecessitiesController {
     public ResponseEntity<List<DailyNecessitiesDto>> getFullStockItems() {
         return ResponseEntity.ok(necessitiesService.getFullStockItems());
     }
+
+    @Operation(
+            summary = "안전 재고 이하 품목 조회",
+            description = "각 품목에 설정된 안전 재고 이하의 품목을 조회합니다."
+    )
+    @GetMapping("/stock/low-by-safety-stock")
+    public ResponseEntity<List<DailyNecessitiesDto>>
+    getLowStockItemsBySafetyStock() {
+
+        return ResponseEntity.ok(
+                necessitiesService.getLowStockItemsBySafetyStock()
+        );
+    }
 }
