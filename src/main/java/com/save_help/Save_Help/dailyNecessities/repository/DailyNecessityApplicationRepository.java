@@ -72,4 +72,9 @@ public interface DailyNecessityApplicationRepository extends JpaRepository<Daily
             String applyType,
             String status
     );
+    List<DailyNecessityApplication>
+    findByStatusInOrderByAppliedAtDesc(
+            List<String> statuses
+    );
+
 }

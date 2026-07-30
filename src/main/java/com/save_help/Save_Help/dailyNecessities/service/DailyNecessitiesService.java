@@ -597,7 +597,6 @@ public class DailyNecessitiesService {
         return now.getYear() + "-" +
                 String.format(String.valueOf(now.getMonthValue()));
     }
-
     @Transactional
     public void approveAutoApplication(Long applicationId) {
 
@@ -705,5 +704,24 @@ public class DailyNecessitiesService {
                 .stream()
                 .map(DailyNecessitiesDto::fromEntity)
                 .toList();
+    }
+
+    // 센터에서 생필품을 배분하는 경우
+    @Transactional
+    public void allocateAutoApplication(Long applicationId) {
+        DailyNecessityApplication application =
+                applicationRepository.findById(applicationId)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "자동 신청 내역을 찾을 수 없습니다."
+                                )
+                        );
+
+        application.allocate();
+
+        log.info(
+                "생필품 배분 완료 applicationId={}",
+                applicationId
+        );
     }
 }
