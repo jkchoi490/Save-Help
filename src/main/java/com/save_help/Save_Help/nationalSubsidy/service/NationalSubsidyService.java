@@ -690,8 +690,9 @@ public class NationalSubsidyService {
         notificationRepository.save(notification);
     }
 
+    /*
     @Transactional(readOnly = true)
-    public Page<NationalSubsidyResponseDto> findAvailableSubsidies(
+    public Optional findAvailableSubsidies(
             Pageable pageable
     ) {
         return subsidyRepository
@@ -701,4 +702,6 @@ public class NationalSubsidyService {
                 )
                 .map(this::toResponseDto);
     }
+
+     */
 }

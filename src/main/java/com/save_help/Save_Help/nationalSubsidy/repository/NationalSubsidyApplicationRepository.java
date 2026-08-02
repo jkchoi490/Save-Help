@@ -53,11 +53,12 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
 
     Page<NationalSubsidyApplication> findByStatus(NationalSubsidyApplication.Status status, Pageable pageable);
 
+
     Page<NationalSubsidyApplication> findByUser_IdAndAppliedByOrderByCreatedAtDesc(
-            Long userId,
-            NationalSubsidyApplication.AppliedBy appliedBy,
-            Pageable pageable
-    );
+                Long userId,
+                NationalSubsidyApplication.AppliedBy appliedBy,
+                Pageable pageable
+        );
 
 
     long countBySubsidy_Id(Long subsidyId);

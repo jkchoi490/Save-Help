@@ -1,6 +1,5 @@
 package com.save_help.Save_Help.nationalSubsidy.entity;
 
-import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationStatus;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -45,7 +44,7 @@ public class SubsidyApplication {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=16)
-    private ApplicationStatus status;
+    private NationalSubsidyApplicationStatus status;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -55,7 +54,7 @@ public class SubsidyApplication {
     private LocalDateTime updatedAt;
 
     @Builder
-    public SubsidyApplication(User user, NationalSubsidy subsidy, ApplicationStatus status) {
+    public SubsidyApplication(User user, NationalSubsidy subsidy, NationalSubsidyApplicationStatus status) {
         this.user = user;
         this.subsidy = subsidy;
         this.status = status;
