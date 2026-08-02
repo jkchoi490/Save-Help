@@ -154,4 +154,8 @@ public final class KafkaTopics {
     // 국가보조금 신청 완료
     public static final String NATIONAL_SUBSIDY_APPLICATION_APPLIED =
             "subsidy.applied";
+
+    // 사용자 자동 신청 자격 확인 완료
+    public static final String USER_ELIGIBILITY_COMPLETED =
+            "user.eligibility.completed.v1";
 }

@@ -331,6 +331,7 @@ public class NationalSubsidyController {
         );
     }
 
+    /*
     @Operation(
             summary = "신청 가능 보조금 페이징 조회",
             description = "기간, 활성 상태, 오픈 상태, 예산을 확인해 조회합니다."
@@ -347,4 +348,6 @@ public class NationalSubsidyController {
                 )
         );
     }
+
+     */
 }
