@@ -116,5 +116,13 @@ public class DailyNecessityApplication {
         return isPending();
     }
 
+    public enum DailyNecessityApplicationStatus {
+        PENDING,
+        APPROVED,
+        REJECTED,
+        ALLOCATED,
+        CANCELLED
+    }
+
 
 }

@@ -243,4 +243,14 @@ public class DailyNecessities {
         }
     }
 
+    public int calculateRequiredStockToSafetyLevel() {
+        if (safetyStock == null) {
+            return 0;
+        }
+
+        int currentStock = stock == null ? 0 : stock;
+
+        return Math.max(safetyStock - currentStock, 0);
+    }
+
 }
