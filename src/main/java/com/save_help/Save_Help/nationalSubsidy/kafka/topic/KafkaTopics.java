@@ -158,4 +158,7 @@ public final class KafkaTopics {
     // 사용자 자동 신청 자격 확인 완료
     public static final String USER_ELIGIBILITY_COMPLETED =
             "user.eligibility.completed.v1";
+
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_DLT =
+            "daily-necessity.auto-apply.request.v1-dlt";
 }
