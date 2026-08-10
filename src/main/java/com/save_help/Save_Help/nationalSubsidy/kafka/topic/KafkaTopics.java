@@ -161,4 +161,8 @@ public final class KafkaTopics {
 
     public static final String DAILY_NECESSITIES_AUTO_APPLY_DLT =
             "daily-necessity.auto-apply.request.v1-dlt";
+
+    // 사용자가 생필품 신청 요건에 적합한 지 확인
+    public static final String DAILY_NECESSITIES_USER_ELIGIBILITY_CHECK =
+            "daily-necessities.user-eligibility.check.v1";
 }
