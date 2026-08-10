@@ -272,4 +272,18 @@ WHERE d.active = true
 
     List<DailyNecessities>
     findByStockLessThanEqualAndActiveTrue(Integer stock);
+
+
+    // 자동 신청이 가능한 생필품 찾기
+    @Query("""
+        select d
+        from DailyNecessities d
+        where d.active = true
+          and d.stock > 0
+          and (d.applyStartedAt is null or d.applyStartedAt <= :now)
+          and (d.applyEndedAt is null or d.applyEndedAt >= :now)
+        """)
+    List<DailyNecessities> findAutoApplicableItems(
+            @Param("now") LocalDateTime now
+    );
 }

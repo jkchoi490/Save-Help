@@ -3,6 +3,8 @@ package com.save_help.Save_Help.dailyNecessities.kafka.producer;
 import com.save_help.Save_Help.dailyNecessities.entity.DailyNecessities;
 import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessitiesCreated;
 import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessityEligibilityEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserDailyNecessitiesEligibilityEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserEligibilityUpdatedEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.topic.KafkaTopics;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -35,5 +37,14 @@ public class DailyNecessitiesPublisher {
 
     public void publishDailyNecessitiesCreated(DailyNecessitiesCreated event) {
 
+    }
+
+    //사용자 데이터에 따른 자동신청 기능 개발을 위한 Producer
+    public void send(UserDailyNecessitiesEligibilityEvent event) {
+        kafkaTemplate.send(
+                KafkaTopics.DAILY_NECESSITIES_USER_ELIGIBILITY_CHECK,
+                event.userId().toString(),
+                event
+        );
     }
 }

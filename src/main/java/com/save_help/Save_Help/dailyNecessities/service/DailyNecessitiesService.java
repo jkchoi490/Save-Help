@@ -12,6 +12,7 @@ import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessityEligib
 import com.save_help.Save_Help.dailyNecessities.kafka.producer.DailyNecessitiesPublisher;
 import com.save_help.Save_Help.dailyNecessities.repository.*;
 import com.save_help.Save_Help.dailyNecessities.spec.DailyNecessitiesSpecs;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserDailyNecessitiesEligibilityEvent;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +23,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -724,4 +727,269 @@ public class DailyNecessitiesService {
                 applicationId
         );
     }
+
+    // 생필품 자동 신청
+    @Transactional
+    public int autoApply(
+            UserDailyNecessitiesEligibilityEvent event
+    ) {
+        // 1. Kafka 이벤트의 사용자 ID로 최신 사용자 데이터를 조회합니다.
+        User user = userRepository.findById(event.userId()).orElseThrow(() ->
+                        new IllegalArgumentException("사용자를 찾을 수 없습니다. userId=" + event.userId()));
+
+        // 2. 사용자가 자동 신청에 동의했는지 여부를 확인해서 동의하지 않았다면 처리하지 않습니다.
+        if (!user.isAutoApplyEnabled()) {
+            return 0;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        String periodKey = createPeriodKey();
+
+        // 3. 현재 자동 신청 가능한 생필품을 조회합니다.
+        List<DailyNecessities> necessities = necessitiesRepository.findAutoApplicableItems(now);
+
+        int applicationCount = 0;
+
+        // 4. 각각의 생필품에 대해 사용자 자격 조건을 확인합니다.
+        for (DailyNecessities necessity : necessities) {
+
+            // 5. 동일 기간에 같은 생필품을 이미 신청했는지 확인합니다.
+            boolean alreadyApplied =
+                    applicationRepository
+                            .existsByUserIdAndSupportIdAndPeriodKey(
+                                    user.getId(),
+                                    necessity.getId(),
+                                    periodKey
+                            );
+
+            if (alreadyApplied) {
+                continue;
+            }
+
+            // 6. 사용자와 생필품의 신청 조건을 비교합니다.
+            if (!isEligible(user, necessity, now)) {
+                continue;
+            }
+
+            // 7. 재고가 없는경우
+            /*
+            if (necessity.getStock() == null
+                    || necessity.getStock() <= 0) {
+                continue;
+            }
+            */
+
+            // 8. 신청 데이터를 생성합니다.
+            DailyNecessityApplication application =
+                    createAutoApplication(
+                            user,
+                            necessity,
+                            event,
+                            periodKey,
+                            now
+                    );
+
+            applicationRepository.save(application);
+
+            // 9. 신청 수량만큼 재고를 줄입니다.
+            necessity.setStock(
+                    necessity.getStock() - 1
+            );
+
+            // 요청 횟수를 증가시킵니다.
+            necessity.increaseRequestCount();
+
+            applicationCount++;
+        }
+
+        return applicationCount;
+    }
+
+    private boolean isEligible(
+            User user,
+            DailyNecessities necessity,
+            LocalDateTime now
+    ) {
+        // 비활성화된 생필품은 신청할 수 없습니다. -> 신청 활성화 된 생필품 위주로 신청
+        if (!necessity.isActive()) {
+            return false;
+        }
+
+        // 신청 기간을 확인합니다.
+        if (necessity.getApplyStartedAt() != null
+                && now.isBefore(necessity.getApplyStartedAt())) {
+            return false;
+        }
+
+        if (necessity.getApplyEndedAt() != null
+                && now.isAfter(necessity.getApplyEndedAt())) {
+            return false;
+        }
+
+        // 소득 수준을 확인합니다.
+        if (!matchesIncomeLevel(user, necessity)) {
+            return false;
+        }
+
+        // 사용자가 자동 신청에 동의했는지 다시 확인합니다.
+        if (!user.isAutoApplyEnabled()) {
+            return false;
+        }
+
+        /*
+         *
+         *
+         * user.isDisabled()
+         * user.isInEmergency()
+         * user.getWelfareType()
+         * user.getMemberCount()
+         * user.getRegion()
+         * user.getLifeCycle()
+         * user.getAge() 추가
+         */
+
+        return true;
+    }
+
+    private boolean matchesIncomeLevel(
+            User user,
+            DailyNecessities necessity
+    ) {
+        // 생필품에 소득 조건이 없다면 모두 신청할 수 있도록 합니다.
+        if (necessity.getIncomeLevel() == null) {
+            return true;
+        }
+
+        // 사용자에게 소득 데이터가 없다면 조건을 판단할 수 없습니다 -> 이 경우 어떻게 해야할 지 고민
+        if (user.getIncomeLevel() == null
+                || user.getIncomeLevel().isBlank()) {
+            return false;
+        }
+
+        try {
+            int userIncomeLevel =
+                    Integer.parseInt(user.getIncomeLevel());
+
+            return userIncomeLevel
+                    <= necessity.getIncomeLevel();
+
+        } catch (NumberFormatException exception) {
+            return false;
+        }
+    }
+
+    private DailyNecessityApplication createAutoApplication(
+            User user,
+            DailyNecessities necessity,
+            UserDailyNecessitiesEligibilityEvent event,
+            String periodKey,
+            LocalDateTime now
+    ) {
+        DailyNecessityApplication application =
+                new DailyNecessityApplication();
+
+        application.setUserId(user.getId());
+        application.setSupportId(necessity.getId());
+        application.setStatus("PENDING");
+        application.setApplyType("AUTO");
+        application.setPeriodKey(periodKey);
+        application.setQuantity(1);
+        application.setAppliedAt(now);
+
+        application.setReason(
+                "사용자 신청 자격 확인에 따른 자동 신청: "
+                        + event.triggerType()
+        );
+
+        if (necessity.getProvidedBy() != null) {
+            application.setCenterId(
+                    necessity.getProvidedBy().getId()
+            );
+        }
+
+        return application;
+    }
+
+    private String createPeriodKey() {
+        return LocalDate.now()
+                .format(
+                        DateTimeFormatter.ofPattern("yyyy-MM")
+                );
+    }
+
+    public UserEligibilityResult check(
+            User user,
+            DailyNecessities necessity,
+            LocalDateTime now
+    ) {
+        if (!user.isAutoApplyEnabled()) {
+            return UserEligibilityResult.fail(
+                    "사용자가 자동 신청에 동의하지 않았습니다."
+            );
+        }
+
+        if (!necessity.isActive()) {
+            return UserEligibilityResult.fail(
+                    "비활성화된 생필품입니다."
+            );
+        }
+
+        if (!necessity.isWithinApplyPeriod()) {
+            return UserEligibilityResult.fail(
+                    "생필품 신청 기간이 아닙니다."
+            );
+        }
+
+        if (necessity.getStock() == null
+                || necessity.getStock() <= 0) {
+            return UserEligibilityResult.fail(
+                    "생필품 재고가 없습니다."
+            );
+        }
+
+        if (!matchesIncomeLevel(user, necessity)) {
+            return UserEligibilityResult.fail(
+                    "소득 수준 조건을 충족하지 않습니다."
+            );
+        }
+
+        /*
+        if (!matchesEmergencyCondition(user, necessity)) {
+            return UserEligibilityResult.fail(
+                    "긴급 지원 조건을 충족하지 않습니다."
+            );
+        }
+        */
+
+        if (!matchesRequireCheck(user, necessity)) {
+            return UserEligibilityResult.fail(
+                    "장애 여부 조건을 충족하지 않습니다."
+            );
+        }
+
+        /*
+        if (!matchesRegion(user, necessity)) {
+            return UserEligibilityResult.fail(
+                    "거주 지역 조건을 충족하지 않습니다."
+            );
+        }
+        */
+
+        return UserEligibilityResult.success();
+    }
+
+    private boolean matchesRequireCheck(
+            User user,
+            DailyNecessities necessity
+    ) {
+        if (!Boolean.TRUE.equals(
+                necessity.getRequireCheck()
+        )) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
+

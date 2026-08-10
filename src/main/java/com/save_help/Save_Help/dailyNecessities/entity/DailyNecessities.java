@@ -120,13 +120,44 @@ public class DailyNecessities {
     }
 
 
-    public boolean isAvailableForUser() {
-        return active
-                && approvalStatus == ApprovalStatus.APPROVED
-                && stock != null
-                && stock > 0;
-    }
+    public boolean isAvailableForUser(
+            Integer userIncomeLevel,
+            Long userCenterId,
+            LocalDateTime now
+    ) {
+        if (!active) {
+            return false;
+        }
 
+        if (approvalStatus != ApprovalStatus.APPROVED) {
+            return false;
+        }
+
+        if (stock == null || stock <= 0) {
+            return false;
+        }
+
+        if (applyStartedAt != null && now.isBefore(applyStartedAt)) {
+            return false;
+        }
+
+        if (applyEndedAt != null && now.isAfter(applyEndedAt)) {
+            return false;
+        }
+
+        if (incomeLevel != null
+                && userIncomeLevel != null
+                && userIncomeLevel > incomeLevel) {
+            return false;
+        }
+
+        if (providedBy != null
+                && !providedBy.getId().equals(userCenterId)) {
+            return false;
+        }
+
+        return true;
+    }
     public void addStock(int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("추가 수량 관련 예외처리가 필요합니다");
