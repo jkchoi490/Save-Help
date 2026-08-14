@@ -7,8 +7,9 @@ import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestCreateDto;
 import com.save_help.Save_Help.dailyNecessities.dto.DailyNecessitiesRequestResponseDto;
 import com.save_help.Save_Help.dailyNecessities.entity.*;
-import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessitiesCreated;
+import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessitiesCreatedEvent;
 import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessityEligibilityEvent;
+import com.save_help.Save_Help.dailyNecessities.kafka.event.DailyNecessitySavedEvent;
 import com.save_help.Save_Help.dailyNecessities.kafka.producer.DailyNecessitiesPublisher;
 import com.save_help.Save_Help.dailyNecessities.repository.*;
 import com.save_help.Save_Help.dailyNecessities.spec.DailyNecessitiesSpecs;
@@ -29,7 +30,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -513,7 +513,7 @@ public class DailyNecessitiesService {
         DailyNecessities savedDailyNecessities =
                 necessitiesRepository.save(dailyNecessities);
 
-        DailyNecessitiesCreated event = DailyNecessitiesCreated.builder()
+        DailyNecessitiesCreatedEvent event = DailyNecessitiesCreatedEvent.builder()
                 .necessityId(savedDailyNecessities.getId())
                 .title(savedDailyNecessities.getName())
                 .category(savedDailyNecessities.getCategory().name())
@@ -989,6 +989,25 @@ public class DailyNecessitiesService {
         }
 
         return false;
+    }
+
+    @Transactional
+    public DailyNecessities createDailyNecessities(
+            DailyNecessities dailyNecessities
+    ) {
+
+        DailyNecessities saved =
+                necessitiesRepository.save(
+                        dailyNecessities
+                );
+
+        dailyNecessitiesPublisher.publishEvent(
+                new DailyNecessitySavedEvent(
+                        saved.getId()
+                )
+        );
+
+        return saved;
     }
 
 }

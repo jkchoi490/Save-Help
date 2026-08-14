@@ -92,8 +92,9 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITY_ELIGIBILITY_CHANGED =
             "daily-necessity-eligibility-changed";
 
+    // 생필품 생성 이벤트 Topic
     public static final String DAILY_NECESSITIES_CREATED =
-            "daily.necessities.created.v1";
+            "daily.necessities.created";
 
     // 생필품 승인됨
     public static final String DAILY_NECESSITIES_APPROVED =
@@ -165,4 +166,7 @@ public final class KafkaTopics {
     // 사용자가 생필품 신청 요건에 적합한 지 확인
     public static final String DAILY_NECESSITIES_USER_ELIGIBILITY_CHECK =
             "daily-necessities.user-eligibility.check.v1";
+
+
+
 }
