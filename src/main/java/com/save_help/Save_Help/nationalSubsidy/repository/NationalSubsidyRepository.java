@@ -281,5 +281,18 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
             String categoryCode,
             Pageable pageable
     );
+
+    // 국가보조금 신청 기간 확인 메서드
+    @Query("""
+            SELECT n
+            FROM NationalSubsidy n
+            WHERE n.active = true
+              AND n.isOpen = true
+              AND n.startDate <= :today
+              AND n.endDate >= :today
+            """)
+    List<NationalSubsidy> findOpenSubsidies(
+            @Param("today") LocalDate today
+    );
 }
 

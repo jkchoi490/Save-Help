@@ -76,4 +76,19 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
             Pageable pageable
     );
 
+    // 중복 신청 검사를 위한 메서드
+    boolean existsByUser_IdAndSubsidy_Id(
+            Long userId,
+            Long subsidyId
+    );
+
+    // 중복 신청 검사를 위한 메서드
+    boolean existsByEventId(String eventId);
+
+    // 중복 신청 검사를 위한 메서드
+    Optional<NationalSubsidyApplication>
+    findByUser_IdAndSubsidy_Id(
+            Long userId,
+            Long subsidyId
+    );
 }
