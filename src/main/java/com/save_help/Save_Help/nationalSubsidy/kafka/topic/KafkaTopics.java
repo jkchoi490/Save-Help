@@ -167,6 +167,8 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITIES_USER_ELIGIBILITY_CHECK =
             "daily-necessities.user-eligibility.check.v1";
 
-
+    // 사용자 국가보조금 자동 신청 자격 검사
+    public static final String USER_SUBSIDY_ELIGIBILITY_CHECK =
+            "national-subsidy.user-eligibility-check";
 
 }
