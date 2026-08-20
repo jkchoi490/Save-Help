@@ -148,10 +148,6 @@ public final class KafkaTopics {
     public static final String NATIONAL_SUBSIDY_APPLICATION_PENDING =
             "subsidy.application.pending";
 
-    // 국가보조금 생성
-    public static final String NATIONAL_SUBSIDY_CREATED =
-            "subsidy.created";
-
     // 국가보조금 신청 완료
     public static final String NATIONAL_SUBSIDY_APPLICATION_APPLIED =
             "subsidy.applied";
@@ -171,4 +167,7 @@ public final class KafkaTopics {
     public static final String USER_SUBSIDY_ELIGIBILITY_CHECK =
             "national-subsidy.user-eligibility-check";
 
+    // 국가보조금 생성 (자동 신청용)
+    public static final String NATIONAL_SUBSIDY_CREATED =
+            "subsidy.created";
 }

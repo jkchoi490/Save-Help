@@ -5,6 +5,8 @@ import com.save_help.Save_Help.nationalSubsidy.dto.*;
 import com.save_help.Save_Help.nationalSubsidy.entity.*;
 import com.save_help.Save_Help.nationalSubsidy.kafka.ApplicationCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyApplicationStatus;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.NationalSubsidyCreatedEvent;
+import com.save_help.Save_Help.nationalSubsidy.kafka.event.NationalSubsidySavedEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.SubsidyCreatedInternalEvent;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserNationalSubsidyEligibilityEvent;
 import com.save_help.Save_Help.nationalSubsidy.repository.*;
@@ -27,10 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -851,6 +850,180 @@ public class NationalSubsidyService {
                 );
             }
         }
+
+        return applicationCount;
+    }
+
+    // 새로운 보조금 생성
+    @Transactional
+    public NationalSubsidy createNationalSubsidy(
+            NationalSubsidy subsidy
+    ) {
+
+        // 이벤트 ID 생성
+        if (subsidy.getEventId() == null
+                || subsidy.getEventId().isBlank()) {
+
+            subsidy.setEventId(
+                    UUID.randomUUID().toString()
+            );
+        }
+
+        // 국가보조금 DB 저장
+        NationalSubsidy savedSubsidy =
+                nationalSubsidyRepository.save(subsidy);
+
+        // DB 저장 완료 이벤트 발행
+        publisher.publishEvent(
+                new NationalSubsidySavedEvent(
+                        savedSubsidy.getId(),
+                        savedSubsidy.getEventId()
+                )
+        );
+
+        return savedSubsidy;
+    }
+
+    /**
+     * 새로운 국가보조금 생성 시
+     * 자동 신청 대상 사용자를 검사하여 신청
+     */
+    @Transactional
+    public int autoApplyNewSubsidy(
+            NationalSubsidyCreatedEvent event
+    ) {
+
+        // 1. 새로 생성된 국가보조금 조회
+        NationalSubsidy subsidy =
+                nationalSubsidyRepository
+                        .findById(event.getSubsidyId())
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "국가보조금을 찾을 수 없습니다. subsidyId="
+                                                + event.getSubsidyId()
+                                )
+                        );
+
+        LocalDate today = LocalDate.now();
+
+        // 2. 보조금 신청 가능 여부 검사
+        if (!subsidy.isRunnable(today)) {
+
+            log.info(
+                    "현재 자동 신청할 수 없는 보조금: subsidyId={}",
+                    subsidy.getId()
+            );
+
+            return 0;
+        }
+
+        // 3. 자동 신청 동의 사용자 조회
+        List<User> users =
+                userRepository.findByAutoApplyEnabledTrue();
+
+        log.info(
+                "신규 보조금 자동 신청 사용자 검사 시작: subsidyId={}, userCount={}",
+                subsidy.getId(),
+                users.size()
+        );
+
+        int applicationCount = 0;
+
+        // 4. 사용자 순회
+        for (User user : users) {
+
+            // 5. 중복 신청 검사
+            boolean alreadyApplied =
+                    appRepository
+                            .existsByUser_IdAndSubsidy_Id(
+                                    user.getId(),
+                                    subsidy.getId()
+                            );
+
+            if (alreadyApplied) {
+
+                log.debug(
+                        "이미 신청한 국가보조금: userId={}, subsidyId={}",
+                        user.getId(),
+                        subsidy.getId()
+                );
+
+                continue;
+            }
+
+            // 6. 사용자 조건 검사
+            boolean eligible =
+                    subsidy.isEligible(
+                            user.getAge(),
+                            user.getIncomeLevel(),
+                            user.isDisabled(),
+                            user.isInEmergency()
+                    );
+
+            if (!eligible) {
+
+                log.debug(
+                        "신규 국가보조금 자격 미충족: userId={}, subsidyId={}",
+                        user.getId(),
+                        subsidy.getId()
+                );
+
+                continue;
+            }
+
+            // 7. 자동 신청 Application 생성
+            NationalSubsidyApplication application =
+                    NationalSubsidyApplication.builder()
+                            .user(user)
+                            .subsidy(subsidy)
+                            .status(
+                                    NationalSubsidyApplication.Status.PENDING
+                            )
+                            .active(true)
+                            .appliedBy(
+                                    NationalSubsidyApplication.AppliedBy.AUTO
+                            )
+                            .eventId(event.getEventId())
+                            .build();
+
+            // 8. AUTO 신청 처리
+            application.markAppliedAuto(
+                    "신규 국가보조금 등록에 따른 자동 신청",
+                    event.getEventId()
+            );
+
+            try {
+
+                // 9. DB 저장
+                appRepository.save(application);
+
+                // 10. 신청 수 증가
+                subsidy.increaseApplicationCount(1);
+
+                applicationCount++;
+
+                log.info(
+                        "신규 국가보조금 자동 신청 완료: userId={}, subsidyId={}, eventId={}",
+                        user.getId(),
+                        subsidy.getId(),
+                        event.getEventId()
+                );
+
+            } catch (DataIntegrityViolationException e) {
+
+                log.warn(
+                        "신규 국가보조금 중복 신청 차단: userId={}, subsidyId={}",
+                        user.getId(),
+                        subsidy.getId()
+                );
+            }
+        }
+
+        log.info(
+                "신규 국가보조금 자동 신청 처리 완료: subsidyId={}, applicationCount={}",
+                subsidy.getId(),
+                applicationCount
+        );
 
         return applicationCount;
     }
