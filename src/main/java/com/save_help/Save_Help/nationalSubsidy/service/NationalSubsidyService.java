@@ -1027,4 +1027,29 @@ public class NationalSubsidyService {
 
         return applicationCount;
     }
+
+    @Transactional(readOnly = true)
+    public boolean checkEligibility(
+            Long subsidyId,
+            int age,
+            String incomeLevel,
+            boolean disabled,
+            boolean emergency
+    ) {
+
+        NationalSubsidy subsidy =
+                nationalSubsidyRepository.findById(subsidyId)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "보조금을 찾을 수 없습니다."
+                                )
+                        );
+
+        return subsidy.isEligible(
+                age,
+                incomeLevel,
+                disabled,
+                emergency
+        );
+    }
 }

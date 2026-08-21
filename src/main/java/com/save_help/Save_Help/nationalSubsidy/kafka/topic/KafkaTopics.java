@@ -170,4 +170,8 @@ public final class KafkaTopics {
     // 국가보조금 생성 (자동 신청용)
     public static final String NATIONAL_SUBSIDY_CREATED =
             "subsidy.created";
+
+    // 국가보조금 지급 완료
+    public static final String NATIONAL_SUBSIDY_APPLICATION_PAID =
+            "subsidy.application.paid";
 }
