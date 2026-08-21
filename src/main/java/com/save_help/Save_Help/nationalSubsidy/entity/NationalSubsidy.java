@@ -191,4 +191,21 @@ public class NationalSubsidy {
 
         return (double) approvedCount / applicationCount * 100.0;
     }
+
+    // 현재 신청 기간인지 확인
+    public boolean isWithinApplyPeriod(LocalDate today) {
+        if (today == null) {
+            return false;
+        }
+
+        if (startDate != null && today.isBefore(startDate)) {
+            return false;
+        }
+
+        if (endDate != null && today.isAfter(endDate)) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -350,4 +350,35 @@ public class NationalSubsidyController {
     }
 
      */
+
+    @Operation(
+            summary = "보조금 신청 자격 검사",
+            description = "사용자 조건이 해당 보조금 신청 조건에 맞는지 검사합니다"
+    )
+    @GetMapping("/{subsidyId}/eligibility")
+    public ResponseEntity<Map<String, Object>>
+    checkEligibility(
+            @PathVariable Long subsidyId,
+            @RequestParam int age,
+            @RequestParam(required = false) String incomeLevel,
+            @RequestParam(defaultValue = "false") boolean disabled,
+            @RequestParam(defaultValue = "false") boolean emergency
+    ) {
+
+        boolean eligible =
+                subsidyService.checkEligibility(
+                        subsidyId,
+                        age,
+                        incomeLevel,
+                        disabled,
+                        emergency
+                );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "subsidyId", subsidyId,
+                        "eligible", eligible
+                )
+        );
+    }
 }

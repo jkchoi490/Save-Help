@@ -123,4 +123,9 @@ public class NationalSubsidyApplication {
     public boolean isManualApplied() {
         return this.appliedBy == AppliedBy.MANUAL;
     }
+
+    public boolean canApprove() {
+        return this.status == Status.APPLIED
+                || this.status == Status.PENDING;
+    }
 }
