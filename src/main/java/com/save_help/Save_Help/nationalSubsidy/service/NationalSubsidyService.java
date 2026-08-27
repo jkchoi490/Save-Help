@@ -1052,4 +1052,29 @@ public class NationalSubsidyService {
                 emergency
         );
     }
+
+    // 사용자의 신청 상태별 조회
+    @Transactional(readOnly = true)
+    public Page<NationalSubsidyApplicationResponseDto>
+    findUserApplicationsByStatus(
+            Long userId,
+            NationalSubsidyApplication.Status status,
+            Pageable pageable
+    ) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException(
+                    "EntityNotFoundException userId=" + userId
+            );
+        }
+
+        return appRepository
+                .findByUser_IdAndStatusOrderByCreatedAtDesc(
+                        userId,
+                        status,
+                        pageable
+                )
+                .map(
+                        NationalSubsidyApplicationResponseDto::fromEntity
+                );
+    }
 }
