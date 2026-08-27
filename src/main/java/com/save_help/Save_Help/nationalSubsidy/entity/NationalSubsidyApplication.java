@@ -112,6 +112,13 @@ public class NationalSubsidyApplication {
     }
 
     public void approve(String reason) {
+
+        if (!canApprove()) {
+            throw new IllegalStateException(
+                    "IllegalStateException : " + status
+            );
+        }
+
         this.status = Status.APPROVED;
         this.reason = reason;
     }
@@ -128,4 +135,9 @@ public class NationalSubsidyApplication {
         return this.status == Status.APPLIED
                 || this.status == Status.PENDING;
     }
+
+    public boolean isPaid() {
+        return this.status == Status.PAID;
+    }
+
 }

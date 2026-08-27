@@ -2,6 +2,7 @@ package com.save_help.Save_Help.nationalSubsidy.controller;
 
 
 import com.save_help.Save_Help.nationalSubsidy.dto.*;
+import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyApplication;
 import com.save_help.Save_Help.nationalSubsidy.repository.NationalSubsidyNotificationRepository;
 import com.save_help.Save_Help.nationalSubsidy.service.NationalSubsidyService;
 import com.save_help.Save_Help.nationalSubsidy.entity.NationalSubsidyType;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -380,5 +383,26 @@ public class NationalSubsidyController {
                         "eligible", eligible
                 )
         );
+    }
+
+    // 사용자의 신청 내역을 상태별로 조회
+    @GetMapping("/applications/users/{userId}")
+    public ResponseEntity<Page<NationalSubsidyApplicationResponseDto>>
+    findUserApplicationsByStatus(
+            @PathVariable Long userId,
+            @RequestParam NationalSubsidyApplication.Status status,
+            @PageableDefault(
+                    size = 16,
+                    sort = "createdAt"
+            ) Pageable pageable
+    ) {
+        Page<NationalSubsidyApplicationResponseDto> response =
+                subsidyService.findUserApplicationsByStatus(
+                        userId,
+                        status,
+                        pageable
+                );
+
+        return ResponseEntity.ok(response);
     }
 }

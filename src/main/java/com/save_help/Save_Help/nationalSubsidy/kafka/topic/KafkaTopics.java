@@ -174,4 +174,8 @@ public final class KafkaTopics {
     // 국가보조금 지급 완료
     public static final String NATIONAL_SUBSIDY_APPLICATION_PAID =
             "subsidy.application.paid";
+
+    // 국가보조금 지급 알림 발송 성공
+    public static final String NATIONAL_SUBSIDY_NOTIFICATION_SENT =
+            "subsidy.notification.sent";
 }

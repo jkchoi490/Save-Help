@@ -208,4 +208,9 @@ public class NationalSubsidy {
 
         return true;
     }
+
+    // 남은 예산을 반환
+    public long getRemainingBudgetAmount() {
+        return Math.max(0L, currentBudgetAmount - executedAmount);
+    }
 }

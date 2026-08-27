@@ -91,4 +91,16 @@ public interface NationalSubsidyApplicationRepository extends JpaRepository<Nati
             Long userId,
             Long subsidyId
     );
+
+    Optional<NationalSubsidyApplication> findByEventId(
+            String eventId
+    );
+
+    Page<NationalSubsidyApplication>
+    findByUser_IdAndStatusOrderByCreatedAtDesc(
+            Long userId,
+            NationalSubsidyApplication.Status status,
+            Pageable pageable
+    );
+
 }
