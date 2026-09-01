@@ -695,4 +695,17 @@ public class DailyNecessitiesController {
                 necessitiesService.getLowStockItemsBySafetyStock()
         );
     }
+
+    @Operation(
+            summary = "pending중인 자동 신청 조회",
+            description = "pending중인 자동 신청 목록을 조회합니다."
+    )
+    @GetMapping("/auto-applications/pending")
+    public ResponseEntity<List<DailyNecessityApplication>>
+    getPendingAutoApplications() {
+
+        return ResponseEntity.ok(
+                necessitiesService.getPendingAutoApplications()
+        );
+    }
 }
