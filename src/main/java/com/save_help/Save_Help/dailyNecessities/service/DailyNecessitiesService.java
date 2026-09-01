@@ -1010,5 +1010,14 @@ public class DailyNecessitiesService {
         return saved;
     }
 
+    @Transactional(readOnly = true)
+    public boolean canAutoApply(
+            Long necessityId,
+            Integer quantity
+    ) {
+        DailyNecessities necessity = findEntity(necessityId);
+
+        return necessity.canAutoApplyWithQuantity(quantity);
+    }
 }
 

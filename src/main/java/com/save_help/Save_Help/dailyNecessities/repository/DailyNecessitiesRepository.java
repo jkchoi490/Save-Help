@@ -286,4 +286,9 @@ WHERE d.active = true
     List<DailyNecessities> findAutoApplicableItems(
             @Param("now") LocalDateTime now
     );
+
+    Page<DailyNecessities> findByApprovalStatusOrderByIdDesc(
+            DailyNecessities.ApprovalStatus approvalStatus,
+            Pageable pageable
+    );
 }

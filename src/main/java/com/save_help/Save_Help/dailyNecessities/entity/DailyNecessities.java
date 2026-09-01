@@ -284,4 +284,23 @@ public class DailyNecessities {
         return Math.max(safetyStock - currentStock, 0);
     }
 
+    @PrePersist
+    private void initializeDefaultValues() {
+        if (stock == null) {
+            stock = 0;
+        }
+
+        if (requestCount < 0) {
+            requestCount = 0;
+        }
+
+        if (approvalStatus == null) {
+            approvalStatus = ApprovalStatus.PENDING;
+        }
+
+        if (requireCheck == null) {
+            requireCheck = false;
+        }
+    }
+
 }
