@@ -66,6 +66,10 @@ public class NationalSubsidyApplication {
 
     private LocalDateTime appliedAt; // 신청 완료 시간
 
+    private LocalDateTime approvedAt;  // 승인 시간
+
+    private LocalDateTime paidAt;      // 지급 완료 시간
+
     @Version
     private Long version;
 

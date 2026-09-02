@@ -1077,4 +1077,31 @@ public class NationalSubsidyService {
                         NationalSubsidyApplicationResponseDto::fromEntity
                 );
     }
+
+    // 사용자 신청 여부 확인
+    @Transactional(readOnly = true)
+    public boolean hasAlreadyApplied(
+            Long userId,
+            Long subsidyId
+    ) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException(
+                    "EntityNotFoundException userId="
+                            + userId
+            );
+        }
+
+        if (!subsidyRepository.existsById(subsidyId)) {
+            throw new EntityNotFoundException(
+                    "EntityNotFoundException subsidyId="
+                            + subsidyId
+            );
+        }
+
+        return appRepository
+                .existsByUser_IdAndSubsidy_Id(
+                        userId,
+                        subsidyId
+                );
+    }
 }

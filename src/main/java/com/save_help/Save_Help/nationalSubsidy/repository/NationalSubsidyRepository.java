@@ -294,5 +294,18 @@ public interface NationalSubsidyRepository extends JpaRepository<NationalSubsidy
     List<NationalSubsidy> findOpenSubsidies(
             @Param("today") LocalDate today
     );
+
+    // 신청 예정 보조금 조회
+    @Query("""
+        select s
+        from NationalSubsidy s
+        where s.active = true
+          and s.startDate > :today
+        order by s.startDate asc
+        """)
+    Page<NationalSubsidy> findScheduledSubsidies(
+            @Param("today") LocalDate today,
+            Pageable pageable
+    );
 }
 

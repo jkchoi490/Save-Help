@@ -213,4 +213,10 @@ public class NationalSubsidy {
     public long getRemainingBudgetAmount() {
         return Math.max(0L, currentBudgetAmount - executedAmount);
     }
+
+    // 신청 수를 1건 증가
+    public void increaseApplicationCount() {
+        this.applicationCount++;
+    }
+
 }

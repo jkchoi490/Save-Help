@@ -182,4 +182,8 @@ public final class KafkaTopics {
     // 국가보조금 지급 알림 발송 성공
     public static final String NATIONAL_SUBSIDY_NOTIFICATION_SENT =
             "subsidy.notification.sent";
+
+    // 국가보조금 중복 신청 예방을 위한 감지
+    public static final String NATIONAL_SUBSIDY_APPLICATION_DUPLICATED =
+            "subsidy.application.duplicated";
 }

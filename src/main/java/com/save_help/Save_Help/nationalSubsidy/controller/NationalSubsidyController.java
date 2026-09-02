@@ -405,4 +405,31 @@ public class NationalSubsidyController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(
+            summary = "사용자 보조금 신청 여부 확인",
+            description = "특정 사용자가 해당 국가보조금을 이미 신청했는지 확인합니다"
+    )
+    @GetMapping(
+            "/{subsidyId}/applications/users/{userId}/exists"
+    )
+    public ResponseEntity<Map<String, Object>>
+    hasAlreadyApplied(
+            @PathVariable Long subsidyId,
+            @PathVariable Long userId
+    ) {
+        boolean alreadyApplied =
+                subsidyService.hasAlreadyApplied(
+                        userId,
+                        subsidyId
+                );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "userId", userId,
+                        "subsidyId", subsidyId,
+                        "alreadyApplied", alreadyApplied
+                )
+        );
+    }
 }
