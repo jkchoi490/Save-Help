@@ -291,4 +291,8 @@ WHERE d.active = true
             DailyNecessities.ApprovalStatus approvalStatus,
             Pageable pageable
     );
+
+    long countByProvidedBy_IdAndActiveTrue(
+            Long centerId
+    );
 }

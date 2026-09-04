@@ -186,4 +186,8 @@ public final class KafkaTopics {
     // 국가보조금 중복 신청 예방을 위한 감지
     public static final String NATIONAL_SUBSIDY_APPLICATION_DUPLICATED =
             "subsidy.application.duplicated";
+
+    // 생필품 자동 신청 처리 시작
+    public static final String DAILY_NECESSITIES_AUTO_APPLY_PROCESSING =
+            "dailynecessities.auto-apply.processing";
 }

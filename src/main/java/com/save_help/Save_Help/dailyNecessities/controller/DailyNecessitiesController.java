@@ -708,4 +708,22 @@ public class DailyNecessitiesController {
                 necessitiesService.getPendingAutoApplications()
         );
     }
+
+    @Operation(
+            summary = "사용자 생필품 신청 조건 확인",
+            description = "특정 사용자가 선택한 생필품의 자동 신청 조건을 충족하는지 확인합니다."
+    )
+    @GetMapping("/eligibility/users/{userId}/necessities/{necessityId}")
+    public ResponseEntity<UserEligibilityResult> checkUserEligibility(
+            @PathVariable Long userId,
+            @PathVariable Long necessityId
+    ) {
+        UserEligibilityResult result =
+                necessitiesService.checkUserEligibility(
+                        userId,
+                        necessityId
+                );
+
+        return ResponseEntity.ok(result);
+    }
 }

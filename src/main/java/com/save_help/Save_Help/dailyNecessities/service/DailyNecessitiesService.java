@@ -1019,5 +1019,26 @@ public class DailyNecessitiesService {
 
         return necessity.canAutoApplyWithQuantity(quantity);
     }
+
+    @Transactional(readOnly = true)
+    public UserEligibilityResult checkUserEligibility(
+            Long userId,
+            Long necessityId
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "IllegalArgumentException"
+                        )
+                );
+
+        DailyNecessities necessity = findEntity(necessityId);
+
+        return check(
+                user,
+                necessity,
+                LocalDateTime.now()
+        );
+    }
 }
 

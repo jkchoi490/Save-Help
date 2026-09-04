@@ -13,5 +13,6 @@ public enum DailyNecessitiesCategory {
     SAFETY, //안전용품
     DAILY_LIFE, //생활용품
     USER_REQUEST, // 사용자 요청 품목
+    TOOL,        // 생활 용품
     OTHER       // 기타
 }

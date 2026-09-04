@@ -303,4 +303,8 @@ public class DailyNecessities {
         }
     }
 
+    public boolean hasApplicationStarted() {
+        return applyStartedAt == null
+                || !LocalDateTime.now().isBefore(applyStartedAt);
+    }
 }
