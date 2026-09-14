@@ -190,4 +190,9 @@ public final class KafkaTopics {
     // 생필품 자동 신청 처리 시작
     public static final String DAILY_NECESSITIES_AUTO_APPLY_PROCESSING =
             "dailynecessities.auto-apply.processing";
+    // 자동 신청 자격 충족
+    public static final String DAILY_NECESSITIES_ELIGIBILITY_MATCHED =
+            "dailynecessities.eligibility.matched";
+
+
 }

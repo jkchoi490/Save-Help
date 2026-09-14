@@ -14,5 +14,6 @@ public enum DailyNecessitiesCategory {
     DAILY_LIFE, //생활용품
     USER_REQUEST, // 사용자 요청 품목
     TOOL,        // 생활 용품
+    COMMUNICATION, //통신 용품
     OTHER       // 기타
 }

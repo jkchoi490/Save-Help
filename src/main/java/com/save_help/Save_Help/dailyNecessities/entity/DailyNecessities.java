@@ -307,4 +307,8 @@ public class DailyNecessities {
         return applyStartedAt == null
                 || !LocalDateTime.now().isBefore(applyStartedAt);
     }
+
+    public int calculateAvailableStock() {
+        return stock == null ? 0 : stock;
+    }
 }

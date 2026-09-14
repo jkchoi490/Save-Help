@@ -726,4 +726,18 @@ public class DailyNecessitiesController {
 
         return ResponseEntity.ok(result);
     }
+
+    @Operation(
+            summary = "생필품 가용 재고 수량 조회",
+            description = "생필품 ID를 사용하여 현재 신청 가능한 재고 수량을 조회합니다."
+    )
+    @GetMapping("/{necessityId}/available-quantity")
+    public ResponseEntity<Integer> getAvailableQuantity(
+            @PathVariable Long necessityId
+    ) {
+        int availableQuantity =
+                necessitiesService.getAvailableQuantity(necessityId);
+
+        return ResponseEntity.ok(availableQuantity);
+    }
 }

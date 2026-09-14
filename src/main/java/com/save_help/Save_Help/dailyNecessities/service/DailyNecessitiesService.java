@@ -1040,5 +1040,18 @@ public class DailyNecessitiesService {
                 LocalDateTime.now()
         );
     }
+
+    @Transactional(readOnly = true)
+    public int getAvailableQuantity(Long necessityId) {
+        DailyNecessities necessity = findEntity(necessityId);
+
+        Integer stock = necessity.getStock();
+
+        if (stock == null || stock <= 0) {
+            return 0;
+        }
+
+        return stock;
+    }
 }
 
