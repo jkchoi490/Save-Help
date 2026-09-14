@@ -295,4 +295,13 @@ WHERE d.active = true
     long countByProvidedBy_IdAndActiveTrue(
             Long centerId
     );
+
+    @Query("""
+    SELECT d.stock
+    FROM DailyNecessities d
+    WHERE d.id = :necessityId
+""")
+    Optional<Integer> findAvailableQuantity(
+            @Param("necessityId") Long necessityId
+    );
 }
