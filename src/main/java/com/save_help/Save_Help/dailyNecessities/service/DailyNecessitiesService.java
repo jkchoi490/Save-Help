@@ -16,6 +16,7 @@ import com.save_help.Save_Help.dailyNecessities.spec.DailyNecessitiesSpecs;
 import com.save_help.Save_Help.nationalSubsidy.kafka.event.UserDailyNecessitiesEligibilityEvent;
 import com.save_help.Save_Help.user.entity.User;
 import com.save_help.Save_Help.user.repository.UserRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -1052,6 +1052,32 @@ public class DailyNecessitiesService {
         }
 
         return stock;
+    }
+
+    @Transactional(readOnly = true)
+    public int getApplicableQuantity(
+            Long necessityId,
+            int requestedQuantity
+    ) {
+        if (requestedQuantity <= 0) {
+            return 0;
+        }
+
+        DailyNecessities necessity = findEntity(necessityId);
+
+        if (!necessity.isActive()
+                || necessity.isExpired()
+                || !necessity.isWithinApplyPeriod()) {
+            return 0;
+        }
+
+        Integer stock = necessity.getStock();
+
+        if (stock == null || stock <= 0) {
+            return 0;
+        }
+
+        return Math.min(stock, requestedQuantity);
     }
 }
 

@@ -304,4 +304,20 @@ WHERE d.active = true
     Optional<Integer> findAvailableQuantity(
             @Param("necessityId") Long necessityId
     );
+
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.providedBy.id = :centerId
+      AND d.active = true
+      AND d.approvalStatus = :approvalStatus
+      AND d.stock > 0
+      AND (d.expirationDate IS NULL OR d.expirationDate >= :today)
+""")
+    List<DailyNecessities> findAvailableItemsByCenter(
+            @Param("centerId") Long centerId,
+            @Param("approvalStatus")
+            DailyNecessities.ApprovalStatus approvalStatus,
+            @Param("today") LocalDate today
+    );
 }
