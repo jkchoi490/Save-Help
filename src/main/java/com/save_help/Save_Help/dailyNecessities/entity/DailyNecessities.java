@@ -311,4 +311,16 @@ public class DailyNecessities {
     public int calculateAvailableStock() {
         return stock == null ? 0 : stock;
     }
+
+    public int calculateRemainingCapacity() {
+        if (maxStock == null) {
+            return Integer.MAX_VALUE;
+        }
+
+        return Math.max(
+                maxStock - calculateAvailableStock(),
+                0
+        );
+    }
+
 }

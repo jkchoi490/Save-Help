@@ -194,5 +194,7 @@ public final class KafkaTopics {
     public static final String DAILY_NECESSITIES_ELIGIBILITY_MATCHED =
             "dailynecessities.eligibility.matched";
 
-
+    // 생필품 신청 대기
+    public static final String DAILY_NECESSITIES_APPLICATION_PENDING =
+            "dailynecessities.application.pending.v1";
 }

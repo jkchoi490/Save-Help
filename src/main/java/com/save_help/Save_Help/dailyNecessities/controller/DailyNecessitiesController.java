@@ -740,4 +740,22 @@ public class DailyNecessitiesController {
 
         return ResponseEntity.ok(availableQuantity);
     }
+
+    @Operation(
+            summary = "생필품 신청 가능 수량 조회",
+            description = "사용자가 요청한 수량과 현재 재고 및 신청 가능 상태를 확인하여 실제 신청 가능한 수량을 반환합니다."
+    )
+    @GetMapping("/{necessityId}/applicable-quantity")
+    public ResponseEntity<Integer> getApplicableQuantity(
+            @PathVariable Long necessityId,
+            @RequestParam int requestedQuantity
+    ) {
+        int applicableQuantity =
+                necessitiesService.getApplicableQuantity(
+                        necessityId,
+                        requestedQuantity
+                );
+
+        return ResponseEntity.ok(applicableQuantity);
+    }
 }
