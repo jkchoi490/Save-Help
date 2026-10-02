@@ -122,4 +122,17 @@ public class Emergency {
         this.resolved = false;
     }
 
+
+    @PrePersist
+    protected void initialize() {
+        if (this.status == null) {
+            this.status = EmergencyStatus.REQUESTED;
+        }
+
+        if (this.requestedAt == null) {
+            this.requestedAt = LocalDateTime.now();
+        }
+
+    }
+
 }
