@@ -4,6 +4,8 @@ import com.save_help.Save_Help.emergency.entity.Emergency;
 import com.save_help.Save_Help.emergency.entity.EmergencyStatus;
 import com.save_help.Save_Help.user.entity.User;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
@@ -23,5 +25,12 @@ public interface EmergencyRepository extends JpaRepository<Emergency, Long>, Jpa
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select e from Emergency e where e.id = :id")
     Optional<Emergency> findByIdForUpdate(@Param("id") Long id);
+
+    // 사용자의 긴급 요청을 최신순으로 조회
+    Page<Emergency> findByRequester_IdOrderByRequestedAtDesc(
+            Long userId,
+            Pageable pageable
+    );
+
 
 }

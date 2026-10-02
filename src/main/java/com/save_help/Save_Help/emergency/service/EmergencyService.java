@@ -261,6 +261,27 @@ public class EmergencyService {
                 .toList();
     }
 
+    /** 특정 사용자의 긴급 요청 조회 */
+    @Transactional(readOnly = true)
+    public Page<EmergencyResponseDto> getEmergenciesByUser(
+            Long userId,
+            Pageable pageable
+    ) {
+        if (userId == null) {
+            throw new IllegalArgumentException("사용자 ID가 필요합니다.");
+        }
 
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException(
+                    "EntityNotFoundException : " + userId
+            );
+        }
+
+        Specification<Emergency> spec = (root, query, cb) ->
+                cb.equal(root.get("requester").get("id"), userId);
+
+        return emergencyRepository.findAll(spec, pageable)
+                .map(EmergencyResponseDto::from);
+    }
 }
 

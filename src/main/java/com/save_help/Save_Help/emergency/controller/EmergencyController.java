@@ -115,5 +115,18 @@ public class EmergencyController {
         return ResponseEntity.ok(emergencyService.getNotes(id));
     }
 
-
+    /** 특정 사용자의 긴급 요청 조회 */
+    @GetMapping("/users/{userId}")
+    @Operation(
+            summary = "사용자별 긴급 요청 조회",
+            description = "특정 사용자의 긴급 요청을 페이징 및 정렬하여 조회합니다."
+    )
+    public ResponseEntity<Page<EmergencyResponseDto>> getEmergenciesByUser(
+            @PathVariable("userId") Long userId,
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                emergencyService.getEmergenciesByUser(userId, pageable)
+        );
+    }
 }
