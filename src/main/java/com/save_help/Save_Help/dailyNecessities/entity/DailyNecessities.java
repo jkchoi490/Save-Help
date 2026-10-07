@@ -323,4 +323,18 @@ public class DailyNecessities {
         );
     }
 
+    public void increaseStocks(Integer quantity) {
+        validatePositiveQuantity(quantity);
+
+        if (!canIncreaseStock(quantity)) {
+            throw new IllegalStateException(
+                    "IllegalStateException"
+            );
+        }
+
+        int currentStock = stock == null ? 0 : stock;
+        this.stock = currentStock + quantity;
+    }
+
+
 }

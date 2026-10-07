@@ -320,4 +320,20 @@ WHERE d.active = true
             DailyNecessities.ApprovalStatus approvalStatus,
             @Param("today") LocalDate today
     );
+
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.providedBy.id = :centerId
+      AND d.active = true
+      AND d.approvalStatus = :approvalStatus
+      AND d.safetyStock IS NOT NULL
+      AND COALESCE(d.stock, 0) <= d.safetyStock
+    ORDER BY d.id ASC
+    """)
+    List<DailyNecessities> findLowStockItemsByCenter(
+            @Param("centerId") Long centerId,
+            @Param("approvalStatus")
+            DailyNecessities.ApprovalStatus approvalStatus
+    );
 }

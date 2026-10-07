@@ -1079,5 +1079,40 @@ public class DailyNecessitiesService {
 
         return Math.min(stock, requestedQuantity);
     }
+
+    // 사용자 자격과 요청 수량에 대한 남은 수량을 확인합니다.
+    @Transactional(readOnly = true)
+    public UserEligibilityResult checkUserEligibilityWithQuantity(
+            Long userId,
+            Long necessityId,
+            Integer quantity
+    ) {
+        if (quantity == null || quantity <= 0) {
+            return UserEligibilityResult.fail(
+                    "신청 수량을 다시 확인해야 합니다"
+            );
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "EntityNotFoundException"
+                        )
+                );
+
+        DailyNecessities necessity = findEntity(necessityId);
+
+        if (!necessity.hasEnoughStock(quantity)) {
+            return UserEligibilityResult.fail(
+                    "요청 수량에 비해 재고가 부족합니다."
+            );
+        }
+
+        return check(
+                user,
+                necessity,
+                LocalDateTime.now()
+        );
+    }
 }
 
