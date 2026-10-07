@@ -758,4 +758,25 @@ public class DailyNecessitiesController {
 
         return ResponseEntity.ok(applicableQuantity);
     }
+
+    // 사용자 신청 자격과 요청 수량에 대한 재고를 확인합니다.
+    @Operation(
+            summary = "사용자 신청 자격 및 요청 수량 확인",
+            description = "사용자의 생필품 자동 신청 자격과 요청 수량에 대한 재고 충족 여부를 확인합니다."
+    )
+    @GetMapping("/eligibility/users/{userId}/necessities/{necessityId}/quantity")
+    public ResponseEntity<UserEligibilityResult> checkUserEligibilityWithQuantity(
+            @PathVariable("userId") Long userId,
+            @PathVariable("necessityId") Long necessityId,
+            @RequestParam("quantity") Integer quantity
+    ) {
+        UserEligibilityResult result =
+                necessitiesService.checkUserEligibilityWithQuantity(
+                        userId,
+                        necessityId,
+                        quantity
+                );
+
+        return ResponseEntity.ok(result);
+    }
 }

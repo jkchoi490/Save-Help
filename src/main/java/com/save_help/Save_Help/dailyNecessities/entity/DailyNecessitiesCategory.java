@@ -16,5 +16,6 @@ public enum DailyNecessitiesCategory {
     TOOL,        // 생활 용품
     COMMUNICATION, //통신 용품
     DIGITAL_DEVICE,     // 디지털 학습기기
+    LEARNING_MATERIAL,      // 학습 용품
     OTHER       // 기타
 }
