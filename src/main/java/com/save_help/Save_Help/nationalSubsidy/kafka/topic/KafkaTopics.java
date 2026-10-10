@@ -201,4 +201,8 @@ public final class KafkaTopics {
     // 생필품 신청 대기
     public static final String DAILY_NECESSITIES_APPLICATION_PENDING =
             "dailynecessities.application.pending.v1";
+
+    // 생필품 신청 기간 시작
+    public static final String DAILY_NECESSITIES_APPLICATION_PERIOD_OPENED =
+            "dailynecessities.application.period.opened";
 }

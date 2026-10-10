@@ -336,4 +336,20 @@ WHERE d.active = true
             @Param("approvalStatus")
             DailyNecessities.ApprovalStatus approvalStatus
     );
+
+    // 승인되고 활성화된 품목 중 신청 시작 전인 품목을 조회합니다.
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.active = true
+      AND d.approvalStatus = :approvalStatus
+      AND d.applyStartedAt > :now
+    ORDER BY d.applyStartedAt ASC, d.id ASC
+    """)
+    Page<DailyNecessities> findApplicationUpcomingItems(
+            @Param("approvalStatus")
+            DailyNecessities.ApprovalStatus approvalStatus,
+            @Param("now") LocalDateTime now,
+            Pageable pageable
+    );
 }

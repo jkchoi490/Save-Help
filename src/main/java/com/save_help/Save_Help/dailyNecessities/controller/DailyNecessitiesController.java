@@ -9,6 +9,7 @@ import com.save_help.Save_Help.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -775,6 +776,34 @@ public class DailyNecessitiesController {
                         userId,
                         necessityId,
                         quantity
+                );
+
+        return ResponseEntity.ok(result);
+    }
+
+    // 생필품 신청 기간을 업데이트합니다.
+    @Operation(
+            summary = "생필품 신청 기간 업데이트",
+            description = "생필품의 신청 시각을 업데이트합니다. "
+                    + "생략한 시각은 제한 없음으로 설정됩니다."
+    )
+    @PatchMapping("/{necessityId}/application-period")
+    public ResponseEntity<DailyNecessitiesDto> updateApplicationPeriod(
+            @PathVariable("necessityId") Long necessityId,
+
+            @RequestParam(value = "startedAt", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime startedAt,
+
+            @RequestParam(value = "endedAt", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime endedAt
+    ) {
+        DailyNecessitiesDto result =
+                necessitiesService.updateApplicationPeriod(
+                        necessityId,
+                        startedAt,
+                        endedAt
                 );
 
         return ResponseEntity.ok(result);
