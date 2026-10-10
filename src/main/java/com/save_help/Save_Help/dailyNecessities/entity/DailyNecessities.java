@@ -336,5 +336,11 @@ public class DailyNecessities {
         this.stock = currentStock + quantity;
     }
 
+    public void addStocks(int quantity) {
+        increaseStocks(quantity);
+    }
+
+
+
 
 }

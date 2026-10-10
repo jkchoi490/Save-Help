@@ -1114,5 +1114,19 @@ public class DailyNecessitiesService {
                 LocalDateTime.now()
         );
     }
+
+    // 생필품 신청 기간을 업데이트합니다.
+    @Transactional
+    public DailyNecessitiesDto updateApplicationPeriod(
+            Long necessityId,
+            LocalDateTime startedAt,
+            LocalDateTime endedAt
+    ) {
+        DailyNecessities necessity = findEntity(necessityId);
+
+        necessity.updateApplyPeriod(startedAt, endedAt);
+
+        return DailyNecessitiesDto.fromEntity(necessity);
+    }
 }
 
