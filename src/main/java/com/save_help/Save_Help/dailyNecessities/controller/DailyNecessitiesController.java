@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/necessities")
@@ -807,5 +808,22 @@ public class DailyNecessitiesController {
                 );
 
         return ResponseEntity.ok(result);
+    }
+
+    // 센터별 안전 재고 보충 수량을 조회합니다.
+    @Operation(
+            summary = "센터별 안전 재고 보충 수량 조회",
+            description = "센터의 활성화되고 승인된 미만료 품목 중 "
+                    + "안전 재고까지 보충이 필요한 품목을 조회합니다. "
+                    + "품목 ID와 필요한 보충 수량을 반환합니다."
+    )
+    @GetMapping("/center/{centerId}/required-stock")
+    public ResponseEntity<Map<Long, Integer>> getRequiredStockByCenter(
+            @PathVariable("centerId") Long centerId
+    ) {
+        Map<Long, Integer> requiredStock =
+                necessitiesService.getRequiredStockByCenter(centerId);
+
+        return ResponseEntity.ok(requiredStock);
     }
 }

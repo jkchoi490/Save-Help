@@ -1128,5 +1128,30 @@ public class DailyNecessitiesService {
 
         return DailyNecessitiesDto.fromEntity(necessity);
     }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Integer> getRequiredStockByCenter(
+            Long centerId
+    ) {
+        if (centerId == null) {
+            throw new IllegalArgumentException("센터 ID는 필수입니다.");
+        }
+
+        return necessitiesRepository.findByProvidedBy_Id(centerId)
+                .stream()
+                .filter(DailyNecessities::isActive)
+                .filter(item ->
+                        item.getApprovalStatus()
+                                == DailyNecessities.ApprovalStatus.APPROVED
+                )
+                .filter(item -> !item.isExpired())
+                .filter(item ->
+                        item.calculateRequiredStockToSafetyLevel() > 0
+                )
+                .collect(Collectors.toMap(
+                        DailyNecessities::getId,
+                        DailyNecessities::calculateRequiredStockToSafetyLevel
+                ));
+    }
 }
 

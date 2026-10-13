@@ -18,5 +18,6 @@ public enum DailyNecessitiesCategory {
     DIGITAL_DEVICE,     // 디지털 학습기기
     LEARNING_MATERIAL,      // 학습 용품
     POWER_SUPPLIES, //전기 용품
+    REPAIR_SUPPLIES, // 수리 용품
     OTHER       // 기타
 }

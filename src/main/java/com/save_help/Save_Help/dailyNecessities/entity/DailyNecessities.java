@@ -340,7 +340,22 @@ public class DailyNecessities {
         increaseStocks(quantity);
     }
 
+    public boolean isApplicableAt(LocalDateTime now) {
+        if (now == null) {
+            throw new IllegalArgumentException("기준 시각은 필수입니다.");
+        }
 
+        return active
+                && approvalStatus == ApprovalStatus.APPROVED
+                && stock != null
+                && stock > 0
+                && (expirationDate == null
+                || !expirationDate.isBefore(now.toLocalDate()))
+                && (applyStartedAt == null
+                || !now.isBefore(applyStartedAt))
+                && (applyEndedAt == null
+                || !now.isAfter(applyEndedAt));
+    }
 
 
 }
