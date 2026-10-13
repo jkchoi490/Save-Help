@@ -205,4 +205,8 @@ public final class KafkaTopics {
     // 생필품 신청 기간 시작
     public static final String DAILY_NECESSITIES_APPLICATION_PERIOD_OPENED =
             "dailynecessities.application.period.opened";
+
+    // 생필품 보충
+    public static final String DAILY_NECESSITIES_RESTOCK_REQUESTED =
+            "dailynecessities.restock.requested";
 }

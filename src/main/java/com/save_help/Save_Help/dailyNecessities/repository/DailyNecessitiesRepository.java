@@ -352,4 +352,22 @@ WHERE d.active = true
             @Param("now") LocalDateTime now,
             Pageable pageable
     );
+
+    @Query("""
+    SELECT d
+    FROM DailyNecessities d
+    WHERE d.providedBy.id = :centerId
+      AND d.active = true
+      AND d.approvalStatus = :approvalStatus
+      AND (d.expirationDate IS NULL OR d.expirationDate >= :today)
+      AND d.safetyStock IS NOT NULL
+      AND COALESCE(d.stock, 0) < d.safetyStock
+    ORDER BY d.id ASC
+    """)
+    List<DailyNecessities> findRestockRequiredItemsByCenter(
+            @Param("centerId") Long centerId,
+            @Param("approvalStatus")
+            DailyNecessities.ApprovalStatus approvalStatus,
+            @Param("today") LocalDate today
+    );
 }
